@@ -22,7 +22,38 @@ pnpm dev
 ```
 
 Open http://localhost:3000. No environment variables or service credentials are required.
-The root route is a Spanish placeholder; localization and the visual system belong to PR-02.
+The root route redirects to `/es`. English is available at `/en`.
+
+## Foundation shells and localization
+
+| Space    | Spanish (default) | English        |
+| -------- | ----------------- | -------------- |
+| Public   | `/es`             | `/en`          |
+| HQ       | `/es/hq`          | `/en/hq`       |
+| Streamer | `/es/streamer`    | `/en/streamer` |
+
+Unprefixed `/hq` and `/streamer` redirect to the Spanish versions. These temporary
+redirects preserve query parameters. Browser language does not override the Spanish
+default. ES/EN links retain the current space; the URL is the language preference.
+Unsupported locale prefixes and unknown routes return 404.
+
+`src/lib/i18n/config.ts` defines the supported locales and shell paths.
+`src/lib/i18n/dictionaries.ts` keeps the translated content and metadata in dictionaries
+with the same checked TypeScript shape. Add new interface copy to both dictionaries.
+The locale layout sets the document language and prerenders both languages.
+
+`src/app/globals.css` defines neutral color, spacing, radius, and typography tokens.
+`src/components/ui` contains shared status badges and content panels; `Shell` composes
+the header, navigation, skip link, main landmark, and footer. Navigation exposes active
+states, visible keyboard focus, and touch targets of at least 44 CSS pixels. The header
+reflows for narrow screens. These preview shells contain no authentication or role gates,
+private information, recruitment, forms, dashboards, or business actions. They must not be
+treated as protected areas until authentication and authorization are implemented later.
+
+Roboto is loaded through `next/font/local` from the pinned `@fontsource-variable/roboto`
+package (SIL Open Font License, also served at `/fonts/roboto-OFL.txt`). Only the Latin variable upright
+font is loaded; it covers the Spanish and English interface. The build and browser do not
+contact Google Fonts. Revisit subsets and styles before adding other scripts or italics.
 
 ## Code standards and validation
 
