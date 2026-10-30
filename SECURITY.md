@@ -1,8 +1,14 @@
 # Security policy for the project foundation
 
-This is a prelaunch foundation, not an authenticated production platform. HQ and
-streamer pages contain public preview content. Do not add private data until access
+This is a prelaunch foundation, not an authenticated production platform. HQ
+returns 404; streamer pages contain public pilot-entry information. Optional
+server-only Auth targets the owner-approved testing project. Do not add private data until access
 control and service integration have been separately implemented and reviewed.
+
+See the [current Auth trust boundary and verification limits](docs/wp-02-sign-in.md).
+Signing in grants no workspace authority. No private data may be served until
+admission/role enforcement is reviewed. The provider still allows signup; the app
+requests magic links with automatic user creation disabled.
 
 ## Reporting
 
@@ -17,7 +23,7 @@ Any history repair or provider/account changes require their own authorized acti
 
 ## Controls supplied here
 
-- Environment schemas reject privileged/legacy keys and attempts to enable Supabase.
+- The WP-01 browser environment rejects privileged/legacy keys and enabling its factories.
   Browser/server markers separate the service factories; the factories throw before
   SDK creation or request-cookie access. They are not authentication or authorization.
 - Production response headers restrict embedding, MIME sniffing, referrers, device

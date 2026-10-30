@@ -93,3 +93,13 @@ contract, not live authentication or route/data enforcement. App pages do not re
 test identities, user roles, browser flags, or request cookies. The approved
 [first-increment scope and matrix](wp-02-pilot-access.md) records the next gate;
 the disconnected Supabase implementation remains unchanged.
+
+## WP-02 sign-in update
+
+[Server Auth adapter](../src/lib/auth/server.ts) uses the approved testing project
+only when explicitly enabled. [Auth handlers](../src/lib/auth/flow.ts) implement
+PKCE callback, server session verification/refresh, and local sign-out. These are
+separate from the disabled browser-service factories. Sign-in/session and pilot
+entry pages render dynamically; Auth responses are private/no-store. HQ remains
+404 and verified identity grants no workspace permissions. See the
+[sign-in scope](wp-02-sign-in.md) for configuration, routes, tests, and limitations.

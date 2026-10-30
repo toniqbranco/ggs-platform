@@ -3,6 +3,8 @@ import { notFound } from "next/navigation";
 import { isLocale, pilotPageHref, sectionHref } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { getPilotCopy } from "@/lib/i18n/pilot";
+import { getPilotAuthConfig } from "@/lib/auth/server";
+import { getAuthCopy } from "@/lib/i18n/auth";
 import { Shell } from "./shell";
 import { Badge } from "./ui/badge";
 import { Icon } from "./ui/icon";
@@ -18,6 +20,8 @@ export async function PilotEntry({
   if (!isLocale(locale)) notFound();
   const base = getDictionary(locale);
   const copy = getPilotCopy(locale);
+  const authEnabled = getPilotAuthConfig().enabled;
+  const authCopy = getAuthCopy(locale);
   const section = base.sections[area];
 
   return (
@@ -67,17 +71,27 @@ export async function PilotEntry({
             ))}
           </ol>
           <p id="pilot-availability" className="pilot-availability">
-            {copy.availability}
+            {authEnabled ? authCopy.boundary : copy.availability}
           </p>
-          <button
-            type="button"
-            className="button-link pilot-signin"
-            disabled
-            aria-describedby="pilot-availability"
-          >
-            {copy.signinSoon}
-            <Icon name="lock" />
-          </button>
+          {authEnabled ? (
+            <Link
+              className="button-link button-primary"
+              href={`/${locale}/sign-in`}
+            >
+              {authCopy.signIn}
+              <Icon name="lock" />
+            </Link>
+          ) : (
+            <button
+              type="button"
+              className="button-link pilot-signin"
+              disabled
+              aria-describedby="pilot-availability"
+            >
+              {copy.signinSoon}
+              <Icon name="lock" />
+            </button>
+          )}
           <Link
             className="pilot-policy-link"
             href={pilotPageHref(locale, "information")}

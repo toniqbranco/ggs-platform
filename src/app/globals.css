@@ -1117,3 +1117,46 @@ h1 > span {
     flex-direction: column;
   }
 }
+
+.auth-card {
+  max-width: 42rem;
+  margin: 3rem auto 5rem;
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1.5rem;
+}
+.auth-card h1 {
+  font-size: clamp(2.2rem, 6vw, 3.5rem);
+  line-height: 1.08;
+  letter-spacing: -0.055em;
+  margin-block: 1rem 1.5rem;
+}
+.auth-card p {
+  line-height: 1.7;
+  margin-block: 1rem;
+}
+.auth-card form {
+  display: grid;
+  gap: 0.75rem;
+  margin-block: 2rem;
+}
+.auth-card input[type="email"] {
+  min-width: 0;
+  width: 100%;
+  padding: 0.9rem 1rem;
+  border: 1px solid currentColor;
+  border-radius: 0.6rem;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.auth-card .button-link {
+  justify-content: center;
+  cursor: pointer;
+}
+.auth-message {
+  padding: 1rem;
+  border-left: 3px solid currentColor;
+  background: var(--color-surface);
+}

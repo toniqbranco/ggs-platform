@@ -2,14 +2,20 @@ import type { NextConfig } from "next";
 import { defaultLocale } from "./src/lib/i18n/config";
 import { parseServerEnvironment } from "./src/lib/env/schema";
 import { securityHeaders } from "./src/lib/security/headers";
+import { parsePilotAuthConfig } from "./src/lib/auth/config";
 
 // Next.js loads the appropriate .env files before evaluating this configuration.
 parseServerEnvironment(process.env);
+parsePilotAuthConfig(process.env);
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
   async headers() {
     return [
+      {
+        source: "/:locale/:authPage(sign-in|session)",
+        headers: [{ key: "Cache-Control", value: "private, no-store" }],
+      },
       {
         source: "/:path*",
         headers: securityHeaders(process.env.NODE_ENV === "production"),

@@ -141,6 +141,17 @@ const copies: Record<Locale, PilotCopy> = {
   },
 };
 
-export function getPilotCopy(locale: Locale): PilotCopy {
-  return copies[locale];
+export function getPilotCopy(locale: Locale, authEnabled = false): PilotCopy {
+  const copy = copies[locale];
+  if (!authEnabled) return copy;
+  const note =
+    locale === "es"
+      ? "Las cuentas del piloto ya habilitadas pueden solicitar un enlace de acceso. El registro público y los espacios privados siguen cerrados."
+      : "Pilot accounts already enabled can request a sign-in link. Public registration and private workspaces remain closed.";
+  return {
+    ...copy,
+    availability: note,
+    information: { ...copy.information, note },
+    denied: { ...copy.denied, note },
+  };
 }

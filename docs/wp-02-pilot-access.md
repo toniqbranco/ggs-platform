@@ -86,3 +86,10 @@ guard only alongside tested session/cookie/authorization implementation.
 
 Commerce, inventory, payouts, rankings/badges, live-platform APIs, analytics extraction,
 Academy modules, production resources, and deployment stay outside this package.
+
+## Subsequent increment
+
+PR #6 is merged following owner approval. The owner approved GG-livestream for
+development/testing sign-in integration. The [PR-02 sign-in contract](wp-02-sign-in.md)
+supersedes the disconnected-only status above for explicitly enabled server Auth.
+The role/admission policy is still not live enforcement, and HQ remains closed.

@@ -2,7 +2,9 @@
 
 Start with the [repository README](../README.md) to run the site. WP-01 is closed;
 the owner approved the [first WP-02 pilot-access increment](wp-02-pilot-access.md).
-Live resources and deployment still require their corresponding scope decisions.
+The [testing-project sign-in increment](wp-02-sign-in.md) is approved for implementation.
+Account creation, schema/settings changes, workspace authorization, and deployment
+still require their corresponding scope decisions.
 
 | I need to…                                               | Read                                                                         |
 | -------------------------------------------------------- | ---------------------------------------------------------------------------- |

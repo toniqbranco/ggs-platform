@@ -91,3 +91,12 @@ Public pages in both languages must contain no HQ text or HQ links. `/hq`,
 or query strings. HQ stays unavailable until server-side authorization is approved.
 The policy fixtures allow only owner/appointed-admin roles for future HQ access;
 streamers and the retired `hq_staff` role cannot authorize HQ.
+
+## Pilot sign-in tests
+
+`pnpm test:e2e:auth` runs the second browser suite on port 3105 with synthetic
+server-only Auth configuration; it never sends a real link or creates an account.
+Run after `pnpm build`. The normal 3104 suite explicitly disables pilot Auth. Both
+run in CI. Unit/SDK integration tests verify synthetic PKCE exchanges, refresh,
+revocation, cookie/cache headers, local sign-out, and no workspace access. See
+[sign-in verification limits](wp-02-sign-in.md) before testing actual delivery.
