@@ -59,6 +59,15 @@ package (SIL Open Font License, also served at `/fonts/roboto-OFL.txt`). Only th
 font is loaded; it covers the Spanish and English interface. The build and browser do not
 contact Google Fonts. Revisit subsets and styles before adding other scripts or italics.
 
+## Environment and services
+
+The website remains disconnected and needs no credentials. Optional variables are
+documented in `.env.example`; run `pnpm validate:env` to check local configuration.
+Development, build, and start commands also validate through the Next.js config.
+Supabase factories are split into browser-only and server-only modules and deliberately
+reject calls during WP-01. Supplying credentials cannot enable them. See the
+[environment and boundary guide](docs/environment.md) for defaults and integration prerequisites.
+
 ## Code standards and validation
 
 ```sh
