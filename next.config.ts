@@ -19,7 +19,6 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/", destination: `/${defaultLocale}`, permanent: false },
-      { source: "/hq", destination: `/${defaultLocale}/hq`, permanent: false },
       {
         source: "/pilot",
         destination: `/${defaultLocale}/pilot`,

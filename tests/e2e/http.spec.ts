@@ -1,6 +1,22 @@
 import { test, expect } from "@playwright/test";
 import { pages } from "./fixtures";
 
+test("HQ stays closed even with claimed owner/admin identity", async ({
+  request,
+}) => {
+  for (const path of ["/hq", "/es/hq", "/en/hq"]) {
+    const response = await request.get(
+      `${path}?role=owner&admin=true&invited=true`,
+      {
+        headers: { cookie: "pilot-role=owner; pilot-approved=true" },
+      },
+    );
+    expect(response.status()).toBe(404);
+    expect(await response.text()).not.toContain("data-pilot-entry");
+    expect(await response.text()).not.toContain("Sign-in coming soon");
+  }
+});
+
 for (const entry of pages) {
   test(`${entry.path} serves a localized page with security headers`, async ({
     request,
@@ -25,7 +41,6 @@ for (const entry of pages) {
 
 for (const [source, destination] of [
   ["/", "/es"],
-  ["/hq", "/es/hq"],
   ["/streamer", "/es/streamer"],
 ]) {
   test(`${source} defaults to Spanish and preserves query parameters`, async ({
@@ -43,7 +58,15 @@ for (const [source, destination] of [
   });
 }
 
-for (const path of ["/fr", "/fr/hq", "/es/unknown", "/en/unknown"]) {
+for (const path of [
+  "/hq",
+  "/es/hq",
+  "/en/hq",
+  "/fr",
+  "/fr/hq",
+  "/es/unknown",
+  "/en/unknown",
+]) {
   test(`${path} returns 404`, async ({ request }) => {
     expect((await request.get(path)).status()).toBe(404);
   });

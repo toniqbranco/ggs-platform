@@ -88,17 +88,6 @@ const spanish: Dictionary = {
       panelDescription:
         "Los espacios de GG's están en preparación. Por ahora, descubre la base de nuestra próxima etapa.",
     },
-    hq: {
-      label: "HQ",
-      eyebrow: "EL ESPACIO DEL EQUIPO",
-      title: "La conexión",
-      accent: "empieza aquí.",
-      description:
-        "Una perspectiva compartida. Un lugar para dar forma al próximo capítulo de GG's.",
-      panelTitle: "Una buena base para grandes ideas.",
-      panelDescription:
-        "El espacio del equipo está en preparación. Esta vista previa presenta la estructura; todavía no hay herramientas ni datos del equipo disponibles.",
-    },
     streamer: {
       label: "Streamers",
       eyebrow: "EL ESPACIO STREAMER",
@@ -165,17 +154,6 @@ const english: Dictionary = {
       panelTitle: "We're shaping what comes next.",
       panelDescription:
         "The GG's spaces are in preparation. For now, explore the foundation of our next chapter.",
-    },
-    hq: {
-      label: "HQ",
-      eyebrow: "THE TEAM SPACE",
-      title: "Connection",
-      accent: "starts here.",
-      description:
-        "A shared perspective. A place to shape the next chapter of GG's.",
-      panelTitle: "A solid foundation for big ideas.",
-      panelDescription:
-        "The team space is in preparation. This preview presents the structure; team tools and data are not available yet.",
     },
     streamer: {
       label: "Streamers",

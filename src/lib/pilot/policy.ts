@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const pilotRoles = ["owner", "hq_staff", "streamer"] as const;
+export const pilotRoles = ["owner", "admin", "streamer"] as const;
 export const pilotTargets = ["hq", "streamer", "pilot-management"] as const;
 export type PilotRole = (typeof pilotRoles)[number];
 export type PilotTarget = (typeof pilotTargets)[number];
@@ -34,7 +34,7 @@ export type PilotDecision =
   { allowed: true } | { allowed: false; reason: PilotDenyReason };
 
 const targetRoles: Record<PilotTarget, readonly PilotRole[]> = {
-  hq: ["owner", "hq_staff"],
+  hq: ["owner", "admin"],
   streamer: ["streamer"],
   "pilot-management": ["owner"],
 };

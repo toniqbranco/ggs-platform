@@ -12,7 +12,7 @@ export async function PilotEntry({
   area,
 }: {
   params: Promise<{ locale: string }>;
-  area: "hq" | "streamer";
+  area: "streamer";
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();

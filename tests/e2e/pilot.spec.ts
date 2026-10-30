@@ -2,7 +2,18 @@ import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "./fixtures";
 
 for (const locale of ["es", "en"]) {
-  for (const area of ["hq", "streamer"]) {
+  test(`${locale} public map excludes HQ`, async ({ page }) => {
+    for (const suffix of ["", "/streamer", "/pilot", "/access-denied"]) {
+      await page.goto(`/${locale}${suffix}`);
+      await expect(page.getByRole("link", { name: /HQ/i })).toHaveCount(0);
+      await expect(page.locator('a[href*="/hq"]')).toHaveCount(0);
+      await expect(page.getByRole("main")).not.toContainText(/\bHQ\b/);
+    }
+  });
+}
+
+for (const locale of ["es", "en"]) {
+  for (const area of ["streamer"]) {
     test(`${locale}/${area} presents closed entry without accepting credentials`, async ({
       page,
     }) => {
@@ -71,7 +82,7 @@ for (const locale of ["es", "en"]) {
 test("pilot policy and restricted-message navigation retain the current page when switching language", async ({
   page,
 }) => {
-  await page.goto("/en/hq");
+  await page.goto("/en/streamer");
   await page.getByRole("link", { name: "How access will work" }).click();
   await expect(page).toHaveURL(/\/en\/pilot$/);
   await page.getByRole("link", { name: "ES — Español", exact: true }).click();
@@ -97,11 +108,11 @@ test("untrusted browser flags and a return URL cannot activate sign-in or redire
     localStorage.setItem("pilot-approved", "true");
   });
   await page.goto(
-    "/en/hq?role=owner&invited=true&next=https%3A%2F%2Fexample.invalid",
+    "/en/streamer?role=owner&invited=true&next=https%3A%2F%2Fexample.invalid",
   );
   await expect(page.locator("[data-pilot-entry]")).toHaveAttribute(
     "data-pilot-entry",
-    "hq",
+    "streamer",
   );
   await expect(
     page.getByRole("button", { name: "Sign-in coming soon" }),

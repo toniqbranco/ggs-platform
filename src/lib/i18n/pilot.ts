@@ -28,7 +28,7 @@ const copies: Record<Locale, PilotCopy> = {
     invitationOnly: "Solo por invitación",
     entryTitle: "Tu invitación es el primer paso.",
     entryDescription:
-      "Estamos preparando un piloto privado para el equipo y los streamers de GG's. El acceso se habilitará únicamente para participantes invitados y aprobados.",
+      "Estamos preparando un piloto privado para los streamers de GG's. El acceso se habilitará únicamente para participantes invitados y aprobados.",
     availability:
       "El inicio de sesión todavía no está disponible. Esta página no crea cuentas ni solicita tus datos.",
     signinSoon: "Inicio de sesión próximamente",
@@ -70,10 +70,6 @@ const copies: Record<Locale, PilotCopy> = {
     audienceLabel: "Cada espacio tiene su propósito",
     audience: [
       {
-        name: "Equipo HQ",
-        description: "Un espacio de trabajo para el equipo autorizado de GG's.",
-      },
-      {
         name: "Streamers",
         description: "Un espacio para cada streamer aprobado en el piloto.",
       },
@@ -91,7 +87,7 @@ const copies: Record<Locale, PilotCopy> = {
     invitationOnly: "Invitation only",
     entryTitle: "Your invitation comes first.",
     entryDescription:
-      "We're preparing a private pilot for the GG's team and streamers. Access will open only to invited and approved participants.",
+      "We're preparing a private pilot for GG's streamers. Access will open only to invited and approved participants.",
     availability:
       "Sign-in is not available yet. This page does not create accounts or collect your details.",
     signinSoon: "Sign-in coming soon",
@@ -132,10 +128,6 @@ const copies: Record<Locale, PilotCopy> = {
     },
     audienceLabel: "Every space has a purpose",
     audience: [
-      {
-        name: "HQ team",
-        description: "A workspace for the authorized GG's team.",
-      },
       {
         name: "Streamers",
         description: "A space for each streamer approved for the pilot.",

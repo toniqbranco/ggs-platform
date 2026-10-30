@@ -1,10 +1,7 @@
-import { PilotEntry } from "@/components/pilot-entry";
-import { getPilotMetadata } from "@/lib/i18n/pilot-metadata";
+import { notFound } from "next/navigation";
 
-export function generateMetadata({ params }: PageProps<"/[locale]/hq">) {
-  return getPilotMetadata(params, "hq");
-}
-
-export default function Headquarters({ params }: PageProps<"/[locale]/hq">) {
-  return <PilotEntry params={params} area="hq" />;
+// Reserved for the owner and appointed admins. Keep closed until trusted
+// server-side authentication and authorization are implemented and reviewed.
+export default function Headquarters() {
+  notFound();
 }

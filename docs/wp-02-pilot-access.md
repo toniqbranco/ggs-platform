@@ -11,8 +11,16 @@ deployment are not authorized by this increment.
 | --------------------- | ----------- | -------------------------------------------- | --------------------------------------------- | ---------------------------------------------- |
 | Visitor / none        | Available   | No pilot access                              | No pilot access                               | No                                             |
 | `owner`               | Available   | Allowed after admission/session requirements | Only with explicit additional `streamer` role | Owner-only authority                           |
-| `hq_staff`            | Available   | Allowed after requirements                   | Only with explicit additional `streamer` role | No                                             |
+| `admin`               | Available   | Allowed after requirements                   | Only with explicit additional `streamer` role | No                                             |
 | `streamer`            | Available   | No                                           | Allowed after requirements                    | No                                             |
+
+HQ is exclusively for the owner and explicitly appointed admins. The `admin` role
+replaces the earlier ambiguous `hq_staff` label; ordinary staff and streamers do not
+gain HQ access. Admins cannot manage admission/roles under this initial matrix.
+HQ has no public navigation links, homepage CTA, audience card, or sign-in preview.
+Direct requests return 404, including requests with browser role flags. The admin
+area remains unavailable to everyone until trusted server authentication and
+authorization are implemented and reviewed; this is not a working admin login.
 
 This conservative matrix is the reviewable starting policy, not an implemented
 permission service. No product identities exist. GitHub ownership does not seed an
@@ -46,21 +54,21 @@ trusted role authorities. Route and data enforcement must not depend on navigati
 flags, with no accounts, emails, IDs, credentials, or tokens. App routes never import
 them. No role selector, query-driven identity, or fixture-login backdoor exists.
 
-## Public entry UX
+## Public website map and separate administration
 
-| Route                                    | Current behavior                                                                    |
-| ---------------------------------------- | ----------------------------------------------------------------------------------- |
-| `/es/hq`, `/en/hq`                       | HQ invitation-only entry information; no private workspace/account data.            |
-| `/es/streamer`, `/en/streamer`           | Localized streamer entry information with the same admission policy.                |
-| `/es/pilot`, `/en/pilot`                 | Invitation policy and planned audiences.                                            |
-| `/es/access-denied`, `/en/access-denied` | Generic, explicitly previewed restricted message, not a personal account diagnosis. |
+| Route                                    | Current behavior                                                                      |
+| ---------------------------------------- | ------------------------------------------------------------------------------------- |
+| `/hq`, `/es/hq`, `/en/hq`                | Not public destinations; return 404 until private admin authorization is implemented. |
+| `/es/streamer`, `/en/streamer`           | Localized streamer entry information with the same admission policy.                  |
+| `/es/pilot`, `/en/pilot`                 | Invitation policy and planned audiences.                                              |
+| `/es/access-denied`, `/en/access-denied` | Generic, explicitly previewed restricted message, not a personal account diagnosis.   |
 
 Sign-in is visibly unavailable. No credential fields, submissions, invite emails,
 enrollment requests, or authentication requests are implemented. Policy/home links
 work; ES/EN retains the current page. New unprefixed information routes temporarily
 redirect to Spanish and preserve query parameters.
 
-These are public informational pages returning 200. The restricted-message route
+Only the streamer and information/message pages are public informational pages returning 200. The restricted-message route
 is a UX state, not an enforced HTTP 403 or protected resource. Browser role/approval
 flags and return URLs cannot activate sign-in or redirect outside the site. Supabase
 and the existing CSP restrictions remain unchanged.

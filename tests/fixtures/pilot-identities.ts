@@ -18,7 +18,7 @@ export const pilotIdentities = {
     session: "valid",
     invitation: "accepted",
     membership: "active",
-    roles: ["hq_staff"],
+    roles: ["admin"],
   },
   streamer: {
     session: "valid",

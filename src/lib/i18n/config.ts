@@ -6,7 +6,7 @@ export function isLocale(value: string): value is Locale {
   return locales.some((locale) => locale === value);
 }
 
-export const sections = ["public", "hq", "streamer"] as const;
+export const sections = ["public", "streamer"] as const;
 export type Section = (typeof sections)[number];
 
 const pilotPaths = { information: "pilot", denied: "access-denied" } as const;

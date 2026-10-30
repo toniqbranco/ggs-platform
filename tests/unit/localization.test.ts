@@ -16,17 +16,15 @@ test("Spanish is default and unsupported/prototype locale names are rejected", (
     assert.equal(isLocale(value), false);
 });
 
-test("navigation constructs all six localized shell paths", () => {
+test("navigation constructs public localized shell paths", () => {
   assert.deepEqual(
     [
       sectionHref("es", "public"),
-      sectionHref("es", "hq"),
       sectionHref("es", "streamer"),
       sectionHref("en", "public"),
-      sectionHref("en", "hq"),
       sectionHref("en", "streamer"),
     ],
-    ["/es", "/es/hq", "/es/streamer", "/en", "/en/hq", "/en/streamer"],
+    ["/es", "/es/streamer", "/en", "/en/streamer"],
   );
 });
 

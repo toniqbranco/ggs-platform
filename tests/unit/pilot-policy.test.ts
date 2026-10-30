@@ -72,8 +72,8 @@ for (const scenario of [
   });
 }
 
-test("an explicit secondary role grants its area but HQ staff cannot manage pilot access", () => {
-  const multiRole = { ...pilotIdentities.hq, roles: ["hq_staff", "streamer"] };
+test("an explicit secondary role grants its area but appointed admins cannot manage pilot access", () => {
+  const multiRole = { ...pilotIdentities.hq, roles: ["admin", "streamer"] };
   assert.equal(evaluatePilotPolicy("hq", multiRole).allowed, true);
   assert.equal(evaluatePilotPolicy("streamer", multiRole).allowed, true);
   assert.deepEqual(evaluatePilotPolicy("pilot-management", multiRole), {
@@ -86,7 +86,7 @@ for (const [name, input] of [
   ["missing context", undefined],
   ["null", null],
   ["empty context", {}],
-  ["unknown role", { ...pilotIdentities.owner, roles: ["admin"] }],
+  ["unknown role", { ...pilotIdentities.owner, roles: ["hq_staff"] }],
   ["unknown session", { ...pilotIdentities.owner, session: "trusted" }],
   ["unexpected admin flag", { ...pilotIdentities.owner, isAdmin: true }],
   [

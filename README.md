@@ -5,8 +5,9 @@ strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
 **WP-01 is closed. Current increment: WP-02 / PR-01, closed-pilot access model and
 disconnected entry UX.** The owner approved the recommended pilot-access package.
-HQ and streamer routes provide public invitation-only entry information, not
-authenticated workspaces. Sign-in is unavailable; no credentials are collected.
+Streamer routes provide public invitation-only entry information.
+HQ is reserved for the owner and appointed admins; its routes return 404 until
+private authentication and authorization are implemented. Sign-in is unavailable; no credentials are collected.
 No live service, account, database table, or deployment has been added.
 
 [Current pilot-access scope and matrix](docs/wp-02-pilot-access.md)
@@ -29,21 +30,24 @@ local preview, run `pnpm build`, then `pnpm start` (port 3000 by default).
 The [runbook](docs/runbook.md) covers a fresh checkout, alternative ports, restarts,
 and common issues.
 
-## Preview routes
+## Public website map
 
 | Space    | Spanish (default) | English        |
 | -------- | ----------------- | -------------- |
 | Public   | `/es`             | `/en`          |
-| HQ       | `/es/hq`          | `/en/hq`       |
 | Streamer | `/es/streamer`    | `/en/streamer` |
 
-`/`, `/hq`, and `/streamer` temporarily redirect to their Spanish versions while
+`/` and `/streamer` temporarily redirect to their Spanish versions while
 preserving query parameters. ES/EN selection retains the current shell. Unsupported
 locales and unknown routes return 404.
 
 Pilot information is at `/es/pilot` and `/en/pilot`; the generic restricted-access
 message is at `/es/access-denied` and `/en/access-denied`. These are public preview
 states, not a working sign-in flow or protected resource.
+
+HQ is excluded from the public map, navigation, calls to action, and pilot audience
+information. `/hq`, `/es/hq`, and `/en/hq` return 404. Hiding links alone would not
+protect an admin workspace; the HQ preview is disabled entirely.
 
 ## Verify a change
 

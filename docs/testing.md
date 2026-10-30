@@ -83,3 +83,11 @@ allowed. Do not add a broad age exception or enable arbitrary lifecycle scripts 
 silence an install failure. Security patches requiring a narrower exception need a
 specific rationale and review. Update action pins only after verifying the upstream
 release and its commit. Re-run the relevant suites after dependency changes.
+
+## Public/admin map regression
+
+Public pages in both languages must contain no HQ text or HQ links. `/hq`,
+`/es/hq`, and `/en/hq` return 404, including owner/admin claims in browser cookies
+or query strings. HQ stays unavailable until server-side authorization is approved.
+The policy fixtures allow only owner/appointed-admin roles for future HQ access;
+streamers and the retired `hq_staff` role cannot authorize HQ.
