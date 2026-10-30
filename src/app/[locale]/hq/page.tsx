@@ -1,5 +1,10 @@
-import { SectionPage } from "@/components/section-page";
+import { PilotEntry } from "@/components/pilot-entry";
+import { getPilotMetadata } from "@/lib/i18n/pilot-metadata";
+
+export function generateMetadata({ params }: PageProps<"/[locale]/hq">) {
+  return getPilotMetadata(params, "hq");
+}
 
 export default function Headquarters({ params }: PageProps<"/[locale]/hq">) {
-  return <SectionPage params={params} section="hq" />;
+  return <PilotEntry params={params} area="hq" />;
 }

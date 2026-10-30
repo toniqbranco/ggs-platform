@@ -3,11 +3,13 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**Scope: WP-01 Project Foundation**, including the documentation and WP-02 handoff.
-The delivery record tracks review/acceptance evidence for the staged work.
-This is a disconnected foundation preview. HQ and streamer pages are public
-structural previews, not authenticated workspaces. No live services, accounts,
-database tables, business features, or deployment are included.
+**WP-01 is closed. Current increment: WP-02 / PR-01, closed-pilot access model and
+disconnected entry UX.** The owner approved the recommended pilot-access package.
+HQ and streamer routes provide public invitation-only entry information, not
+authenticated workspaces. Sign-in is unavailable; no credentials are collected.
+No live service, account, database table, or deployment has been added.
+
+[Current pilot-access scope and matrix](docs/wp-02-pilot-access.md)
 
 [Documentation index](docs/README.md) · [Delivery and acceptance](docs/wp-01-status.md) ·
 [WP-02 handoff](docs/wp-02-handoff.md)
@@ -38,6 +40,10 @@ and common issues.
 `/`, `/hq`, and `/streamer` temporarily redirect to their Spanish versions while
 preserving query parameters. ES/EN selection retains the current shell. Unsupported
 locales and unknown routes return 404.
+
+Pilot information is at `/es/pilot` and `/en/pilot`; the generic restricted-access
+message is at `/es/access-denied` and `/en/access-denied`. These are public preview
+states, not a working sign-in flow or protected resource.
 
 ## Verify a change
 
@@ -75,5 +81,7 @@ compatibility when upgrading tooling.
 
 WP-01 follows five separately reviewed PRs: bootstrap → design/localization →
 disconnected boundaries → tests/CI/security/staging preparation → documentation/handoff.
-Stop at each PR boundary. Close WP-01 only after PR-05 review, merge, and acceptance.
-Approve a concrete WP-02 brief separately before any WP-02 implementation.
+WP-01 is closed following PR-05 merge/acceptance. The owner approved WP-02's
+closed-pilot access package. Stop after its first access-model/UX PR for review;
+confirm the live integration method, non-production target, and any schema before
+the next increment. Review boundaries and service permissions remain explicit.

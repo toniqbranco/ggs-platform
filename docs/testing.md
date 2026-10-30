@@ -37,6 +37,12 @@ JavaScript errors, or console/CSP errors. Tests use reserved `.invalid` URLs and
 artificial keys only. No test queries a database, calls a real Supabase service, or
 requires a service account. The disconnected factories remain guarded.
 
+The WP-02 first increment adds status-only pilot-policy fixtures, role/admission
+matrix tests, and entry/information/restricted-state browser checks. These verify
+the disconnected contract and public UX, not working session verification, RLS,
+or real authorization. Query/cookie/local-storage flags cannot enable the entry UI.
+See [pilot-access scope](wp-02-pilot-access.md).
+
 Automated accessibility checks cover detectable issues, not complete accessibility
 conformance. Manual review still covers screen-reader flow, zoom, reading order,
 touch targets, visual balance, and real device/browser behavior. Chromium desktop and

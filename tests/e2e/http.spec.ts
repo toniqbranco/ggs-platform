@@ -58,3 +58,24 @@ test("self-hosted artwork and font license are served", async ({ request }) => {
   expect(license.status()).toBe(200);
   expect(await license.text()).toContain("SIL OPEN FONT LICENSE");
 });
+
+for (const route of ["pilot", "access-denied"]) {
+  test(`${route} defaults to Spanish and remains a public informational page`, async ({
+    request,
+    baseURL,
+  }) => {
+    const redirect = await request.get(`/${route}?source=pilot`, {
+      maxRedirects: 0,
+    });
+    expect(redirect.status()).toBe(307);
+    const url = new URL(redirect.headers().location!, baseURL);
+    expect(url.pathname).toBe(`/es/${route}`);
+    expect(url.searchParams.get("source")).toBe("pilot");
+    for (const locale of ["es", "en"]) {
+      const page = await request.get(`/${locale}/${route}`);
+      expect(page.status()).toBe(200);
+      expect(page.headers()["x-robots-tag"]).toContain("noindex");
+    }
+    expect((await request.get(`/fr/${route}`)).status()).toBe(404);
+  });
+}

@@ -24,7 +24,7 @@ live sessions, or database-backed pages.
 flowchart TD
   Request[Page request] --> Config[Validated configuration and redirect rules]
   Config --> Layout[Locale root layout and local font]
-  Layout --> Page[SectionPage and shared Shell]
+  Layout --> Page[Public SectionPage / pilot entry and shared Shell]
   Page --> Copy[Spanish / English dictionaries]
   Page --> Assets[Local styles and artwork]
   subgraph Offline[Separate integration scaffolding — no page imports]
@@ -77,3 +77,16 @@ roles/authorization, database schema, recruitment/onboarding, and other business
 features are not selected or implemented by this architecture. Choosing a shell
 name does not define a permission model. Approve those decisions in the next work
 package before writing implementation code.
+
+## WP-02 first-increment update
+
+HQ and streamer routes now use [PilotEntry](../src/components/pilot-entry.tsx);
+[pilot information](../src/components/pilot-information.tsx) provides the localized
+`/pilot` and `/access-denied` public states. The shared Shell preserves these page
+paths when switching languages. The public landing design remains unchanged.
+
+The [pilot policy model](../src/lib/pilot/policy.ts) is a pure, fixture-tested
+contract, not live authentication or route/data enforcement. App pages do not read
+test identities, user roles, browser flags, or request cookies. The approved
+[first-increment scope and matrix](wp-02-pilot-access.md) records the next gate;
+the disconnected Supabase implementation remains unchanged.

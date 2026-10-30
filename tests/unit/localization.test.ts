@@ -6,6 +6,8 @@ import {
   sectionHref,
 } from "../../src/lib/i18n/config";
 import { getDictionary } from "../../src/lib/i18n/dictionaries";
+import { getPilotCopy } from "../../src/lib/i18n/pilot";
+import { pilotPageHref } from "../../src/lib/i18n/config";
 
 test("Spanish is default and unsupported/prototype locale names are rejected", () => {
   assert.equal(defaultLocale, "es");
@@ -49,4 +51,20 @@ test("both dictionaries have matching, nonempty content including accessible lab
   );
   assert.equal(getDictionary("es").skipLink, "Saltar al contenido");
   assert.equal(getDictionary("en").skipLink, "Skip to content");
+});
+
+test("pilot translations are complete and information links preserve locale", () => {
+  assert.deepEqual(
+    textEntries(getPilotCopy("es")),
+    textEntries(getPilotCopy("en")),
+  );
+  assert.deepEqual(
+    [
+      pilotPageHref("es", "information"),
+      pilotPageHref("es", "denied"),
+      pilotPageHref("en", "information"),
+      pilotPageHref("en", "denied"),
+    ],
+    ["/es/pilot", "/es/access-denied", "/en/pilot", "/en/access-denied"],
+  );
 });

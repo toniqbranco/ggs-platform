@@ -21,6 +21,16 @@ const nextConfig: NextConfig = {
       { source: "/", destination: `/${defaultLocale}`, permanent: false },
       { source: "/hq", destination: `/${defaultLocale}/hq`, permanent: false },
       {
+        source: "/pilot",
+        destination: `/${defaultLocale}/pilot`,
+        permanent: false,
+      },
+      {
+        source: "/access-denied",
+        destination: `/${defaultLocale}/access-denied`,
+        permanent: false,
+      },
+      {
         source: "/streamer",
         destination: `/${defaultLocale}/streamer`,
         permanent: false,

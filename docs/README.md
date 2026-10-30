@@ -1,7 +1,8 @@
 # GG's foundation documentation
 
-Start with the [repository README](../README.md) to run the site. These guides describe
-the existing WP-01 foundation and its review gates; they do not authorize WP-02 or deployment.
+Start with the [repository README](../README.md) to run the site. WP-01 is closed;
+the owner approved the [first WP-02 pilot-access increment](wp-02-pilot-access.md).
+Live resources and deployment still require their corresponding scope decisions.
 
 | I need to…                                               | Read                                                                         |
 | -------------------------------------------------------- | ---------------------------------------------------------------------------- |
