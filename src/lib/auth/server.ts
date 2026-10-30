@@ -1,7 +1,7 @@
 import "server-only";
 import { createServerClient } from "@supabase/ssr";
 import type { NextRequest, NextResponse } from "next/server";
-import { parsePilotAuthConfig } from "./config";
+import { parsePilotAuthConfig, pilotAuthCookieName } from "./config";
 import type { Database } from "@/lib/supabase/database.types";
 import type { AuthGateway } from "./flow";
 
@@ -21,6 +21,7 @@ export function createPilotGateway(
     config.publishableKey,
     {
       cookieOptions: {
+        name: pilotAuthCookieName,
         httpOnly: true,
         sameSite: "lax",
         secure: config.appOrigin.startsWith("https:"),

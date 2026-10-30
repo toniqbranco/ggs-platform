@@ -20,7 +20,8 @@ export async function PilotEntry({
   if (!isLocale(locale)) notFound();
   const base = getDictionary(locale);
   const copy = getPilotCopy(locale);
-  const authEnabled = getPilotAuthConfig().enabled;
+  const authConfig = getPilotAuthConfig();
+  const authEnabled = authConfig.enabled && !!authConfig.ownerUserId;
   const authCopy = getAuthCopy(locale);
   const section = base.sections[area];
 

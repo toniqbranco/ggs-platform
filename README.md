@@ -3,14 +3,15 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**WP-01 is closed. Current increment: WP-02 / PR-02, testing-project sign-in and sessions.** The owner approved the recommended pilot-access package.
+**WP-01 is closed. Current increment: WP-02 / PR-03, owner-approved application admission.** The owner approved the recommended pilot-access package.
 Streamer routes provide public invitation-only entry information.
 HQ is reserved for the owner and appointed admins; its routes return 404 until
 private authentication and authorization are implemented. Optional server-only
 email-link sign-in targets the owner-approved GG-livestream testing project.
 No account, database table, project setting, production service, or deployment has been added.
 
-[Current sign-in scope and verification limits](docs/wp-02-sign-in.md) ·
+[Current approval-only access contract](docs/wp-02-approved-access.md) ·
+[Sign-in scope and verification limits](docs/wp-02-sign-in.md) ·
 [Pilot-access model and matrix](docs/wp-02-pilot-access.md)
 
 [Documentation index](docs/README.md) · [Delivery and acceptance](docs/wp-01-status.md) ·
@@ -89,7 +90,7 @@ compatibility when upgrading tooling.
 
 WP-01 follows five separately reviewed PRs: bootstrap → design/localization →
 disconnected boundaries → tests/CI/security/staging preparation → documentation/handoff.
-WP-01 is closed following PR-05 merge/acceptance. The owner approved WP-02's
-closed-pilot access package. Its first access-model/UX PR is merged. The owner approved the testing-project
-sign-in increment; stop at its PR for review before workspace authorization,
-account creation, or schema changes. Review boundaries and service permissions remain explicit.
+WP-01 is closed following PR-05 merge/acceptance. WP-02's access-model and
+sign-in PRs are merged. The current approval-enforcement PR stops for review before
+owner bootstrap, real account/role grants, provider settings, schema changes, or
+operational workspaces. Each later increment retains its own review boundary.

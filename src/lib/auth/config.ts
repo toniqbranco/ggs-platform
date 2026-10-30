@@ -1,11 +1,16 @@
 import { z } from "zod";
 
 export const approvedPilotOrigin = "https://rchxnmpsxfbsicthasxn.supabase.co";
+export const pilotAuthCookieName = "sb-rchxnmpsxfbsicthasxn-auth-token";
 
 const schema = z.object({
   PILOT_AUTH_ENABLED: z.enum(["false", "true"]).default("false"),
   PILOT_SUPABASE_URL: z.string().optional(),
   PILOT_SUPABASE_PUBLISHABLE_KEY: z.string().optional(),
+  PILOT_OWNER_USER_ID: z.preprocess(
+    (value) => (value === "" ? undefined : value),
+    z.uuid().optional(),
+  ),
   APP_ENV: z
     .enum(["development", "test", "staging", "production"])
     .default("development"),
@@ -19,6 +24,7 @@ export type PilotAuthConfig =
       url: string;
       publishableKey: string;
       appOrigin: string;
+      ownerUserId?: string | undefined;
     };
 
 export function parsePilotAuthConfig(input: unknown): PilotAuthConfig {
@@ -52,5 +58,6 @@ export function parsePilotAuthConfig(input: unknown): PilotAuthConfig {
     url: approvedPilotOrigin,
     publishableKey: env.PILOT_SUPABASE_PUBLISHABLE_KEY!,
     appOrigin: app.origin,
+    ownerUserId: env.PILOT_OWNER_USER_ID,
   };
 }

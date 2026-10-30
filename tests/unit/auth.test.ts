@@ -1,6 +1,11 @@
 import assert from "node:assert/strict";
 import test from "node:test";
 import { NextRequest } from "next/server";
+import { pilotAuthCookieName } from "../../src/lib/auth/config";
+import {
+  approvedFixtureUser,
+  fixtureOwnerId,
+} from "../fixtures/pilot-admissions";
 import {
   approvedPilotOrigin,
   parsePilotAuthConfig,
@@ -17,6 +22,7 @@ const input = {
   PILOT_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_fixture_not_real",
   NEXT_PUBLIC_APP_URL: "http://localhost:3103",
   APP_ENV: "test",
+  PILOT_OWNER_USER_ID: fixtureOwnerId,
 };
 const config = parsePilotAuthConfig(input);
 test("pilot authentication defaults off and targets only the approved test project", () => {
@@ -27,6 +33,7 @@ test("pilot authentication defaults off and targets only the approved test proje
     { PILOT_SUPABASE_URL: "https://other.supabase.co" },
     { PILOT_SUPABASE_PUBLISHABLE_KEY: "sb_secret_fixture" },
     { PILOT_AUTH_ENABLED: "yes" },
+    { PILOT_OWNER_USER_ID: "not-a-user-id" },
     { NEXT_PUBLIC_APP_URL: "https://user:password@example.invalid" },
     { NEXT_PUBLIC_APP_URL: "javascript:alert(1)" },
   ]) {
@@ -45,7 +52,10 @@ function setup(overrides: Partial<AuthGateway> = {}) {
       calls.push([code]);
       return { error: null };
     },
-    verify: async () => ({ data: { user: { id: "synthetic" } }, error: null }),
+    verify: async () => ({
+      data: { user: approvedFixtureUser() },
+      error: null,
+    }),
     signOut: async () => ({ error: null }),
     ...overrides,
   };
@@ -217,6 +227,7 @@ test("verified session never grants workspace authority or exposes identity", as
   );
   assert.deepEqual(await response.json(), {
     authenticated: true,
+    approved: true,
     workspaceAccess: false,
   });
   assert.match(response.headers.get("cache-control")!, /no-store/);
@@ -264,4 +275,183 @@ test("sign-out confirms only success and redirects locally", async () => {
     setup({ signOut: async () => ({ error: new Error("failure") }) }).deps,
   );
   assert.match(failed.headers.get("location")!, /state=unavailable/);
+});
+
+test("no owner bootstrap means no magic-link request even with a valid address", async () => {
+  const { deps, calls } = setup();
+  const withoutOwner = { ...input, PILOT_OWNER_USER_ID: undefined };
+  const response = await runAuth("sign-in", request("sign-in"), {
+    ...deps,
+    config: () => parsePilotAuthConfig(withoutOwner),
+  });
+  assert.match(response.headers.get("location")!, /state=sent/);
+  assert.equal(calls.length, 0);
+});
+
+for (const [name, change] of [
+  ["missing approval", null],
+  ["pending application", { approval: "pending" }],
+  ["rejected application", { approval: "rejected" }],
+  ["suspended membership", { membership: "suspended" }],
+  ["revoked invitation", { invitation: "revoked" }],
+] as const) {
+  test(`callback rejects ${name}, revokes the new session, and expires token cookies`, async () => {
+    const user = approvedFixtureUser();
+    const deniedUser = {
+      ...user,
+      app_metadata: change
+        ? { ggs_pilot: { ...user.app_metadata.ggs_pilot, ...change } }
+        : {},
+    };
+    let revoked = false;
+    const { deps } = setup({
+      verify: async () => ({ data: { user: deniedUser }, error: null }),
+      signOut: async () => {
+        revoked = true;
+        return { error: null };
+      },
+    });
+    const originalGateway = deps.gateway;
+    const response = await runAuth(
+      "callback",
+      request("callback", { query: "?code=validcode&locale=en" }),
+      {
+        ...deps,
+        gateway: (_request, output) => {
+          output.cookies.set(pilotAuthCookieName + ".0", "new-token");
+          return originalGateway();
+        },
+      },
+    );
+    assert.equal(
+      response.headers.get("location"),
+      "http://localhost:3103/en/sign-in?state=approval-required",
+    );
+    assert.equal(revoked, true);
+    assert.equal(response.cookies.get(pilotAuthCookieName + ".0")?.value, "");
+    assert.equal(response.cookies.get(pilotAuthCookieName + ".0")?.maxAge, 0);
+  });
+}
+
+test("provider sign-out failure cannot return exchanged tokens after approval denial", async () => {
+  const user = { ...approvedFixtureUser(), app_metadata: {} };
+  const { deps } = setup({
+    verify: async () => ({ data: { user }, error: null }),
+    signOut: async () => {
+      throw new Error("network");
+    },
+  });
+  const gateway = deps.gateway;
+  const response = await runAuth(
+    "callback",
+    request("callback", { query: "?code=validcode" }),
+    {
+      ...deps,
+      gateway: (_request, output) => {
+        output.cookies.set(pilotAuthCookieName, "must-not-reach-browser");
+        return gateway();
+      },
+    },
+  );
+  assert.match(response.headers.get("location")!, /state=approval-required/);
+  assert.equal(response.cookies.get(pilotAuthCookieName)?.value, "");
+});
+
+for (const [role, expected] of [
+  ["owner", [200, 403, 200]],
+  ["admin", [200, 403, 403]],
+  ["streamer", [403, 200, 403]],
+] as const) {
+  test(`protected access endpoint enforces ${role} boundaries without logging out on wrong-role requests`, async () => {
+    let revoked = false;
+    const { deps } = setup({
+      verify: async () => ({
+        data: { user: approvedFixtureUser(role) },
+        error: null,
+      }),
+      signOut: async () => {
+        revoked = true;
+        return { error: null };
+      },
+    });
+    for (const [index, target] of [
+      "hq",
+      "streamer",
+      "pilot-management",
+    ].entries()) {
+      const response = await runAuth(
+        "access",
+        request("access", {
+          query: `?area=${target}&role=owner&approved=true`,
+        }),
+        deps,
+      );
+      assert.equal(response.status, expected[index]);
+      assert.deepEqual(await response.json(), {
+        allowed: expected[index] === 200,
+      });
+    }
+    assert.equal(revoked, false);
+  });
+}
+
+test("an approval removed after login is rejected on the next request with the same browser state", async () => {
+  let user = approvedFixtureUser();
+  const { deps } = setup({
+    verify: async () => ({ data: { user }, error: null }),
+  });
+  assert.equal(
+    (
+      await runAuth(
+        "access",
+        request("access", { query: "?area=streamer" }),
+        deps,
+      )
+    ).status,
+    200,
+  );
+  user = {
+    ...user,
+    app_metadata: {
+      ...user.app_metadata,
+      ggs_pilot: { ...user.app_metadata.ggs_pilot, membership: "suspended" },
+    },
+  };
+  assert.equal(
+    (
+      await runAuth(
+        "access",
+        request("access", { query: "?area=streamer" }),
+        deps,
+      )
+    ).status,
+    403,
+  );
+  const response = await runAuth("session", request("session"), deps);
+  assert.deepEqual(await response.json(), {
+    authenticated: false,
+    workspaceAccess: false,
+    accessDenied: true,
+  });
+});
+
+test("access checks reject missing sessions and malformed targets", async () => {
+  const { deps } = setup({
+    verify: async () => ({ data: { user: null }, error: null }),
+  });
+  assert.equal(
+    (await runAuth("access", request("access", { query: "?area=hq" }), deps))
+      .status,
+    401,
+  );
+  assert.equal(
+    (
+      await runAuth(
+        "access",
+        request("access", { query: "?area=constructor" }),
+        deps,
+      )
+    ).status,
+    400,
+  );
 });

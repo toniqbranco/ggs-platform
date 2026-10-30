@@ -93,3 +93,10 @@ PR #6 is merged following owner approval. The owner approved GG-livestream for
 development/testing sign-in integration. The [PR-02 sign-in contract](wp-02-sign-in.md)
 supersedes the disconnected-only status above for explicitly enabled server Auth.
 The role/admission policy is still not live enforcement, and HQ remains closed.
+
+## Server enforcement update
+
+The [PR-03 admission contract](wp-02-approved-access.md) adds explicit application
+approval and binds the matrix to current server Auth metadata. This replaces the
+disconnected-only evaluator status above. Real owner bootstrap and grants remain
+unconfigured; HQ UI and operational workspaces stay closed.

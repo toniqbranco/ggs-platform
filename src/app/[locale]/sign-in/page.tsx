@@ -18,7 +18,8 @@ export default async function SignIn({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const copy = getAuthCopy(locale);
-  const enabled = getPilotAuthConfig().enabled;
+  const authConfig = getPilotAuthConfig();
+  const enabled = authConfig.enabled && !!authConfig.ownerUserId;
   const { state } = await searchParams;
   const message =
     typeof state === "string" && Object.hasOwn(copy.states, state)
@@ -29,7 +30,7 @@ export default async function SignIn({
       <section className="auth-card" aria-labelledby="auth-title">
         <p className="eyebrow">{copy.eyebrow}</p>
         <h1 id="auth-title">{copy.title}</h1>
-        <p>{copy.description}</p>
+        <p>{enabled ? copy.description : copy.closedDescription}</p>
         {message && (
           <p role="status" className="auth-message">
             {message}

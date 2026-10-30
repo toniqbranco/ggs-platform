@@ -25,6 +25,16 @@ test("visitors receive no role-specific decision before sign-in", () => {
 
 for (const scenario of [
   {
+    name: "pending application",
+    change: { approval: "pending" },
+    reason: "approval-required",
+  },
+  {
+    name: "rejected application",
+    change: { approval: "rejected" },
+    reason: "approval-required",
+  },
+  {
     name: "expired session",
     change: { session: "expired" },
     reason: "session-expired",
