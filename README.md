@@ -42,7 +42,11 @@ Unsupported locale prefixes and unknown routes return 404.
 with the same checked TypeScript shape. Add new interface copy to both dictionaries.
 The locale layout sets the document language and prerenders both languages.
 
-`src/app/globals.css` defines neutral color, spacing, radius, and typography tokens.
+`src/app/globals.css` defines neutral color, spacing, radius, and typography tokens,
+with restrained lime accents for the global talent and livestream visual direction.
+The homepage adds editorial creator artwork and a static brand-perspective section.
+Image provenance, generation prompt, and visual choices are in [design notes](docs/design-direction.md).
+Subtle motion respects `prefers-reduced-motion`; all imagery and fonts are served locally.
 `src/components/ui` contains shared status badges and content panels; `Shell` composes
 the header, navigation, skip link, main landmark, and footer. Navigation exposes active
 states, visible keyboard focus, and touch targets of at least 44 CSS pixels. The header

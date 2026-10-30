@@ -3,6 +3,7 @@ import type { ReactNode } from "react";
 import { locales, sections, sectionHref } from "@/lib/i18n/config";
 import type { Locale, Section } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
+import { Icon } from "./ui/icon";
 
 export function Shell({
   locale,
@@ -21,16 +22,19 @@ export function Shell({
       </a>
       <header className="site-header">
         <div className="header-inner container">
-          <Link
-            className="wordmark"
-            href={sectionHref(locale, "public")}
-            aria-label={copy.homeLabel}
-          >
-            GG<span className="wordmark-ending">&apos;s</span>
-            <span className="wordmark-period" aria-hidden="true">
-              .
-            </span>
-          </Link>
+          <div className="brand-lockup">
+            <Link
+              className="wordmark"
+              href={sectionHref(locale, "public")}
+              aria-label={copy.homeLabel}
+            >
+              GG<span className="wordmark-ending">&apos;s</span>
+              <span className="wordmark-period" aria-hidden="true">
+                .
+              </span>
+            </Link>
+            <span className="brandline">{copy.brandline}</span>
+          </div>
           <nav className="space-nav" aria-label={copy.navigationLabel}>
             {sections.map((item) => (
               <Link
@@ -62,8 +66,19 @@ export function Shell({
         {children}
       </main>
       <footer className="site-footer container">
-        <span className="footer-brand">GG&apos;s</span>
-        <p>{copy.footer}</p>
+        <div className="footer-main">
+          <span className="footer-brand">
+            GG&apos;s<span aria-hidden="true">↗</span>
+          </span>
+          <p>{copy.footer}</p>
+        </div>
+        <div className="footer-bottom">
+          <span>{copy.brandline}</span>
+          <span>
+            <Icon name="globe" />
+            {copy.availability}
+          </span>
+        </div>
       </footer>
     </div>
   );
