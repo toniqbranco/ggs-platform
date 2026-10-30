@@ -76,7 +76,7 @@ pnpm build
 pnpm start
 ```
 
-`check` runs ESLint with zero warnings, Next.js route type generation, strict TypeScript,
+`check` runs environment validation, ESLint with zero warnings, Next.js route type generation, strict TypeScript,
 and Prettier checks. `build` independently verifies a production build. Run
 `pnpm format` before committing and use `pnpm lint:fix` for fixable lint findings.
 Use the committed pnpm lockfile; do not commit alternate package-manager lockfiles.
@@ -89,8 +89,13 @@ Commit UTF-8 text with LF endings. Keep secrets and generated build output out o
 
 ## Review gates
 
-PR-01 contains only the bootstrap, developer commands, and code standards. Test suites,
-CI automation, security checks, and the staging plan are scheduled for PR-04.
+Automated tests and CI are documented in [foundation verification](docs/testing.md).
+Run `pnpm test` for unit/integration checks; after `pnpm build`, run `pnpm test:e2e`
+for isolated production browser checks. Security scope is in [SECURITY.md](SECURITY.md).
+The [staging plan](docs/staging-plan.md) is preparation only; no deployment is configured.
+
+PR-01 establishes the bootstrap; PR-02 adds design/localization; PR-03 adds disconnected
+environment/service boundaries; PR-04 adds tests, CI, security checks, and staging preparation.
 Each subsequent PR starts only after review of the preceding PR. PR-05 will consolidate
 operational documentation and handoff prerequisites; WP-02 requires separate authorization.
 

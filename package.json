@@ -12,7 +12,13 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "check": "pnpm validate:env && pnpm lint && pnpm typecheck && pnpm format:check",
-    "validate:env": "tsx scripts/validate-env.ts"
+    "validate:env": "tsx scripts/validate-env.ts",
+    "test": "pnpm test:unit && pnpm test:integration",
+    "test:unit": "tsx --test tests/unit/*.test.ts",
+    "test:integration": "tsx --test tests/integration/*.test.ts",
+    "test:e2e": "playwright test",
+    "test:e2e:report": "playwright show-report",
+    "security:audit": "pnpm audit --audit-level=high"
   },
   "dependencies": {
     "@fontsource-variable/roboto": "^5.3.0",
@@ -26,7 +32,9 @@
     "zod": "4.6.7"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
     "@next/env": "16.4.3",
+    "@playwright/test": "1.64.1",
     "@types/node": "^24.19.2",
     "@types/react": "^19",
     "@types/react-dom": "^19",

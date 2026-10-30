@@ -53,7 +53,7 @@ export function Shell({
                 href={sectionHref(language, section)}
                 lang={language}
                 hrefLang={language}
-                aria-label={language === "es" ? "Español" : "English"}
+                aria-label={language === "es" ? "ES — Español" : "EN — English"}
                 aria-current={locale === language ? "true" : undefined}
               >
                 {language.toUpperCase()}
