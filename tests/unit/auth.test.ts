@@ -219,6 +219,34 @@ test("callback checks exchanged identity and never trusts query role/next", asyn
     );
   }
 });
+
+test("missing PKCE verifier gives browser recovery guidance without admitting a user", async () => {
+  let verified = false;
+  const { deps } = setup({
+    exchange: async () => ({
+      error: {
+        code: "pkce_code_verifier_not_found",
+        message: "must not be exposed",
+      },
+    }),
+    verify: async () => {
+      verified = true;
+      return { data: { user: approvedFixtureUser() }, error: null };
+    },
+  });
+  const response = await runAuth(
+    "callback",
+    request("callback", { query: "?code=validcode&locale=en" }),
+    deps,
+  );
+  assert.equal(
+    response.headers.get("location"),
+    "http://localhost:3103/en/sign-in?state=browser-required",
+  );
+  assert.equal(verified, false);
+  assert.equal(response.cookies.getAll().length, 0);
+  assert.ok(!(await response.text()).includes("must not be exposed"));
+});
 test("verified session never grants workspace authority or exposes identity", async () => {
   const response = await runAuth(
     "session",

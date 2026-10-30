@@ -179,8 +179,21 @@ export async function runAuth(
     const response = redirect(`/${locale}/session`);
     try {
       const gateway = deps.gateway(request, response);
-      if ((await gateway.exchange(code)).error)
-        return redirect(`/${locale}/sign-in?state=expired`);
+      const exchanged = await gateway.exchange(code);
+      if (exchanged.error) {
+        // A missing browser verifier is not an expired email link. Keep PKCE
+        // required and give a precise recovery instruction without exposing
+        // tokens, cookie contents, or provider error messages.
+        const error = exchanged.error;
+        const wrongBrowser =
+          typeof error === "object" &&
+          error !== null &&
+          "code" in error &&
+          error.code === "pkce_code_verifier_not_found";
+        return redirect(
+          `/${locale}/sign-in?state=${wrongBrowser ? "browser-required" : "expired"}`,
+        );
+      }
       const verified = await gateway.verify();
       if (verified.error || !verified.data.user)
         return redirect(`/${locale}/sign-in?state=expired`);
