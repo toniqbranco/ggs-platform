@@ -12,3 +12,4 @@ export default function RestrictedAccess({
 }: PageProps<"/[locale]/access-denied">) {
   return <PilotInformation params={params} page="denied" />;
 }
+export const dynamic = "force-dynamic";

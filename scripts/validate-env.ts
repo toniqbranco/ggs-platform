@@ -1,4 +1,5 @@
 import { loadEnvConfig } from "@next/env";
+import { parsePilotAuthConfig } from "../src/lib/auth/config";
 import {
   EnvironmentValidationError,
   parseServerEnvironment,
@@ -11,7 +12,12 @@ loadEnvConfig(process.cwd(), !production);
 
 try {
   parseServerEnvironment(process.env);
-  console.log("Environment valid. Supabase connections remain disabled.");
+  const auth = parsePilotAuthConfig(process.env);
+  console.log(
+    auth.enabled
+      ? "Environment valid. Pilot sign-in targets the approved testing project; browser services remain disabled."
+      : "Environment valid. Supabase connections remain disabled.",
+  );
 } catch (error) {
   console.error(
     error instanceof EnvironmentValidationError

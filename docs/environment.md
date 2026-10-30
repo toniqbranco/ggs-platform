@@ -82,3 +82,11 @@ request context. Those changes are outside PR-03.
 Supabase SDK and environment-tool versions are pinned in `package.json` and the pnpm
 lockfile. `esbuild`'s local installation script is allowed because the `tsx` developer
 command requires it. Other dependency build permissions remain unchanged.
+
+## WP-02 optional server Auth
+
+The WP-01 variables and browser factories above remain disconnected. The owner
+approved a separate server-only Auth adapter for GG-livestream testing. See the
+[current sign-in configuration and limits](wp-02-sign-in.md) for `PILOT_AUTH_ENABLED`,
+`PILOT_SUPABASE_URL`, and `PILOT_SUPABASE_PUBLISHABLE_KEY`. Production is rejected;
+default builds and CI stay disconnected.

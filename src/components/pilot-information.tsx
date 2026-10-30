@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { isLocale, pilotPageHref, sectionHref } from "@/lib/i18n/config";
 import type { PilotPage } from "@/lib/i18n/config";
 import { getPilotCopy } from "@/lib/i18n/pilot";
+import { getPilotAuthConfig } from "@/lib/auth/server";
 import { Shell } from "./shell";
 import { Badge } from "./ui/badge";
 import { Icon } from "./ui/icon";
@@ -16,7 +17,7 @@ export async function PilotInformation({
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const copy = getPilotCopy(locale);
+  const copy = getPilotCopy(locale, getPilotAuthConfig().enabled);
   const content = copy[page];
   return (
     <Shell locale={locale} section="public" pilotPage={page}>

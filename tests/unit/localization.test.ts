@@ -7,6 +7,7 @@ import {
 } from "../../src/lib/i18n/config";
 import { getDictionary } from "../../src/lib/i18n/dictionaries";
 import { getPilotCopy } from "../../src/lib/i18n/pilot";
+import { getAuthCopy } from "../../src/lib/i18n/auth";
 import { pilotPageHref } from "../../src/lib/i18n/config";
 
 test("Spanish is default and unsupported/prototype locale names are rejected", () => {
@@ -52,6 +53,14 @@ test("both dictionaries have matching, nonempty content including accessible lab
 });
 
 test("pilot translations are complete and information links preserve locale", () => {
+  assert.deepEqual(
+    textEntries(getAuthCopy("es")),
+    textEntries(getAuthCopy("en")),
+  );
+  assert.deepEqual(
+    textEntries(getPilotCopy("es", true)),
+    textEntries(getPilotCopy("en", true)),
+  );
   assert.deepEqual(
     textEntries(getPilotCopy("es")),
     textEntries(getPilotCopy("en")),

@@ -8,3 +8,4 @@ export function generateMetadata({ params }: PageProps<"/[locale]/pilot">) {
 export default function PilotPolicy({ params }: PageProps<"/[locale]/pilot">) {
   return <PilotInformation params={params} page="information" />;
 }
+export const dynamic = "force-dynamic";

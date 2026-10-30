@@ -1,3 +1,4 @@
+export const dynamic = "force-dynamic";
 import { PilotEntry } from "@/components/pilot-entry";
 import { getPilotMetadata } from "@/lib/i18n/pilot-metadata";
 

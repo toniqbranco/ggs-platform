@@ -37,6 +37,7 @@ export default defineConfig({
     timeout: 60000,
     env: {
       APP_ENV: "test",
+      PILOT_AUTH_ENABLED: "false",
       NODE_ENV: "production",
       NEXT_TELEMETRY_DISABLED: "1",
       NEXT_PUBLIC_APP_URL: "http://127.0.0.1:3104",

@@ -15,11 +15,13 @@ export function Shell({
   section,
   children,
   pilotPage,
+  authPage,
 }: {
   locale: Locale;
   section: Section;
   children: ReactNode;
   pilotPage?: PilotPage;
+  authPage?: "sign-in" | "session";
 }) {
   const copy = getDictionary(locale);
   return (
@@ -48,7 +50,9 @@ export function Shell({
                 key={item}
                 href={sectionHref(locale, item)}
                 aria-current={
-                  !pilotPage && section === item ? "page" : undefined
+                  !pilotPage && !authPage && section === item
+                    ? "page"
+                    : undefined
                 }
               >
                 {copy.sections[item].label}
@@ -60,9 +64,11 @@ export function Shell({
               <Link
                 key={language}
                 href={
-                  pilotPage
-                    ? pilotPageHref(language, pilotPage)
-                    : sectionHref(language, section)
+                  authPage
+                    ? `/${language}/${authPage}`
+                    : pilotPage
+                      ? pilotPageHref(language, pilotPage)
+                      : sectionHref(language, section)
                 }
                 lang={language}
                 hrefLang={language}
