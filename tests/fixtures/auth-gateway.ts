@@ -2,6 +2,9 @@ import assert from "node:assert/strict";
 import { NextRequest, NextResponse } from "next/server";
 import { createPilotGateway } from "../../src/lib/auth/server";
 import { approvedPilotOrigin } from "../../src/lib/auth/config";
+import { getPilotAuthConfig } from "../../src/lib/auth/server";
+import { runAuth } from "../../src/lib/auth/flow";
+import { approvedFixtureUser, fixtureOwnerId } from "./pilot-admissions";
 
 Object.assign(process.env, {
   PILOT_AUTH_ENABLED: "true",
@@ -9,12 +12,14 @@ Object.assign(process.env, {
   PILOT_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_fixture_only",
   APP_ENV: "test",
   NEXT_PUBLIC_APP_URL: "https://app.example.invalid",
+  PILOT_OWNER_USER_ID: fixtureOwnerId,
 });
 const user = {
   id: "00000000-0000-4000-8000-000000000001",
   aud: "authenticated",
   role: "authenticated",
   email: "synthetic@example.invalid",
+  email_confirmed_at: "2020-01-01T00:00:00Z",
   app_metadata: {},
   user_metadata: {},
   created_at: "2026-01-01T00:00:00Z",
@@ -135,6 +140,32 @@ async function main() {
     assert.ok(paths.some((x) => x.includes("grant_type=refresh_token")));
     assert.ok(refreshed.cookies.getAll().some((x) => x.value.length > 0));
     assert.match(refreshed.headers.get("cache-control")!, /no-store/);
+    // Simulate authoritative Auth records changing while the browser keeps the
+    // same original JWT/cookies. getUser must supply the latest approval.
+    const approved = approvedFixtureUser("owner");
+    user.app_metadata = approved.app_metadata;
+    const accessRequest = requestFrom(exchangeResponse);
+    const accessUrl = new URL(accessRequest.url);
+    accessUrl.searchParams.set("area", "hq");
+    const hqRequest = new NextRequest(accessUrl, {
+      headers: accessRequest.headers,
+    });
+    const deps = { config: getPilotAuthConfig, gateway: createPilotGateway };
+    assert.equal((await runAuth("access", hqRequest, deps)).status, 200);
+    user.app_metadata = {
+      ggs_pilot: {
+        ...approved.app_metadata.ggs_pilot,
+        membership: "suspended",
+      },
+    };
+    assert.equal((await runAuth("access", hqRequest, deps)).status, 403);
+    user.app_metadata = {};
+    assert.equal(
+      (await runAuth("session", accessRequest, deps)).cookies
+        .getAll()
+        .some((cookie) => cookie.maxAge === 0),
+      true,
+    );
     console.log("auth-cookie-refresh-revocation-pass");
   } finally {
     globalThis.fetch = previousFetch;

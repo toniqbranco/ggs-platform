@@ -6,8 +6,9 @@ server-only Auth targets the owner-approved testing project. Do not add private 
 control and service integration have been separately implemented and reviewed.
 
 See the [current Auth trust boundary and verification limits](docs/wp-02-sign-in.md).
-Signing in grants no workspace authority. No private data may be served until
-admission/role enforcement is reviewed. The provider still allows signup; the app
+The [current admission boundary](docs/wp-02-approved-access.md) requires owner approval
+on every callback/session/access check. No real owner or admission record is
+configured; private data and operational workspaces remain unavailable. The provider still allows signup; the app
 requests magic links with automatic user creation disabled.
 
 ## Reporting

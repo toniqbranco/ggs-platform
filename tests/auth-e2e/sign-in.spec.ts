@@ -1,6 +1,39 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "../e2e/fixtures";
 for (const locale of ["es", "en"]) {
+  test(`${locale} approval denial is clear and accessible`, async ({
+    page,
+  }) => {
+    await page.goto(`/${locale}/sign-in?state=approval-required`);
+    await expect(page.getByRole("status")).toContainText(
+      locale === "es" ? "requiere aprobación" : "requires approval",
+    );
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+    await page.route("**/auth/session", (route) =>
+      route.fulfill({
+        json: {
+          authenticated: false,
+          workspaceAccess: false,
+          accessDenied: true,
+        },
+      }),
+    );
+    await page.goto(`/${locale}/session`);
+    await expect(page.getByRole("status")).toContainText(
+      locale === "es" ? "no tiene acceso aprobado" : "does not have approved",
+    );
+    await expect(
+      page.getByRole("button", {
+        name: locale === "es" ? "Cerrar sesión" : "Sign out",
+      }),
+    ).toHaveCount(0);
+  });
   test(`${locale} sign-in is accessible, localized, and excludes HQ`, async ({
     page,
   }) => {
@@ -79,4 +112,16 @@ test("invalid sign-in and callback fail locally; no email or account is created"
   );
   expect(callback.headers()["cache-control"]).toContain("no-store");
   expect((await request.get("/en/hq")).status()).toBe(404);
+  for (const area of ["hq", "streamer", "pilot-management"]) {
+    const denied = await request.get(
+      `/auth/access?area=${area}&role=owner&approved=true`,
+      { headers: { cookie: "pilot-role=owner;pilot-approved=true" } },
+    );
+    expect(denied.status()).toBe(401);
+    expect(await denied.json()).toEqual({ allowed: false });
+    expect(denied.headers()["cache-control"]).toContain("no-store");
+  }
+  expect((await request.get("/auth/access?area=constructor")).status()).toBe(
+    400,
+  );
 });

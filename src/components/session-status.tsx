@@ -6,7 +6,7 @@ import { getAuthCopy } from "@/lib/i18n/auth";
 export function SessionStatus({ locale }: { locale: Locale }) {
   const copy = getAuthCopy(locale);
   const [status, setStatus] = useState<
-    "checking" | "verified" | "absent" | "offline"
+    "checking" | "verified" | "absent" | "offline" | "restricted"
   >("checking");
   useEffect(() => {
     const controller = new AbortController();
@@ -17,7 +17,13 @@ export function SessionStatus({ locale }: { locale: Locale }) {
           return;
         }
         const data = await response.json();
-        setStatus(data.authenticated === true ? "verified" : "absent");
+        setStatus(
+          data.accessDenied === true
+            ? "restricted"
+            : data.authenticated === true && data.approved === true
+              ? "verified"
+              : "absent",
+        );
       })
       .catch(() => {
         if (!controller.signal.aborted) setStatus("offline");

@@ -31,6 +31,7 @@ export default defineConfig({
       NEXT_PUBLIC_SUPABASE_URL: "",
       NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY: "",
       PILOT_AUTH_ENABLED: "true",
+      PILOT_OWNER_USER_ID: "00000000-0000-4000-8000-000000000001",
       PILOT_SUPABASE_URL: "https://rchxnmpsxfbsicthasxn.supabase.co",
       PILOT_SUPABASE_PUBLISHABLE_KEY: "sb_publishable_fixture_only",
     },

@@ -4,24 +4,28 @@ import type { PilotPolicyContext } from "../../src/lib/pilot/policy";
 export const pilotIdentities = {
   visitor: {
     session: "absent",
+    approval: "pending",
     invitation: "not-invited",
     membership: "pending",
     roles: [],
   },
   owner: {
     session: "valid",
+    approval: "approved",
     invitation: "accepted",
     membership: "active",
     roles: ["owner"],
   },
   hq: {
     session: "valid",
+    approval: "approved",
     invitation: "accepted",
     membership: "active",
     roles: ["admin"],
   },
   streamer: {
     session: "valid",
+    approval: "approved",
     invitation: "accepted",
     membership: "active",
     roles: ["streamer"],

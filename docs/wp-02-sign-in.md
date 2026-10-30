@@ -118,3 +118,10 @@ and deployment are outside this increment and remain later roadmap work.
 - [Passwordless email sign-in](https://supabase.com/docs/guides/auth/auth-email-passwordless)
 - [Supabase changelog](https://supabase.com/changelog): relevant TLS cipher retirement checked; no TLS weakening or project changes.
 - Installed Next.js route-handler and cookie guides; installed `@supabase/ssr` 0.12.7 cookie/cache-header contract.
+
+## Subsequent approval-enforcement stage
+
+PR #7 is merged. The [PR-03 admission contract](wp-02-approved-access.md) supersedes
+the verified-email-only session behavior above: callback and session checks now
+require current owner approval, accepted invitation, active membership, and explicit
+roles. No live owner/admission record has been configured.

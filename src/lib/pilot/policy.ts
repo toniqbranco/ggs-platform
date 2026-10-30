@@ -5,9 +5,10 @@ export const pilotTargets = ["hq", "streamer", "pilot-management"] as const;
 export type PilotRole = (typeof pilotRoles)[number];
 export type PilotTarget = (typeof pilotTargets)[number];
 
-const contextSchema = z
+export const pilotContextSchema = z
   .object({
     session: z.enum(["absent", "expired", "valid"]),
+    approval: z.enum(["pending", "approved", "rejected"]),
     invitation: z.enum([
       "not-invited",
       "pending",
@@ -20,11 +21,12 @@ const contextSchema = z
   })
   .strict();
 
-export type PilotPolicyContext = z.infer<typeof contextSchema>;
+export type PilotPolicyContext = z.infer<typeof pilotContextSchema>;
 export type PilotDenyReason =
   | "invalid-context"
   | "sign-in-required"
   | "session-expired"
+  | "approval-required"
   | "invitation-required"
   | "invitation-inactive"
   | "membership-pending"
@@ -40,24 +42,25 @@ const targetRoles: Record<PilotTarget, readonly PilotRole[]> = {
 };
 
 /**
- * Disconnected policy contract, not a session verifier or live authorization gate.
- * Future enforcement must build context from trusted server-side identity/records.
- * No route reads browser roles, cookies, query parameters, or test fixtures here.
+ * Pure access decision. The server adapter binds verified identity to the latest
+ * owner-approved admission record. This function never verifies a session itself.
  */
 export function evaluatePilotPolicy(
   target: unknown,
   input: unknown,
 ): PilotDecision {
   const targetResult = z.enum(pilotTargets).safeParse(target);
-  const context = contextSchema.safeParse(input);
+  const context = pilotContextSchema.safeParse(input);
   if (!targetResult.success || !context.success)
     return { allowed: false, reason: "invalid-context" };
 
-  const { session, invitation, membership, roles } = context.data;
+  const { session, approval, invitation, membership, roles } = context.data;
   if (session === "absent")
     return { allowed: false, reason: "sign-in-required" };
   if (session === "expired")
     return { allowed: false, reason: "session-expired" };
+  if (approval !== "approved")
+    return { allowed: false, reason: "approval-required" };
   if (membership === "suspended")
     return { allowed: false, reason: "membership-suspended" };
   if (invitation === "expired" || invitation === "revoked")

@@ -90,3 +90,11 @@ approved a separate server-only Auth adapter for GG-livestream testing. See the
 [current sign-in configuration and limits](wp-02-sign-in.md) for `PILOT_AUTH_ENABLED`,
 `PILOT_SUPABASE_URL`, and `PILOT_SUPABASE_PUBLISHABLE_KEY`. Production is rejected;
 default builds and CI stay disconnected.
+
+## Owner bootstrap remains explicit
+
+`PILOT_OWNER_USER_ID` optionally pins a reviewed existing owner Auth UUID. Missing
+or empty values keep admission closed and the form unavailable; malformed values
+fail validation. Selecting a UUID does not grant access by itself. A valid current
+owner-approved admission record is also required. See the
+[approval contract](wp-02-approved-access.md) before any live metadata/account changes.

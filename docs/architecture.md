@@ -103,3 +103,12 @@ separate from the disabled browser-service factories. Sign-in/session and pilot
 entry pages render dynamically; Auth responses are private/no-store. HQ remains
 404 and verified identity grants no workspace permissions. See the
 [sign-in scope](wp-02-sign-in.md) for configuration, routes, tests, and limitations.
+
+## WP-02 admission enforcement
+
+The [admission reader](../src/lib/pilot/admission.ts) binds the fresh server Auth
+user to an owner-approved `app_metadata.ggs_pilot` record. Callback and every
+session/access request use this result with the existing policy evaluator.
+Missing owner bootstrap denies all admission; no application code writes grants.
+The protected `/auth/access` probe enforces the matrix without exposing private
+workspace data. See the [current admission contract](wp-02-approved-access.md).

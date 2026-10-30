@@ -17,7 +17,11 @@ export async function PilotInformation({
 }) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  const copy = getPilotCopy(locale, getPilotAuthConfig().enabled);
+  const authConfig = getPilotAuthConfig();
+  const copy = getPilotCopy(
+    locale,
+    authConfig.enabled && !!authConfig.ownerUserId,
+  );
   const content = copy[page];
   return (
     <Shell locale={locale} section="public" pilotPage={page}>

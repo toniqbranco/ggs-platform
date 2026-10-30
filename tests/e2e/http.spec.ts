@@ -1,6 +1,17 @@
 import { test, expect } from "@playwright/test";
 import { pages } from "./fixtures";
 
+test("disabled pilot admission serves no sign-in form and cannot authorize a target", async ({
+  request,
+}) => {
+  for (const locale of ["es", "en"]) {
+    const response = await request.get(`/${locale}/sign-in`);
+    expect(response.status()).toBe(200);
+    expect(await response.text()).not.toContain('action="/auth/sign-in"');
+  }
+  expect((await request.get("/auth/access?area=hq")).status()).toBe(503);
+});
+
 test("HQ stays closed even with claimed owner/admin identity", async ({
   request,
 }) => {

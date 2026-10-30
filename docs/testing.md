@@ -100,3 +100,12 @@ Run after `pnpm build`. The normal 3104 suite explicitly disables pilot Auth. Bo
 run in CI. Unit/SDK integration tests verify synthetic PKCE exchanges, refresh,
 revocation, cookie/cache headers, local sign-out, and no workspace access. See
 [sign-in verification limits](wp-02-sign-in.md) before testing actual delivery.
+
+## Approval enforcement
+
+Admission tests bind owner approval to verified identity, deny inactive/rejected
+records, and preserve role boundaries. The SDK fixture mutates mocked server Auth
+metadata while retaining the same browser state; subsequent checks must deny a
+suspended participant. Browser suites cover approval-required messages in both
+languages and reject forged owner claims at `/auth/access`. No real account or
+metadata is changed. The live first-owner UUID remains unset.

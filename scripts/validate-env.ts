@@ -14,9 +14,11 @@ try {
   parseServerEnvironment(process.env);
   const auth = parsePilotAuthConfig(process.env);
   console.log(
-    auth.enabled
-      ? "Environment valid. Pilot sign-in targets the approved testing project; browser services remain disabled."
-      : "Environment valid. Supabase connections remain disabled.",
+    auth.enabled && !auth.ownerUserId
+      ? "Environment valid. Pilot admission remains closed until explicit owner bootstrap."
+      : auth.enabled
+        ? "Environment valid. Pilot sign-in targets the approved testing project; browser services remain disabled."
+        : "Environment valid. Supabase connections remain disabled.",
   );
 } catch (error) {
   console.error(
