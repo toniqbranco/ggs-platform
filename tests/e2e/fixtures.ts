@@ -39,12 +39,6 @@ export const pages = [
     title: "Talento sin fronteras.",
   },
   {
-    path: "/es/hq",
-    locale: "es",
-    shell: "hq",
-    title: "La conexión empieza aquí.",
-  },
-  {
     path: "/es/streamer",
     locale: "es",
     shell: "streamer",
@@ -55,12 +49,6 @@ export const pages = [
     locale: "en",
     shell: "public",
     title: "Talent without limits.",
-  },
-  {
-    path: "/en/hq",
-    locale: "en",
-    shell: "hq",
-    title: "Connection starts here.",
   },
   {
     path: "/en/streamer",

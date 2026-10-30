@@ -3,11 +3,14 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**Scope: WP-01 Project Foundation**, including the documentation and WP-02 handoff.
-The delivery record tracks review/acceptance evidence for the staged work.
-This is a disconnected foundation preview. HQ and streamer pages are public
-structural previews, not authenticated workspaces. No live services, accounts,
-database tables, business features, or deployment are included.
+**WP-01 is closed. Current increment: WP-02 / PR-01, closed-pilot access model and
+disconnected entry UX.** The owner approved the recommended pilot-access package.
+Streamer routes provide public invitation-only entry information.
+HQ is reserved for the owner and appointed admins; its routes return 404 until
+private authentication and authorization are implemented. Sign-in is unavailable; no credentials are collected.
+No live service, account, database table, or deployment has been added.
+
+[Current pilot-access scope and matrix](docs/wp-02-pilot-access.md)
 
 [Documentation index](docs/README.md) · [Delivery and acceptance](docs/wp-01-status.md) ·
 [WP-02 handoff](docs/wp-02-handoff.md)
@@ -27,17 +30,24 @@ local preview, run `pnpm build`, then `pnpm start` (port 3000 by default).
 The [runbook](docs/runbook.md) covers a fresh checkout, alternative ports, restarts,
 and common issues.
 
-## Preview routes
+## Public website map
 
 | Space    | Spanish (default) | English        |
 | -------- | ----------------- | -------------- |
 | Public   | `/es`             | `/en`          |
-| HQ       | `/es/hq`          | `/en/hq`       |
 | Streamer | `/es/streamer`    | `/en/streamer` |
 
-`/`, `/hq`, and `/streamer` temporarily redirect to their Spanish versions while
+`/` and `/streamer` temporarily redirect to their Spanish versions while
 preserving query parameters. ES/EN selection retains the current shell. Unsupported
 locales and unknown routes return 404.
+
+Pilot information is at `/es/pilot` and `/en/pilot`; the generic restricted-access
+message is at `/es/access-denied` and `/en/access-denied`. These are public preview
+states, not a working sign-in flow or protected resource.
+
+HQ is excluded from the public map, navigation, calls to action, and pilot audience
+information. `/hq`, `/es/hq`, and `/en/hq` return 404. Hiding links alone would not
+protect an admin workspace; the HQ preview is disabled entirely.
 
 ## Verify a change
 
@@ -75,5 +85,7 @@ compatibility when upgrading tooling.
 
 WP-01 follows five separately reviewed PRs: bootstrap → design/localization →
 disconnected boundaries → tests/CI/security/staging preparation → documentation/handoff.
-Stop at each PR boundary. Close WP-01 only after PR-05 review, merge, and acceptance.
-Approve a concrete WP-02 brief separately before any WP-02 implementation.
+WP-01 is closed following PR-05 merge/acceptance. The owner approved WP-02's
+closed-pilot access package. Stop after its first access-model/UX PR for review;
+confirm the live integration method, non-production target, and any schema before
+the next increment. Review boundaries and service permissions remain explicit.

@@ -101,10 +101,6 @@ export async function SectionPage({
           <div className="space-links" aria-label={copy.spacesLabel}>
             {section === "public" ? (
               <>
-                <Link className="button-link" href={sectionHref(locale, "hq")}>
-                  HQ
-                  <Icon name="arrow" />
-                </Link>
                 <Link
                   className="button-link"
                   href={sectionHref(locale, "streamer")}

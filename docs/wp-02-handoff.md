@@ -8,10 +8,10 @@ boundaries, and automated quality/security checks. Start with
 [architecture](architecture.md), [environment](environment.md), and the
 [WP-01 acceptance record](wp-01-status.md).
 
-No detailed, approved WP-02 implementation specification is stored in this repository.
-Do not invent its business scope from route names or turn this handoff into an
-implementation authorization. Confirm the work-package objective, acceptance
-criteria, and review sequence with the owner before coding.
+This is the historical planning handoff. The owner subsequently approved the proposed
+closed-pilot access package. The [current first-increment contract](wp-02-pilot-access.md)
+now records its scope and review boundary. This handoff does not authorize additional
+business features, live resources, or deployment beyond that contract.
 
 ## Preserve these foundation decisions
 

@@ -43,9 +43,9 @@ for (const entry of pages) {
 test("language switching preserves the shell and subsequent navigation preserves language", async ({
   page,
 }) => {
-  await page.goto("/es/hq");
+  await page.goto("/es");
   await page.getByRole("link", { name: "EN — English", exact: true }).click();
-  await expect(page).toHaveURL(/\/en\/hq$/);
+  await expect(page).toHaveURL(/\/en$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await page
     .getByRole("navigation", { name: "GG's spaces" })

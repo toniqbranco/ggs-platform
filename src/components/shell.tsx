@@ -1,7 +1,12 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { locales, sections, sectionHref } from "@/lib/i18n/config";
-import type { Locale, Section } from "@/lib/i18n/config";
+import {
+  locales,
+  sections,
+  sectionHref,
+  pilotPageHref,
+} from "@/lib/i18n/config";
+import type { Locale, Section, PilotPage } from "@/lib/i18n/config";
 import { getDictionary } from "@/lib/i18n/dictionaries";
 import { Icon } from "./ui/icon";
 
@@ -9,10 +14,12 @@ export function Shell({
   locale,
   section,
   children,
+  pilotPage,
 }: {
   locale: Locale;
   section: Section;
   children: ReactNode;
+  pilotPage?: PilotPage;
 }) {
   const copy = getDictionary(locale);
   return (
@@ -40,7 +47,9 @@ export function Shell({
               <Link
                 key={item}
                 href={sectionHref(locale, item)}
-                aria-current={section === item ? "page" : undefined}
+                aria-current={
+                  !pilotPage && section === item ? "page" : undefined
+                }
               >
                 {copy.sections[item].label}
               </Link>
@@ -50,7 +59,11 @@ export function Shell({
             {locales.map((language) => (
               <Link
                 key={language}
-                href={sectionHref(language, section)}
+                href={
+                  pilotPage
+                    ? pilotPageHref(language, pilotPage)
+                    : sectionHref(language, section)
+                }
                 lang={language}
                 hrefLang={language}
                 aria-label={language === "es" ? "ES — Español" : "EN — English"}

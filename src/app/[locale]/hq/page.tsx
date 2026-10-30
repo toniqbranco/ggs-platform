@@ -1,5 +1,7 @@
-import { SectionPage } from "@/components/section-page";
+import { notFound } from "next/navigation";
 
-export default function Headquarters({ params }: PageProps<"/[locale]/hq">) {
-  return <SectionPage params={params} section="hq" />;
+// Reserved for the owner and appointed admins. Keep closed until trusted
+// server-side authentication and authorization are implemented and reviewed.
+export default function Headquarters() {
+  notFound();
 }

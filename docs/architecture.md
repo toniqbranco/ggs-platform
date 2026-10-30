@@ -10,7 +10,7 @@ live sessions, or database-backed pages.
 | -------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------- |
 | [next.config.ts](../next.config.ts)                                                                                                                            | Environment validation, Spanish-default redirects, response headers.                          |
 | [Locale layout](../src/app/%5Blocale%5D/layout.tsx)                                                                                                            | HTML language, translated metadata, local Roboto font, static locale generation.              |
-| [Public route](../src/app/%5Blocale%5D/page.tsx), [HQ route](../src/app/%5Blocale%5D/hq/page.tsx), [streamer route](../src/app/%5Blocale%5D/streamer/page.tsx) | Small entry points selecting the corresponding preview shell.                                 |
+| [Public route](../src/app/%5Blocale%5D/page.tsx), [HQ route](../src/app/%5Blocale%5D/hq/page.tsx), [streamer route](../src/app/%5Blocale%5D/streamer/page.tsx) | Public/streamer entry points; HQ is reserved and returns 404.                                 |
 | [SectionPage](../src/components/section-page.tsx)                                                                                                              | Localized page composition, real section/route links, public brand-perspective content.       |
 | [Shell](../src/components/shell.tsx)                                                                                                                           | Header, wordmark, navigation, language selection, keyboard skip link, footer.                 |
 | [UI primitives](../src/components/ui/panel.tsx) and [global styles](../src/app/globals.css)                                                                    | Shared panels, badges, icons, semantic design tokens, responsive/reduced-motion behavior.     |
@@ -24,7 +24,7 @@ live sessions, or database-backed pages.
 flowchart TD
   Request[Page request] --> Config[Validated configuration and redirect rules]
   Config --> Layout[Locale root layout and local font]
-  Layout --> Page[SectionPage and shared Shell]
+  Layout --> Page[Public SectionPage / pilot entry and shared Shell]
   Page --> Copy[Spanish / English dictionaries]
   Page --> Assets[Local styles and artwork]
   subgraph Offline[Separate integration scaffolding — no page imports]
@@ -36,8 +36,8 @@ flowchart TD
 
 ## Routing and rendering
 
-Spanish public/HQ/streamer routes are `/es`, `/es/hq`, and `/es/streamer`; English
-equivalents use `/en`. The root, `/hq`, and `/streamer` redirect to Spanish with a
+Spanish public/streamer routes are `/es` and `/es/streamer`; English
+equivalents use `/en`. The root and `/streamer` redirect to Spanish with a
 temporary 307 while preserving query parameters. Browser language does not override
 the explicit Spanish default. Language links preserve the current shell.
 
@@ -77,3 +77,19 @@ roles/authorization, database schema, recruitment/onboarding, and other business
 features are not selected or implemented by this architecture. Choosing a shell
 name does not define a permission model. Approve those decisions in the next work
 package before writing implementation code.
+
+## WP-02 first-increment update
+
+Only streamer routes use [PilotEntry](../src/components/pilot-entry.tsx);
+[pilot information](../src/components/pilot-information.tsx) provides the localized
+`/pilot` and `/access-denied` public states. The shared Shell preserves these page
+paths when switching languages. HQ is excluded from public navigation, landing links, and audience copy.
+Its reserved localized routes and the unprefixed `/hq` return 404 while services
+remain disconnected. Future HQ access is exclusively for the owner and appointed
+admins. Trusted server authorization is required before any admin UI or data is served.
+
+The [pilot policy model](../src/lib/pilot/policy.ts) is a pure, fixture-tested
+contract, not live authentication or route/data enforcement. App pages do not read
+test identities, user roles, browser flags, or request cookies. The approved
+[first-increment scope and matrix](wp-02-pilot-access.md) records the next gate;
+the disconnected Supabase implementation remains unchanged.
