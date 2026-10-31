@@ -3,14 +3,16 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**WP-01 is closed. Current increment: WP-02 / PR-03, owner-approved application admission.** The owner approved the recommended pilot-access package.
-Streamer routes provide public invitation-only entry information.
-HQ is reserved for the owner and appointed admins; its routes return 404 until
-private authentication and authorization are implemented. Optional server-only
-email-link sign-in targets the owner-approved GG-livestream testing project.
-No account, database table, project setting, production service, or deployment has been added.
+**WP-01 is closed. Current increment: WP-02 application/private-review rehearsal.**
+Streamer routes provide public invitation-only entry information and a fictional
+application form. A private owner-only review preview uses synthetic records;
+no live submissions, decisions, or invitation sending are implemented. Optional
+server-only email-link sign-in targets the approved GG-livestream testing project.
+The owner separately approved initial owner bootstrap and local Auth settings.
+No database tables, production service, or deployment have been added.
 
-[Current approval-only access contract](docs/wp-02-approved-access.md) ·
+[Current application/review preview](docs/wp-02-application-preview.md) ·
+[Approval-only access contract](docs/wp-02-approved-access.md) ·
 [Sign-in scope and verification limits](docs/wp-02-sign-in.md) ·
 [Pilot-access model and matrix](docs/wp-02-pilot-access.md)
 
@@ -50,7 +52,10 @@ states. Optional sign-in is at `/es/sign-in` or `/en/sign-in`; `/es/session` and
 
 HQ is excluded from the public map, navigation, calls to action, and pilot audience
 information. `/hq`, `/es/hq`, and `/en/hq` return 404. Hiding links alone would not
-protect an admin workspace; the HQ preview is disabled entirely.
+protect an admin workspace. The separate `/es/hq/applications` and
+`/en/hq/applications` rehearsal routes require fresh owner-only verification before
+HTML/RSC and independently before fixture data. General HQ and operational tools
+remain unavailable. The public `/es/apply` and `/en/apply` form sends/saves nothing.
 
 ## Verify a change
 
@@ -91,6 +96,7 @@ compatibility when upgrading tooling.
 WP-01 follows five separately reviewed PRs: bootstrap → design/localization →
 disconnected boundaries → tests/CI/security/staging preparation → documentation/handoff.
 WP-01 is closed following PR-05 merge/acceptance. WP-02's access-model and
-sign-in PRs are merged. The current approval-enforcement PR stops for review before
-owner bootstrap, real account/role grants, provider settings, schema changes, or
-operational workspaces. Each later increment retains its own review boundary.
+sign-in, admission enforcement, and browser-recovery PRs are merged. Owner bootstrap
+and local testing Auth settings were separately approved. The application/review
+rehearsal stops for review before live intake, schema, operational decisions, or
+invitations. Each later increment retains its own review boundary.

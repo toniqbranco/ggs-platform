@@ -94,6 +94,16 @@ test identities, user roles, browser flags, or request cookies. The approved
 [first-increment scope and matrix](wp-02-pilot-access.md) records the next gate;
 the disconnected Supabase implementation remains unchanged.
 
+## Application and owner-review rehearsal
+
+The [current preview contract](wp-02-application-preview.md) supersedes the older
+delivery-time UI status above. Public application fields live only in React state.
+`src/proxy.ts` checks current owner admission before the private review page;
+`src/app/auth/review-preview/route.ts` independently checks it before fixture data.
+`src/lib/pilot/review-preview.ts` contains the fictional payload; client components
+import only its types/shared validation and receive records after authorization.
+No application intake or decision mutation endpoint exists.
+
 ## WP-02 sign-in update
 
 [Server Auth adapter](../src/lib/auth/server.ts) uses the approved testing project

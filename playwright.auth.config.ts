@@ -21,7 +21,8 @@ export default defineConfig({
     },
   ],
   webServer: {
-    command: "pnpm start --hostname 127.0.0.1 --port 3105",
+    command:
+      "node --import tsx --import ./tests/fixtures/review-auth-provider.ts node_modules/next/dist/bin/next start --hostname 127.0.0.1 --port 3105",
     url: "http://127.0.0.1:3105/es",
     reuseExistingServer: false,
     env: {

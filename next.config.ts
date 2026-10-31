@@ -13,6 +13,13 @@ const nextConfig: NextConfig = {
   async headers() {
     return [
       {
+        source: "/:locale/hq/:path*",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
+      {
         source: "/:locale/:authPage(sign-in|session)",
         headers: [{ key: "Cache-Control", value: "private, no-store" }],
       },
