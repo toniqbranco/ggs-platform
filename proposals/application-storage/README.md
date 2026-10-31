@@ -1,8 +1,8 @@
 # Application storage proposal — unapplied
 
 This increment prepares a migration and server-only adapter prototype. **It does
-not apply SQL or enable live intake.** No app route/startup module imports the
-proposal. No database driver, connection URL, credentials, accounts, invitations,
+not apply hosted SQL or enable live intake.** No app route/startup module imports the
+proposal. No production database driver, connection URL, credentials, accounts, invitations,
 admission grants, cleanup jobs, or deployment are added to the application.
 
 Read-only inspection of approved testing project `rchxnmpsxfbsicthasxn` reports
@@ -14,6 +14,7 @@ GG’s currently uses email links. No Auth settings changed.
 
 - [CLI-generated SQL](supabase/migrations/20261031053908_application_review_storage.sql)
 - [Adapter prototype](adapter.ts)
+- [Local-only transport prototype](transport.ts) and [verification limits](../../docs/isolated-storage-transport.md)
 - [Embedded PostgreSQL tests](../../tests/storage/application-storage.test.ts)
 
 Checksum-verified official Supabase CLI **2.122.0** generated the name offline.
@@ -54,8 +55,9 @@ its membership to runtime roles. Database administrators retain privileged acces
 ## Server and transaction contract
 
 Recommend separate intake/review runtime credentials through pooled Postgres.
-There is no driver/connection factory here. Pooler endpoints, custom-role support,
-TLS validation and credential rotation remain unverified. Current environment
+The transport prototype accepts only an isolated loopback TLS fixture. Hosted
+pooler authentication, custom-role provisioning, actual hosted driver TLS and
+credential rotation remain unverified. Current environment
 rules still reject privileged Supabase API keys; no service-role shortcut is added.
 
 The [testing connection plan](../../docs/testing-connection-plan.md) selects a
@@ -101,7 +103,8 @@ a superuser would not test a restricted login. This is not Supavisor behavior.
 **PGlite has one connection and a different PostgreSQL version.** Its tests alone
 do not prove simultaneous races or PostgreSQL 17 compatibility. The subsequent
 [native PostgreSQL 17 verification](../../docs/postgres17-verification.md) runs 12
-additional cases with genuine restricted logins and overlapping transactions.
+storage cases with genuine restricted logins and overlapping transactions, plus
+12 [local transport cases](../../docs/isolated-storage-transport.md).
 Hosted pooler/TLS behavior, real credential provisioning and managed migration-user
 permissions remain separate checks before applying anything live.
 

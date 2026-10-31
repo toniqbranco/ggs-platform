@@ -6,7 +6,8 @@ rules, Supabase resources or live configuration change.
 
 ## Coverage
 
-`pnpm test:storage:pg17` runs 12 cases:
+`pnpm test:storage:pg17` runs the following 12 storage cases, then 12
+[isolated TLS transport cases](isolated-storage-transport.md) sequentially:
 
 1. Actual restricted LOGIN identities cannot read/edit private tables, alter owner
    configuration, escalate to executor or create schema objects.

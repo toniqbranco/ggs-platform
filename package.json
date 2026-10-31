@@ -15,7 +15,7 @@
     "validate:env": "tsx scripts/validate-env.ts",
     "test": "pnpm test:unit && pnpm test:integration && pnpm test:storage",
     "test:storage": "node --conditions=react-server --import tsx --test tests/storage/*.test.ts",
-    "test:storage:pg17": "node --conditions=react-server --import tsx --test tests/postgres17/*.test.ts",
+    "test:storage:pg17": "node --conditions=react-server --import tsx --test --test-concurrency=1 tests/postgres17/*.test.ts",
     "test:unit": "tsx --test tests/unit/*.test.ts",
     "test:integration": "tsx --test tests/integration/*.test.ts",
     "test:e2e": "playwright test",

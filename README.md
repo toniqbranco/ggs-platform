@@ -3,7 +3,7 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**WP-01 is closed. Current increment: WP-02 testing connection review plan.**
+**WP-01 is closed. Current increment: WP-02 isolated storage transport.**
 Streamer routes provide public invitation-only entry information and a fictional
 application form. A private owner-only review preview uses synthetic records;
 no live submissions, decisions, or invitation sending are implemented. Optional
@@ -25,6 +25,10 @@ updates only the unapplied bootstrap and adds a non-superuser regression case.
 The [testing connection plan](docs/testing-connection-plan.md) proposes transport,
 dedicated login boundaries, TLS checks and a separately authorized hosted setup
 sequence. It adds no driver wiring, credentials, hosted changes or live intake.
+
+The [isolated transport prototype](docs/isolated-storage-transport.md) tests the
+real driver through a loopback TLS fixture, with separate restricted pools. It
+accepts only disposable local targets and remains outside application imports.
 
 [Current application/review preview](docs/wp-02-application-preview.md) ·
 [Approval-only access contract](docs/wp-02-approved-access.md) ·
