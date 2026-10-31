@@ -1,12 +1,12 @@
 # Isolated PostgreSQL 17 verification
 
-This increment tests the unchanged, unapplied storage proposal on real PostgreSQL
+This suite tests the unapplied storage proposal on real PostgreSQL
 17.11 with independent authenticated connections. No website routes, admission
 rules, Supabase resources or live configuration change.
 
 ## Coverage
 
-`pnpm test:storage:pg17` runs 11 cases:
+`pnpm test:storage:pg17` runs 12 cases:
 
 1. Actual restricted LOGIN identities cannot read/edit private tables, alter owner
    configuration, escalate to executor or create schema objects.
@@ -22,6 +22,8 @@ rules, Supabase resources or live configuration change.
 10. An injected audit failure rolls back intake and decisions on native PG17.
 11. Wrong-owner and fresh suspended/streamer requests cannot inherit authority from
     preceding requests on the same reused backend.
+12. A managed-style non-superuser can apply the corrected draft, and temporary
+    ownership SET/INHERIT rights are removed afterward.
 
 Race cases hold a real row/table lock until `pg_stat_activity` shows at least two
 distinct waiting backend PIDs. Releasing that barrier creates overlapping database
@@ -46,8 +48,10 @@ Separate generated-password intake/review/anonymous logins are not superusers an
 cannot create roles or bypass RLS. All contact addresses use `.invalid`.
 
 Connections are closed and only the run's created database/roles are dropped.
-The setup account is a disposable local superuser so it can manage fixture objects;
-managed Supabase migration-user privileges are not verified by that setup.
+The outer fixture controller is a disposable local superuser for database/role
+cleanup. The actual migration now runs through a separate non-superuser matching
+managed-style role attributes. See the [compatibility correction](managed-migration-compatibility.md).
+Managed-platform provisioning and policy guards remain untested on the hosted project.
 
 ## Native Windows and CI evidence
 
@@ -83,12 +87,14 @@ neither the client nor this harness. Fast embedded-PG tests remain server-free.
 ## Remaining gates
 
 These checks close the native-PG17/overlapping-transaction evidence gaps. They do
-not verify hosted Supavisor custom roles, certificate validation/rotation, managed
-migrator privileges, project schema exposure or real owner refresh/sign-out.
+not verify hosted Supavisor role authentication, application-driver certificate
+validation/rotation, managed-platform policy guards, schema exposure or real owner
+refresh/sign-out. The extra regression covers core PostgreSQL migrator attributes.
 They are correctness tests, not load tests or complete distributed failure analysis.
 
-The migration remains byte-for-byte unchanged, SHA-256:
-`F07A7F52ECA42820DDC1502ADFABB12B2DAB7883C3C1F00F4871DE429491A4B7`.
+The original PR #12 hash and the corrected proposal hash are recorded in the
+[managed-migration review](managed-migration-compatibility.md). Only the unapplied
+role bootstrap changed; runtime grants/routines retain the tested behavior.
 Nothing is applied to GG-livestream. Privacy/retention/redaction, distributed abuse
 controls, verified correction and actual server transport/routes remain live gates.
 `PILOT_APPLICATIONS_ENABLED=true` is rejected. Accounts, invitations, activation,

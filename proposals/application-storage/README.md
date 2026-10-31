@@ -95,10 +95,15 @@ a superuser would not test a restricted login. This is not Supavisor behavior.
 
 **PGlite has one connection and a different PostgreSQL version.** Its tests alone
 do not prove simultaneous races or PostgreSQL 17 compatibility. The subsequent
-[native PostgreSQL 17 verification](../../docs/postgres17-verification.md) runs 11
+[native PostgreSQL 17 verification](../../docs/postgres17-verification.md) runs 12
 additional cases with genuine restricted logins and overlapping transactions.
 Hosted pooler/TLS behavior, real credential provisioning and managed migration-user
 permissions remain separate checks before applying anything live.
+
+The [managed-style migration correction](../../docs/managed-migration-compatibility.md)
+now tests the proposal through a non-superuser with role/database creation rights.
+Temporary ownership grants are revoked before commit; runtime role permissions
+do not expand. The original superuser-only setup missed this case.
 
 ## Gates and rollback
 
@@ -120,8 +125,8 @@ is included.
 
 Before live intake: approve ES/EN privacy/retention and verified correction processes,
 distributed abuse controls and receipt/error behavior; review/wire the actual server
-transport and routes. The proposed 90-day contacts/one-year events policy remains
-unapproved. No invitation sending, account activation, later business modules or
+transport and routes. Draft retention selections alone do not authorize collection,
+scheduled deletion or publication. No invitation sending, account activation, later business modules or
 deployment is included.
 
 Retention is not implemented by this draft. Its restrictive foreign keys and
