@@ -1,7 +1,14 @@
-# Application storage proposal — unapplied
+# Application storage — applied testing baseline, disconnected adapter
+
+**Current status:** the owner separately approved the corrected SQL for testing,
+and it was applied on 2026-10-31. All four tables are empty; no dedicated logins or
+owner seed exist. See the [applied revision and evidence](../../docs/testing-storage-status.md).
+Freeze that SQL file; its original UNAPPLIED comment is historical. The preparation
+notes below describe the original proposal boundary and do not undo that dated
+approval or authorize another application.
 
 This increment prepares a migration and server-only adapter prototype. **It does
-not apply hosted SQL or enable live intake.** No app route/startup module imports the
+not itself authorize hosted SQL or enable live intake.** No app route/startup module imports the
 proposal. No production database driver, connection URL, credentials, accounts, invitations,
 admission grants, cleanup jobs, or deployment are added to the application.
 

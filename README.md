@@ -3,17 +3,19 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**WP-01 is closed. Current increment: WP-02 isolated storage transport.**
+**WP-01 is closed. Current increment: WP-02 testing storage baseline.**
 Streamer routes provide public invitation-only entry information and a fictional
 application form. A private owner-only review preview uses synthetic records;
 no live submissions, decisions, or invitation sending are implemented. Optional
 server-only email-link sign-in targets the approved GG-livestream testing project.
 The owner separately approved initial owner bootstrap and local Auth settings.
-No live application tables, production service, or deployment have been added.
+The owner separately approved an empty private testing schema; the application
+remains disconnected from it. No production service or deployment has been added.
 
 The [storage/transaction proposal](proposals/application-storage/README.md) adds a
-quarantined SQL draft and server-only adapter prototype, tested only in ephemeral
-embedded PostgreSQL. It is not connected to the website or the testing project.
+quarantined SQL source and server-only adapter prototype. The corrected SQL was
+separately approved and applied to testing; the adapter is not connected to it or
+the website. See the [applied testing status](docs/testing-storage-status.md).
 `PILOT_APPLICATIONS_ENABLED=true` is rejected; real intake remains unavailable.
 
 The [native PostgreSQL 17 suite](docs/postgres17-verification.md) adds isolated
