@@ -3,7 +3,7 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**WP-01 is closed. Current increment: WP-02 isolated PostgreSQL 17 verification.**
+**WP-01 is closed. Current increment: WP-02 managed migration compatibility.**
 Streamer routes provide public invitation-only entry information and a fictional
 application form. A private owner-only review preview uses synthetic records;
 no live submissions, decisions, or invitation sending are implemented. Optional
@@ -18,7 +18,9 @@ embedded PostgreSQL. It is not connected to the website or the testing project.
 
 The [native PostgreSQL 17 suite](docs/postgres17-verification.md) adds isolated
 multi-connection and restricted-login checks. It uses a disposable local/CI server,
-never the Supabase project. It does not change the unapplied migration.
+never the Supabase project. The original verification left the proposal unchanged.
+The subsequent [managed-role correction](docs/managed-migration-compatibility.md)
+updates only the unapplied bootstrap and adds a non-superuser regression case.
 
 [Current application/review preview](docs/wp-02-application-preview.md) ·
 [Approval-only access contract](docs/wp-02-approved-access.md) ·
@@ -107,8 +109,8 @@ disconnected boundaries → tests/CI/security/staging preparation → documentat
 WP-01 is closed following PR-05 merge/acceptance. WP-02's access-model and
 sign-in, admission enforcement, and browser-recovery PRs are merged. Owner bootstrap
 and local testing Auth settings were separately approved. The application/review
-rehearsal and storage proposal are merged. The native-PG17 verification increment
-stops for review before hosted connection/credential provisioning or live schema,
+rehearsal, storage proposal and native-PG17 verification are merged. The managed
+migration compatibility correction stops for review before hosted credentials or live schema,
 intake, operational decisions, or invitations. Merging a proposal does not
 authorize applying its SQL. Each later increment
 retains its own review boundary.

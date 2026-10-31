@@ -7,7 +7,8 @@ The [owner-approved access stage](wp-02-approved-access.md) now binds verified
 identity to current trusted admission. Initial owner bootstrap and local Auth settings
 were separately approved; the [application/private-review rehearsal](wp-02-application-preview.md)
 is merged and supersedes older delivery-time status below. The current increment
-is [isolated PostgreSQL 17 verification](postgres17-verification.md) of the merged,
+is the [managed-role compatibility correction](managed-migration-compatibility.md),
+following merged [PostgreSQL 17 verification](postgres17-verification.md) of the
 unapplied [storage/transaction proposal](../proposals/application-storage/README.md).
 Account creation, schema/settings changes, operational workspaces, and deployment
 still require their corresponding scope decisions.

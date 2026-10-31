@@ -13,6 +13,15 @@ create role ggs_pilot_data_owner nologin nosuperuser nocreatedb nocreaterole nor
 create role ggs_pilot_executor nologin nosuperuser nocreatedb nocreaterole noreplication nobypassrls;
 create role ggs_pilot_intake nologin nosuperuser nocreatedb nocreaterole noreplication nobypassrls;
 create role ggs_pilot_review nologin nosuperuser nocreatedb nocreaterole noreplication nobypassrls;
+-- PG17 CREATEROLE gives non-superuser creators ADMIN but no SET/INHERIT rights.
+-- Temporarily grant only the two ownership roles to this migrator. Identify the
+-- grantor explicitly so cleanup removes this grant, not PG's automatic ADMIN grant.
+do $$
+begin
+  if not (select rolsuper from pg_roles where rolname=current_user) then
+    execute format('grant ggs_pilot_data_owner,ggs_pilot_executor to %I with inherit true,set true granted by %I',current_user,current_user);
+  end if;
+end $$;
 create schema ggs_pilot authorization ggs_pilot_data_owner;
 revoke all on schema ggs_pilot from public;
 grant usage on schema ggs_pilot to ggs_pilot_executor, ggs_pilot_intake, ggs_pilot_review;
@@ -251,4 +260,10 @@ grant execute on function ggs_pilot.submit_application(uuid,text,text,text,text,
 grant execute on function ggs_pilot.decide_application(uuid,uuid,uuid,integer,text,text) to ggs_pilot_review;
 grant execute on function ggs_pilot.list_applications(uuid,text,timestamptz,uuid,integer) to ggs_pilot_review;
 grant execute on function ggs_pilot.application_history(uuid,uuid,integer) to ggs_pilot_review;
+do $$
+begin
+  if not (select rolsuper from pg_roles where rolname=current_user) then
+    execute format('revoke ggs_pilot_data_owner,ggs_pilot_executor from %I granted by %I',current_user,current_user);
+  end if;
+end $$;
 commit;

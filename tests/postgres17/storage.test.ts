@@ -49,6 +49,8 @@ let user: ReturnType<typeof approvedFixtureUser> | null;
 let intake: Pool;
 let review: Pool;
 let anonymous: Pool;
+let migrator: Pool;
+let migratorName: string;
 
 const input = (change: Record<string, unknown> = {}) => ({
   operationId: randomUUID(),
@@ -174,10 +176,29 @@ before(async () => {
   await control.query(
     "create role anon nologin; create role authenticated nologin; create role service_role nologin bypassrls",
   );
-  await admin.query(
-    "alter default privileges grant all on tables to public,anon,authenticated,service_role; alter default privileges grant execute on functions to anon,authenticated,service_role",
+  migratorName = `ggs_fixture_migrator_${suffix}`;
+  const migratorPassword = randomBytes(32).toString("hex");
+  await control.query(
+    `create role ${migratorName} login nosuperuser createrole createdb noreplication bypassrls password '${migratorPassword}'`,
   );
-  const setup = await admin.connect();
+  createdLogins.push(migratorName);
+  await admin.query(
+    `grant create on database ${databaseName} to ${migratorName}`,
+  );
+  migrator = new Pool({
+    ...config,
+    database: databaseName,
+    user: migratorName,
+    password: migratorPassword,
+    max: 1,
+    application_name: `ggs_fixture_migrator_${suffix}`,
+  });
+  migrator.on("error", (error) => unexpectedPoolErrors.push(error.message));
+  runtimes.set("migrator", migrator);
+  await admin.query(
+    `alter default privileges for role ${migratorName} grant all on tables to public,anon,authenticated,service_role; alter default privileges for role ${migratorName} grant execute on functions to anon,authenticated,service_role`,
+  );
+  const setup = await migrator.connect();
   try {
     await assert.rejects(setup.query(migration), /Unapproved storage proposal/);
     await setup.query("rollback");
@@ -225,6 +246,45 @@ after(async () => {
   assert.deepEqual(unexpectedPoolErrors, [], "No unexpected idle-pool errors");
 });
 
+test("managed-style non-superuser migration restores temporary ownership access", async () => {
+  const profile = await migrator.query<{
+    rolsuper: boolean;
+    rolcreaterole: boolean;
+    rolcreatedb: boolean;
+    rolbypassrls: boolean;
+    self_grant: string;
+  }>(
+    "select rolsuper,rolcreaterole,rolcreatedb,rolbypassrls,current_setting('createrole_self_grant') self_grant from pg_roles where rolname=current_user",
+  );
+  assert.deepEqual(profile.rows[0], {
+    rolsuper: false,
+    rolcreaterole: true,
+    rolcreatedb: true,
+    rolbypassrls: true,
+    self_grant: "",
+  });
+  for (const role of ["ggs_pilot_data_owner", "ggs_pilot_executor"]) {
+    const effective = await migrator.query<{
+      inherited: boolean;
+      can_set: boolean;
+    }>(
+      "select pg_has_role(current_user,$1,'USAGE') inherited,pg_has_role(current_user,$1,'SET') can_set",
+      [role],
+    );
+    assert.deepEqual(effective.rows[0], { inherited: false, can_set: false });
+  }
+  assert.equal(
+    (
+      await admin.query(
+        "select count(*)::int n from pg_auth_members m join pg_roles r on r.oid=m.grantor where r.rolname=$1",
+        [migratorName],
+      )
+    ).rows[0].n,
+    0,
+    "No explicit migrator-granted membership survives setup",
+  );
+  await assert.rejects(migrator.query("select * from ggs_pilot.applications"));
+});
 test("real restricted logins have no superuser, role-management or table-edit authority", async () => {
   for (const pool of [intake, review, anonymous]) {
     const identity = await pool.query<{
