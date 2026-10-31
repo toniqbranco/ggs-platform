@@ -1,6 +1,8 @@
 # Testing storage connection — review plan
 
-Status: proposed, 2026-10-31. This document authorizes no hosted changes. The
+Status: staged plan, 2026-10-31. Local transport verification and separately approved
+SSL/schema setup are complete; see the [testing baseline](testing-storage-status.md).
+Remaining gates are still pending. This document itself authorizes no hosted changes. The
 website still imports no storage proposal, accepts no real applications, and
 rejects `PILOT_APPLICATIONS_ENABLED=true`. Auth remains a separate existing
 integration. No production driver, environment variables or credentials are added.

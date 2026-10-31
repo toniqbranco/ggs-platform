@@ -7,11 +7,12 @@ The [owner-approved access stage](wp-02-approved-access.md) now binds verified
 identity to current trusted admission. Initial owner bootstrap and local Auth settings
 were separately approved; the [application/private-review rehearsal](wp-02-application-preview.md)
 is merged and supersedes older delivery-time status below. The current increment
-is the [isolated storage transport](isolated-storage-transport.md), following
+is the [applied testing storage baseline](testing-storage-status.md), following
+the [isolated storage transport](isolated-storage-transport.md) and
 the [testing connection review plan](testing-connection-plan.md),
 the merged [managed-role correction](managed-migration-compatibility.md) and
 [PostgreSQL 17 verification](postgres17-verification.md) of the
-unapplied [storage/transaction proposal](../proposals/application-storage/README.md).
+initial [storage/transaction proposal](../proposals/application-storage/README.md).
 Account creation, schema/settings changes, operational workspaces, and deployment
 still require their corresponding scope decisions.
 
