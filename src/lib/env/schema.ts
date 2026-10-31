@@ -89,6 +89,12 @@ const serverSchema = z
         })
         .default("development"),
     ),
+    PILOT_APPLICATIONS_ENABLED: z
+      .literal("false", {
+        error:
+          "Live applications are not authorized; keep PILOT_APPLICATIONS_ENABLED=false.",
+      })
+      .default("false"),
     SUPABASE_SERVICE_ROLE_KEY: forbidden,
     SUPABASE_SECRET_KEY: forbidden,
     NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY: forbidden,

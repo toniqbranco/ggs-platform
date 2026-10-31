@@ -14,6 +14,7 @@
 /coverage
 /playwright-report/
 /test-results/
+/proposals/application-storage/supabase/.temp/
 
 # next.js
 /.next/

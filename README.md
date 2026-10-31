@@ -3,13 +3,18 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**WP-01 is closed. Current increment: WP-02 application/private-review rehearsal.**
+**WP-01 is closed. Current increment: WP-02 unapplied application-storage proposal.**
 Streamer routes provide public invitation-only entry information and a fictional
 application form. A private owner-only review preview uses synthetic records;
 no live submissions, decisions, or invitation sending are implemented. Optional
 server-only email-link sign-in targets the approved GG-livestream testing project.
 The owner separately approved initial owner bootstrap and local Auth settings.
-No database tables, production service, or deployment have been added.
+No live application tables, production service, or deployment have been added.
+
+The [storage/transaction proposal](proposals/application-storage/README.md) adds a
+quarantined SQL draft and server-only adapter prototype, tested only in ephemeral
+embedded PostgreSQL. It is not connected to the website or the testing project.
+`PILOT_APPLICATIONS_ENABLED=true` is rejected; real intake remains unavailable.
 
 [Current application/review preview](docs/wp-02-application-preview.md) ·
 [Approval-only access contract](docs/wp-02-approved-access.md) ·
@@ -98,5 +103,7 @@ disconnected boundaries → tests/CI/security/staging preparation → documentat
 WP-01 is closed following PR-05 merge/acceptance. WP-02's access-model and
 sign-in, admission enforcement, and browser-recovery PRs are merged. Owner bootstrap
 and local testing Auth settings were separately approved. The application/review
-rehearsal stops for review before live intake, schema, operational decisions, or
-invitations. Each later increment retains its own review boundary.
+rehearsal is merged. The storage proposal stops for code review before any live
+schema, credential provisioning, intake, operational decisions, or invitations.
+Merging the proposal does not authorize applying its SQL. Each later increment
+retains its own review boundary.
