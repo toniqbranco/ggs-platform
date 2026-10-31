@@ -22,6 +22,7 @@ GG’s currently uses email links. No Auth settings changed.
 - [CLI-generated SQL](supabase/migrations/20261031053908_application_review_storage.sql)
 - [Adapter prototype](adapter.ts)
 - [Local-only transport prototype](transport.ts) and [verification limits](../../docs/isolated-storage-transport.md)
+- [Separate testing factory and credential proposal](../../docs/testing-connection-boundary.md); no hosted authentication yet
 - [Embedded PostgreSQL tests](../../tests/storage/application-storage.test.ts)
 
 Checksum-verified official Supabase CLI **2.122.0** generated the name offline.

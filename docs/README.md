@@ -7,7 +7,8 @@ The [owner-approved access stage](wp-02-approved-access.md) now binds verified
 identity to current trusted admission. Initial owner bootstrap and local Auth settings
 were separately approved; the [application/private-review rehearsal](wp-02-application-preview.md)
 is merged and supersedes older delivery-time status below. The current increment
-is the [applied testing storage baseline](testing-storage-status.md), following
+is the [testing connection boundary](testing-connection-boundary.md), following
+the [applied testing storage baseline](testing-storage-status.md),
 the [isolated storage transport](isolated-storage-transport.md) and
 the [testing connection review plan](testing-connection-plan.md),
 the merged [managed-role correction](managed-migration-compatibility.md) and
