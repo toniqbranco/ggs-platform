@@ -1,6 +1,24 @@
 import AxeBuilder from "@axe-core/playwright";
 import { test, expect } from "../e2e/fixtures";
 for (const locale of ["es", "en"]) {
+  test(`${locale} missing browser verification gives actionable recovery guidance`, async ({
+    page,
+  }) => {
+    await page.goto(`/auth/callback?code=synthetic-code&locale=${locale}`);
+    await expect(page).toHaveURL(
+      new RegExp(`/${locale}/sign-in\\?state=browser-required$`),
+    );
+    await expect(page.getByRole("status")).toContainText(
+      locale === "es" ? "ese mismo navegador" : "that same browser",
+    );
+    expect(
+      (
+        await new AxeBuilder({ page })
+          .withTags(["wcag2a", "wcag2aa", "wcag21a", "wcag21aa"])
+          .analyze()
+      ).violations,
+    ).toEqual([]);
+  });
   test(`${locale} approval denial is clear and accessible`, async ({
     page,
   }) => {

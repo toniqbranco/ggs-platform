@@ -76,6 +76,22 @@ function requestFrom(response: NextResponse) {
 }
 async function main() {
   try {
+    const missingBrowser = await runAuth(
+      "callback",
+      new NextRequest(
+        "https://app.example.invalid/auth/callback?code=synthetic-code&locale=en",
+      ),
+      { config: getPilotAuthConfig, gateway: createPilotGateway },
+    );
+    assert.equal(
+      missingBrowser.headers.get("location"),
+      "https://app.example.invalid/en/sign-in?state=browser-required",
+    );
+    assert.equal(
+      paths.length,
+      0,
+      "A missing verifier must fail before contacting Auth",
+    );
     const linkResponse = NextResponse.json({});
     const first = createPilotGateway(
       new NextRequest("https://app.example.invalid/auth/sign-in"),

@@ -70,3 +70,19 @@ changes or rewrite shared history as a routine fix. Rebuild the selected revisio
 before restarting the preview. There are no WP-01 database migrations or service
 resources to roll back. A future hosted rollback follows the separate
 [staging plan](staging-plan.md).
+
+## Email link opens an expired-link message
+
+Email-link sign-in is bound to the browser that requested the link. Requesting it
+inside Codex and then opening the email in a separate Chrome/Edge window cannot
+complete that request: the other browser does not have its verification cookie.
+
+Open the GG's sign-in page in your preferred browser, request a new link there,
+and open that newest email link in the same browser/profile and device. Do not
+reuse the failed link. The same host must be used throughout (`127.0.0.1` and
+`localhost` have separate cookies).
+
+A missing PKCE verifier now shows localized `browser-required` recovery guidance
+instead of being reported as an expired link. Other invalid/used/expired links
+still fail closed, and owner approval is required after successful verification.
+No cookie/token values or provider error messages are shown or logged by this fix.
