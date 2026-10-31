@@ -93,11 +93,12 @@ output redaction and sanitized failures. The ephemeral test harness changes sess
 authorization and explicitly restores its original superuser; SET ROLE alone from
 a superuser would not test a restricted login. This is not Supavisor behavior.
 
-**PGlite has one connection and a different PostgreSQL version.** These tests do not
-prove simultaneous races, real login provisioning, PostgreSQL 17 compatibility or
-pooler isolation. Before any live application, run isolated PostgreSQL 17 tests with
-multiple connections: competing decisions, duplicate contact/operation UUID claims,
-commit uncertainty/retry recovery, real role privileges and TLS/pooler behavior.
+**PGlite has one connection and a different PostgreSQL version.** Its tests alone
+do not prove simultaneous races or PostgreSQL 17 compatibility. The subsequent
+[native PostgreSQL 17 verification](../../docs/postgres17-verification.md) runs 11
+additional cases with genuine restricted logins and overlapping transactions.
+Hosted pooler/TLS behavior, real credential provisioning and managed migration-user
+permissions remain separate checks before applying anything live.
 
 ## Gates and rollback
 
@@ -106,7 +107,7 @@ No endpoint enables intake. The existing fictional public/private UI stays intac
 A proposal merge does not approve SQL application, owner seeding, role provisioning,
 credentials, or real personal-data collection.
 
-Before live schema: complete PostgreSQL 17/multi-connection tests, verify the exact
+Before live schema: retain passing PostgreSQL 17/multi-connection evidence, verify the exact
 testing target and schema exposure, recheck schema/grants/advisors, and obtain exact
 schema/role approval. Seed only the separately verified owner through an approved
 operation; no first-user bootstrap. Existing same-named objects cause failure/review,
