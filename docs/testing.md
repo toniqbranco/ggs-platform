@@ -3,10 +3,13 @@
 The [storage proposal](../proposals/application-storage/README.md) adds
 `pnpm test:storage`, included in `pnpm test`. It executes the quarantined migration
 and server-only adapter against ephemeral PGlite, not GG-livestream. It needs no
-database credentials. PGlite uses PostgreSQL 18.6 and one connection; PostgreSQL
-17.11, real multi-connection races and Supavisor/TLS remain live-application gates.
-Startup tests also prove `PILOT_APPLICATIONS_ENABLED=true` is rejected. No CI job
-applies proposal SQL or provisions any real role.
+database credentials. PGlite uses PostgreSQL 18.6 and one connection.
+[Native PostgreSQL 17 verification](postgres17-verification.md) adds the opt-in
+`pnpm test:storage:pg17` suite, run in its own disposable CI service. It tests the
+exact migration with overlapping transactions and real restricted fixture logins.
+Supavisor/TLS and managed migration-user privileges remain live-application gates.
+Startup tests prove `PILOT_APPLICATIONS_ENABLED=true` is rejected. No CI job
+applies SQL to a live project or provisions a live role.
 
 ## Local commands
 
