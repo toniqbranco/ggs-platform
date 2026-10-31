@@ -58,6 +58,11 @@ There is no driver/connection factory here. Pooler endpoints, custom-role suppor
 TLS validation and credential rotation remain unverified. Current environment
 rules still reject privileged Supabase API keys; no service-role shortcut is added.
 
+The [testing connection plan](../../docs/testing-connection-plan.md) selects a
+proposed session-mode approach for the local pilot and defines driver verification,
+two dedicated login boundaries and the exact review sequence. Hosted custom-role
+authentication remains untested; a credential-free handshake is not that evidence.
+
 The injected-query prototype repeats validation, parameterizes SQL, sanitizes
 errors and strips internal contact keys/fingerprints/actor IDs from output.
 Every owner read/decision freshly verifies Auth, exact owner identity and current
