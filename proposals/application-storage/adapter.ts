@@ -5,7 +5,7 @@ import { readPilotAdmission } from "@/lib/pilot/admission";
 import { evaluatePilotPolicy } from "@/lib/pilot/policy";
 import { applicationSchema } from "@/lib/pilot/applications";
 
-// Proposal only: no driver, credentials, connection factory or application import.
+// Proposal only: injected channels; no credentials or application import.
 export type ProposalQuery = {
   query(
     sql: string,
