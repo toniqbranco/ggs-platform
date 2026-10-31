@@ -3,7 +3,7 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**WP-01 is closed. Current increment: WP-02 managed migration compatibility.**
+**WP-01 is closed. Current increment: WP-02 testing connection review plan.**
 Streamer routes provide public invitation-only entry information and a fictional
 application form. A private owner-only review preview uses synthetic records;
 no live submissions, decisions, or invitation sending are implemented. Optional
@@ -21,6 +21,10 @@ multi-connection and restricted-login checks. It uses a disposable local/CI serv
 never the Supabase project. The original verification left the proposal unchanged.
 The subsequent [managed-role correction](docs/managed-migration-compatibility.md)
 updates only the unapplied bootstrap and adds a non-superuser regression case.
+
+The [testing connection plan](docs/testing-connection-plan.md) proposes transport,
+dedicated login boundaries, TLS checks and a separately authorized hosted setup
+sequence. It adds no driver wiring, credentials, hosted changes or live intake.
 
 [Current application/review preview](docs/wp-02-application-preview.md) ·
 [Approval-only access contract](docs/wp-02-approved-access.md) ·
