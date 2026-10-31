@@ -98,3 +98,10 @@ or empty values keep admission closed and the form unavailable; malformed values
 fail validation. Selecting a UUID does not grant access by itself. A valid current
 owner-approved admission record is also required. See the
 [approval contract](wp-02-approved-access.md) before any live metadata/account changes.
+
+## Application-storage proposal guard
+
+`PILOT_APPLICATIONS_ENABLED` is server-only, defaults to `false`, and accepts only
+the literal string `false`. Setting `true` fails startup validation. This proposal
+adds no database connection variables or driver; no app route imports its adapter.
+See the [unapplied storage proposal](../proposals/application-storage/README.md).

@@ -1,5 +1,13 @@
 # Foundation verification
 
+The [storage proposal](../proposals/application-storage/README.md) adds
+`pnpm test:storage`, included in `pnpm test`. It executes the quarantined migration
+and server-only adapter against ephemeral PGlite, not GG-livestream. It needs no
+database credentials. PGlite uses PostgreSQL 18.6 and one connection; PostgreSQL
+17.11, real multi-connection races and Supavisor/TLS remain live-application gates.
+Startup tests also prove `PILOT_APPLICATIONS_ENABLED=true` is rejected. No CI job
+applies proposal SQL or provisions any real role.
+
 ## Local commands
 
 Use the Node/pnpm versions documented in the repository, then:

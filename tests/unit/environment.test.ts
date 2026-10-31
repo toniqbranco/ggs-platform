@@ -7,6 +7,16 @@ import {
 } from "../../src/lib/env/schema";
 import { supabaseFixture } from "../helpers/environment";
 
+test("live application collection cannot be enabled by configuration in this proposal", () => {
+  assert.equal(parseServerEnvironment({}).PILOT_APPLICATIONS_ENABLED, "false");
+  for (const value of ["true", true, "yes"]) {
+    assert.throws(
+      () => parseServerEnvironment({ PILOT_APPLICATIONS_ENABLED: value }),
+      /PILOT_APPLICATIONS_ENABLED/,
+    );
+  }
+});
+
 test("missing and blank environment values preserve the disconnected defaults", () => {
   for (const input of [
     {},

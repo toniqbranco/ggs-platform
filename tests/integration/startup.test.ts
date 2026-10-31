@@ -6,6 +6,8 @@ import { cleanEnvironment } from "../helpers/environment";
 
 const next = path.resolve("node_modules/next/dist/bin/next");
 for (const scenario of [
+  { command: "build", field: "PILOT_APPLICATIONS_ENABLED", value: "true" },
+  { command: "start", field: "PILOT_APPLICATIONS_ENABLED", value: "true" },
   { command: "build", field: "NEXT_PUBLIC_SUPABASE_ENABLED", value: "true" },
   { command: "start", field: "NEXT_PUBLIC_SUPABASE_ENABLED", value: "true" },
   {

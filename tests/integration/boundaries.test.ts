@@ -20,6 +20,12 @@ test("server factory fails before request context and makes no fetch calls", () 
 
 for (const boundary of [
   {
+    name: "storage-proposal-server-only",
+    conditions: [],
+    file: "./proposals/application-storage/adapter.ts",
+    message: /cannot be imported from a Client Component/i,
+  },
+  {
     name: "server-only",
     conditions: [],
     file: "./src/lib/env/server.ts",

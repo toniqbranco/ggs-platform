@@ -13,7 +13,8 @@
     "format:check": "prettier --check .",
     "check": "pnpm validate:env && pnpm lint && pnpm typecheck && pnpm format:check",
     "validate:env": "tsx scripts/validate-env.ts",
-    "test": "pnpm test:unit && pnpm test:integration",
+    "test": "pnpm test:unit && pnpm test:integration && pnpm test:storage",
+    "test:storage": "node --conditions=react-server --import tsx --test tests/storage/*.test.ts",
     "test:unit": "tsx --test tests/unit/*.test.ts",
     "test:integration": "tsx --test tests/integration/*.test.ts",
     "test:e2e": "playwright test",
@@ -34,6 +35,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
+    "@electric-sql/pglite": "0.5.11",
     "@next/env": "16.4.3",
     "@playwright/test": "1.64.1",
     "@types/node": "^24.19.2",
