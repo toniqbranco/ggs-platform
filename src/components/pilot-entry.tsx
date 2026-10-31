@@ -100,6 +100,12 @@ export async function PilotEntry({
             {copy.readPolicy}
             <Icon name="arrow" />
           </Link>
+          <Link className="pilot-policy-link" href={`/${locale}/apply`}>
+            {locale === "es"
+              ? "Probar formulario ficticio"
+              : "Try the fictional application form"}
+            <Icon name="arrow" />
+          </Link>
         </section>
       </div>
     </Shell>

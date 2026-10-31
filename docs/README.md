@@ -4,7 +4,9 @@ Start with the [repository README](../README.md) to run the site. WP-01 is close
 the owner approved the [first WP-02 pilot-access increment](wp-02-pilot-access.md).
 The [testing-project sign-in increment](wp-02-sign-in.md) is approved for implementation.
 The [owner-approved access stage](wp-02-approved-access.md) now binds verified
-identity to current trusted admission; real owner bootstrap is not configured.
+identity to current trusted admission. Initial owner bootstrap and local Auth settings
+were separately approved; the [application/private-review rehearsal](wp-02-application-preview.md)
+is the current increment and supersedes older delivery-time status below.
 Account creation, schema/settings changes, operational workspaces, and deployment
 still require their corresponding scope decisions.
 

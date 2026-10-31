@@ -21,7 +21,7 @@ export function Shell({
   section: Section;
   children: ReactNode;
   pilotPage?: PilotPage;
-  authPage?: "sign-in" | "session";
+  authPage?: "sign-in" | "session" | "apply";
 }) {
   const copy = getDictionary(locale);
   return (

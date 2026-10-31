@@ -108,4 +108,18 @@ records, and preserve role boundaries. The SDK fixture mutates mocked server Aut
 metadata while retaining the same browser state; subsequent checks must deny a
 suspended participant. Browser suites cover approval-required messages in both
 languages and reject forged owner claims at `/auth/access`. No real account or
-metadata is changed. The live first-owner UUID remains unset.
+metadata is changed by tests. Live identities stay outside the repository.
+
+## Application and private review preview
+
+The [preview contract](wp-02-application-preview.md) describes the current routes.
+Auth browser tests preload a test-only mocked provider with a fictional key and
+synthetic session cookies. They exercise the real SDK/server guard and UI without
+sending email or mutating Auth. Owner-only checks apply separately to HTML/RSC and
+fixture data; admin/streamer/anonymous identities are denied. Application and
+decision rehearsals make no mutation requests and reset on reload.
+
+Run the two browser suites sequentially, as CI does. Both use the default
+Playwright report/artifact directories, so concurrent runs can delete each other's
+trace files. Successful automated tests do not prove real mail delivery or a real
+owner's complete refresh/sign-out cycle.
