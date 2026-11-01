@@ -3,7 +3,7 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**WP-01 is closed. Current increment: WP-02 Windows credential-store preparation.**
+**WP-01 is closed. Current increment: WP-02 credential handoff coordination.**
 Streamer routes provide public invitation-only entry information and a fictional
 application form. A private owner-only review preview uses synthetic records;
 no live submissions, decisions, or invitation sending are implemented. Optional
@@ -39,6 +39,10 @@ credentials and has not connected; no app routes import either factory.
 The [Windows encrypted-store implementation](docs/windows-credential-store.md)
 uses fictional test data only. It is not connected to the app or provisioning;
 no real credential bundle or dedicated database login has been created.
+
+The [handoff coordinator](docs/credential-handoff.md) tests storage/provisioning
+ordering and uncertain-outcome recovery through simulated callbacks. It has no
+live provider adapter and creates no hosted credentials.
 
 [Current application/review preview](docs/wp-02-application-preview.md) ·
 [Approval-only access contract](docs/wp-02-approved-access.md) ·

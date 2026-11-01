@@ -101,7 +101,9 @@ jobs:
           persist-credentials: false
       - name: Test fictional DPAPI credentials and restrictive ACLs
         shell: pwsh
-        run: ./tests/windows/local-secret-store.test.ps1
+        run: |
+          ./tests/windows/local-secret-store.test.ps1
+          ./tests/windows/credential-handoff.test.ps1
 
   secrets:
     name: Secret scanning
