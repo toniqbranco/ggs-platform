@@ -97,3 +97,7 @@ owner seeding, synthetic writes and real intake remain separate later gates.
 
 Sources: [Supabase connection modes and custom role usernames](https://supabase.com/docs/guides/database/connecting-to-postgres),
 [PostgreSQL role membership options](https://www.postgresql.org/docs/17/role-membership.html).
+
+Subsequent stage: the [Windows store implementation](windows-credential-store.md)
+now tests the proposed encryption/ACL contract with fictional data. It still
+creates no real credential bundle, provisioning bridge or hosted login.
