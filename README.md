@@ -3,7 +3,7 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**WP-01 is closed. Current increment: WP-02 testing connection boundary.**
+**WP-01 is closed. Current increment: WP-02 Windows credential-store preparation.**
 Streamer routes provide public invitation-only entry information and a fictional
 application form. A private owner-only review preview uses synthetic records;
 no live submissions, decisions, or invitation sending are implemented. Optional
@@ -35,6 +35,10 @@ accepts only disposable local targets and remains outside application imports.
 The separate [testing connection boundary](docs/testing-connection-boundary.md)
 prepares an exact-target factory and credential-storage proposal. It has no
 credentials and has not connected; no app routes import either factory.
+
+The [Windows encrypted-store implementation](docs/windows-credential-store.md)
+uses fictional test data only. It is not connected to the app or provisioning;
+no real credential bundle or dedicated database login has been created.
 
 [Current application/review preview](docs/wp-02-application-preview.md) ·
 [Approval-only access contract](docs/wp-02-approved-access.md) ·
