@@ -1,5 +1,10 @@
 # Credential handoff coordinator — simulated gateway only
 
+Subsequent stage: the [concrete operator adapter](supabase-operator-adapter.md)
+now implements the gateway. It remains unauthorized/unrun live; the earlier
+simulated evidence below is not hosted verification. Its terminal revoked marker
+and transaction lock also prevent a delayed enable from undoing recovery.
+
 This increment adds a quarantined [Windows coordinator](../proposals/application-storage/credential-handoff.psm1)
 over the [encrypted credential store](windows-credential-store.md). Importing it
 performs no operation. No application, route, startup or database driver imports
