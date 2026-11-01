@@ -53,6 +53,23 @@ The source stays quarantined; this does not enable root CLI push or deployment.
 
 ## What remains disconnected
 
+### Subsequent approved testing operations (2026-11-01)
+
+The owner separately approved two restricted runtime logins, encrypted local
+credential storage, a sole-owner configuration and one fictional workflow test.
+These operations completed and were independently checked. Current testing rows:
+one configuration, one fictional approved application, two operation receipts and
+two events. The temporary Management token was deleted by the user. Temporary
+operator ownership inheritance was removed. No Auth account/invitation or streamer
+admission followed the fictional database decision. Records are preserved; no
+cleanup is authorized. The [local read-only integration](owner-storage-review.md)
+documents the next default-off application boundary.
+
+The following paragraphs record the earlier post-migration disconnected state;
+this dated update supersedes their absent-login/empty-configuration statements.
+The local read-only integration also promotes the pinned pg driver into application
+dependencies; its feature remains off by default.
+
 No dedicated runtime LOGIN roles/passwords, owner configuration seed, application
 rows, Auth users/invitations, admission updates, route wiring, cleanup jobs or
 deployment were added. The website still imports no storage proposal, the driver

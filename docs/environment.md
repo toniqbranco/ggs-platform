@@ -105,3 +105,13 @@ owner-approved admission record is also required. See the
 the literal string `false`. Setting `true` fails startup validation. This proposal
 adds no database connection variables or driver; no app route imports its adapter.
 See the [unapplied storage proposal](../proposals/application-storage/README.md).
+
+## Local stored owner review
+
+`PILOT_REVIEW_STORAGE_ENABLED=false` keeps the existing rehearsal disconnected.
+The optional true value is accepted only with a loopback origin and a development
+or test APP_ENV. Actual credential reads require Windows, PowerShell 7.4+,
+APP_ENV=development and a development-mode Node process; test fixtures and
+production/staging cannot export credentials. No database password belongs in an
+environment variable. See [owner storage review](owner-storage-review.md) for
+the private-pipe, read-only, access and separate activation boundaries.

@@ -21,6 +21,16 @@ function isSafeHttpUrl(value: string) {
   }
 }
 
+function isLoopbackOrigin(value: string) {
+  try {
+    return ["localhost", "127.0.0.1", "[::1]"].includes(
+      new URL(value).hostname,
+    );
+  } catch {
+    return false;
+  }
+}
+
 const origin = z.string().refine(isSafeHttpUrl, {
   message:
     "Use an HTTPS origin, or HTTP on localhost, without credentials, paths, queries, or fragments.",
@@ -95,13 +105,24 @@ const serverSchema = z
           "Live applications are not authorized; keep PILOT_APPLICATIONS_ENABLED=false.",
       })
       .default("false"),
+    PILOT_REVIEW_STORAGE_ENABLED: z.enum(["false", "true"]).default("false"),
     SUPABASE_SERVICE_ROLE_KEY: forbidden,
     SUPABASE_SECRET_KEY: forbidden,
     NEXT_PUBLIC_SUPABASE_SERVICE_ROLE_KEY: forbidden,
     NEXT_PUBLIC_SUPABASE_SECRET_KEY: forbidden,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: forbidden,
   })
-  .refine(hasConfigPair, pairError);
+  .refine(hasConfigPair, pairError)
+  .refine(
+    (value) =>
+      value.PILOT_REVIEW_STORAGE_ENABLED === "false" ||
+      (["development", "test"].includes(value.APP_ENV) &&
+        isLoopbackOrigin(value.NEXT_PUBLIC_APP_URL)),
+    {
+      path: ["PILOT_REVIEW_STORAGE_ENABLED"],
+      message: "Stored review is limited to local development/testing.",
+    },
+  );
 
 export type PublicEnvironment = z.infer<typeof publicSchema>;
 export type ServerEnvironment = z.infer<typeof serverSchema>;

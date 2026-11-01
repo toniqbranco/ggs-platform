@@ -1,13 +1,18 @@
 # Application storage — applied testing baseline, disconnected adapter
 
 **Current status:** the owner separately approved the corrected SQL for testing,
-and it was applied on 2026-10-31. All four tables are empty; no dedicated logins or
-owner seed exist. See the [applied revision and evidence](../../docs/testing-storage-status.md).
+and it was applied on 2026-10-31. Subsequent approved 2026-11-01 operations added
+restricted logins, the existing sole owner and one preserved fictional application.
+See the [dated applied status](../../docs/testing-storage-status.md) and the
+[default-off local read-only application integration](../../docs/owner-storage-review.md).
 Freeze that SQL file; its original UNAPPLIED comment is historical. The preparation
 notes below describe the original proposal boundary and do not undo that dated
 approval or authorize another application.
 
-This increment prepares a migration and server-only adapter prototype. **It does
+The remaining preparation notes are historical proposal boundaries, not current
+hosted-state assertions. The application reuses only the Windows credential-store
+API through a fixed private child; proposal SQL, mutation adapter and operator are
+not imported into routes/startup. This increment originally prepared a migration and server-only adapter prototype. **It does
 not itself authorize hosted SQL or enable live intake.** No app route/startup module imports the
 proposal. No production database driver, connection URL, credentials, accounts, invitations,
 admission grants, cleanup jobs, or deployment are added to the application.
