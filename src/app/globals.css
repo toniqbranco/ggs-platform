@@ -413,6 +413,34 @@
   margin: 4rem auto;
   padding: 2rem;
 }
+.stored-review-note {
+  padding: 0 1.5rem;
+  color: #515951;
+  font-size: 0.875rem;
+}
+.review-refresh {
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  background: white;
+  color: var(--color-ink);
+  font: inherit;
+  cursor: pointer;
+}
+.stored-review-history {
+  padding-left: 1.25rem;
+}
+.stored-review-history li {
+  padding-block: 0.75rem;
+}
+.stored-review-history span,
+.stored-review-history time {
+  display: block;
+  margin-top: 0.3rem;
+  color: #515951;
+  font-size: 0.8125rem;
+}
 @media (max-width: 1000px) {
   .application-layout {
     gap: 2rem;
