@@ -3,7 +3,7 @@
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.
 
-**WP-01 is closed. Current increment: WP-02 credential handoff coordination.**
+**WP-01 is closed. Current increment: WP-02 Supabase operator adapter.**
 Streamer routes provide public invitation-only entry information and a fictional
 application form. A private owner-only review preview uses synthetic records;
 no live submissions, decisions, or invitation sending are implemented. Optional
@@ -42,7 +42,11 @@ no real credential bundle or dedicated database login has been created.
 
 The [handoff coordinator](docs/credential-handoff.md) tests storage/provisioning
 ordering and uncertain-outcome recovery through simulated callbacks. It has no
-live provider adapter and creates no hosted credentials.
+default provider authorization and creates no hosted credentials by itself.
+
+The [concrete Supabase operator adapter](docs/supabase-operator-adapter.md) is
+implemented and tested locally. It has not been authorized or run live: the local
+operator still needs separate scoped Management access and exact setup approval.
 
 [Current application/review preview](docs/wp-02-application-preview.md) ·
 [Approval-only access contract](docs/wp-02-approved-access.md) ·
