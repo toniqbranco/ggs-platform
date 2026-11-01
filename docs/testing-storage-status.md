@@ -66,3 +66,7 @@ the [isolated transport](isolated-storage-transport.md) target restrictions as a
 operational shortcut. Owner seed and any synthetic hosted writes are later exact
 approvals. Privacy, retention/redaction/backups, rights, minors and abuse controls
 still precede real applications. No account invitation is implied by approval.
+
+The subsequent [testing connection boundary](testing-connection-boundary.md)
+prepares a separate exact-target factory and credential proposal. It creates no
+login or credential bundle and does not wire the application.

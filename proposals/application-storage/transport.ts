@@ -1,9 +1,11 @@
 import "server-only";
 import { Pool, type PoolClient, type PoolConfig } from "pg";
 import { z } from "zod";
+import { X509Certificate } from "node:crypto";
 import type { ProposalQuery } from "./adapter";
 
-// Quarantined prototype: no app imports, env loading or hosted target support.
+// Quarantined prototype: no app imports or env loading. Hosted use needs
+// separately approved dedicated credentials; this module provisions nothing.
 const credentials = z
   .object({
     user: z.string().regex(/^ggs_fixture_(intake|review)_[a-f0-9]{12}$/),
@@ -56,6 +58,65 @@ function sanitized(error: unknown) {
   );
 }
 
+const testingProject = "rchxnmpsxfbsicthasxn";
+const testingConfiguration = z
+  .object({
+    appEnv: z.literal("development"),
+    acknowledgement: z.literal("reviewed-gg-livestream-testing"),
+    projectId: z.literal(testingProject),
+    host: z.literal("aws-1-us-west-2.pooler.supabase.com"),
+    port: z.literal(5432),
+    database: z.literal("postgres"),
+    ca: z.string().min(64).max(32768),
+    intake: z
+      .object({
+        user: z.literal(`ggs_pilot_intake_login.${testingProject}`),
+        password: z.string().regex(/^[a-f0-9]{64}$/),
+      })
+      .strict(),
+    review: z
+      .object({
+        user: z.literal(`ggs_pilot_review_login.${testingProject}`),
+        password: z.string().regex(/^[a-f0-9]{64}$/),
+      })
+      .strict(),
+  })
+  .strict()
+  .refine((value) => value.intake.password !== value.review.password);
+
+function reviewedCA(pem: string) {
+  try {
+    // Require exactly the reviewed public CA, not an appended trust bundle.
+    const blocks = pem.match(
+      /-----BEGIN CERTIFICATE-----[\s\S]*?-----END CERTIFICATE-----/g,
+    );
+    if (blocks?.length !== 1 || pem.trim() !== blocks[0]) return false;
+    const certificate = new X509Certificate(pem);
+    return (
+      certificate.ca &&
+      certificate.fingerprint256 ===
+        "80:70:25:AD:50:D4:ED:21:9D:2C:9C:7D:29:9C:00:4F:82:4E:B0:0C:F7:F6:5A:FE:F6:07:D0:7B:72:E6:CA:FA" &&
+      Date.parse(certificate.validFrom) <= Date.now() &&
+      Date.parse(certificate.validTo) > Date.now()
+    );
+  } catch {
+    return false;
+  }
+}
+
+export function createTestingStorageTransport(input: unknown) {
+  if (
+    process.env.APP_ENV === "production" ||
+    process.env.NODE_ENV === "production"
+  ) {
+    throw new StorageTransportError();
+  }
+  const parsed = testingConfiguration.safeParse(input);
+  if (!parsed.success || !reviewedCA(parsed.data.ca))
+    throw new StorageTransportError();
+  return createTransport(parsed.data, "ggs_testing");
+}
+
 export function createIsolatedStorageTransport(input: unknown): {
   intake: ProposalQuery;
   review: ProposalQuery;
@@ -64,7 +125,21 @@ export function createIsolatedStorageTransport(input: unknown): {
   const parsed = configuration.safeParse(input);
   // Never expose Zod issues/input, a driver error, config or password in errors.
   if (!parsed.success) throw new StorageTransportError();
-  const config = parsed.data;
+  return createTransport(parsed.data, "ggs_isolated");
+}
+
+type TransportConfiguration = {
+  host: string;
+  port: number;
+  database: string;
+  ca: string;
+  intake: { user: string; password: string };
+  review: { user: string; password: string };
+};
+function createTransport(
+  config: TransportConfiguration,
+  applicationName: string,
+) {
   let closed = false;
   let closing: Promise<void> | undefined;
   const pools: Pool[] = [];
@@ -82,7 +157,7 @@ export function createIsolatedStorageTransport(input: unknown): {
       options: "-c timezone=UTC",
       client_encoding: "UTF8",
       replication: "false",
-      application_name: `ggs_isolated_${kind}`,
+      application_name: `${applicationName}_${kind}`,
       statement_timeout: 10000,
       lock_timeout: 3000,
       idle_in_transaction_session_timeout: 15000,
