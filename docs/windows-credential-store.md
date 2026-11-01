@@ -114,3 +114,7 @@ invitations, admission, cleanup jobs and deployment remain later separate gates.
 Sources: [Microsoft DPAPI](https://learn.microsoft.com/dotnet/api/system.security.cryptography.protecteddata),
 [protected ACL inheritance](https://learn.microsoft.com/dotnet/api/system.security.accesscontrol.objectsecurity.setaccessruleprotection),
 [GitHub Windows runner support](https://docs.github.com/en/actions/reference/runners/github-hosted-runners).
+
+Subsequent stage: the [handoff coordinator](credential-handoff.md) tests ordering
+and uncertain-outcome recovery with fake gateway callbacks. It does not supply
+the missing live provider adapter or authorize credential provisioning.

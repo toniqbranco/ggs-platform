@@ -7,7 +7,8 @@ The [owner-approved access stage](wp-02-approved-access.md) now binds verified
 identity to current trusted admission. Initial owner bootstrap and local Auth settings
 were separately approved; the [application/private-review rehearsal](wp-02-application-preview.md)
 is merged and supersedes older delivery-time status below. The current increment
-is the [Windows credential store](windows-credential-store.md), following
+is the [credential handoff coordinator](credential-handoff.md), following
+the [Windows credential store](windows-credential-store.md),
 the [testing connection boundary](testing-connection-boundary.md),
 the [applied testing storage baseline](testing-storage-status.md),
 the [isolated storage transport](isolated-storage-transport.md) and
