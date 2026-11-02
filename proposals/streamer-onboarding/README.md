@@ -6,13 +6,16 @@ This is the next design increment after merged PR #25, implementing the contract
 portion of stage two in the [onboarding plan](../../docs/streamer-onboarding-plan.md).
 It supplies [executable request/receipt/audit contracts](contract.ts) and isolated
 fictional [unit cases](../../tests/unit/onboarding-storage-contract.test.ts).
-It contains **no SQL migration, persistence adapter, provider operation or runtime
-route integration**. No database/schema/grant, account, invitation, password,
-profile record, secret, hosted setting or deployment changes are performed.
+The subsequent [isolated migration verification](../../docs/onboarding-migration.md)
+adds an unapplied SQL draft and real PostgreSQL 17 tests. No persistence adapter,
+provider operation or runtime route integration is added. No hosted schema/grant,
+account, invitation, password, profile record, secret, setting or deployment changes
+are performed.
 
-These tests validate TypeScript contracts, not transactions, RLS, provider email,
-concurrent locks or crash recovery. Those require the subsequent isolated migration
-and native PostgreSQL 17 verification before fixture-backed Auth can be connected.
+The TypeScript tests validate contracts. The subsequent native suite verifies
+SQL permissions, transactions and concurrent locks in disposable local databases;
+it does not verify provider email or cross-service crash recovery. Fixture-backed
+Auth remains a later increment.
 The frozen application-storage migration must not be edited or replayed.
 
 ## Identity and invitation binding
