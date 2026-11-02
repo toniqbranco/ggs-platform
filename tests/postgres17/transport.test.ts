@@ -363,15 +363,21 @@ test("idle socket failure fails closed; close drains and is idempotent", async (
   await channels.review.query("select 1", []);
   await Promise.all([channels.close(), channels.close()]);
   await assert.rejects(channels.review.query("select 1", []), failure("08006"));
-  assert.equal(
-    (
+  // Pool.end() observes local sockets closing; the TLS bridge/server processes
+  // that close asynchronously. Require observed server cleanup within a bound.
+  const deadline = Date.now() + 3000;
+  let remaining: number | null;
+  do {
+    remaining = (
       await admin.query(
         "select 1 from pg_stat_activity where datname=$1 and application_name like 'ggs_isolated_%'",
         [database],
       )
-    ).rowCount,
-    0,
-  );
+    ).rowCount;
+    if (remaining === 0) break;
+    await delay(10);
+  } while (Date.now() < deadline);
+  assert.equal(remaining, 0, "Transport server sessions must close within 3s");
 });
 
 async function waitForIntakeQuery() {

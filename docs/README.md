@@ -32,6 +32,9 @@ outcomes. Its isolated contract tests do not apply SQL or connect the website.
 The subsequent [unapplied onboarding migration](onboarding-migration.md) now has
 native PostgreSQL 17 permission, transaction and race tests in disposable databases.
 It remains disconnected from the website and hosted project.
+The [isolated server-only adapter](onboarding-adapter.md) now maps fresh fixture
+identity/evidence to those restricted SQL routines. No live gateway or website
+connection is enabled.
 
 | I need to…                                               | Read                                                                         |
 | -------------------------------------------------------- | ---------------------------------------------------------------------------- |
