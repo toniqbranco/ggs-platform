@@ -7,8 +7,10 @@ portion of stage two in the [onboarding plan](../../docs/streamer-onboarding-pla
 It supplies [executable request/receipt/audit contracts](contract.ts) and isolated
 fictional [unit cases](../../tests/unit/onboarding-storage-contract.test.ts).
 The subsequent [isolated migration verification](../../docs/onboarding-migration.md)
-adds an unapplied SQL draft and real PostgreSQL 17 tests. No persistence adapter,
-provider operation or runtime route integration is added. No hosted schema/grant,
+adds an unapplied SQL draft and real PostgreSQL 17 tests. A subsequent
+[isolated server-only adapter](../../docs/onboarding-adapter.md) exercises fixture
+identity/evidence against it. No provider operation or runtime route integration
+is added. No hosted schema/grant,
 account, invitation, password, profile record, secret, setting or deployment changes
 are performed.
 

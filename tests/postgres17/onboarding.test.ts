@@ -5,6 +5,12 @@ import { before, beforeEach, after, test } from "node:test";
 import { setTimeout as delay } from "node:timers/promises";
 import { Pool, type PoolClient } from "pg";
 import { postgres17TestConfig } from "./config";
+import {
+  createOnboardingAdapter,
+  OnboardingAdapterError,
+  type OnboardingQuery,
+} from "../../proposals/streamer-onboarding/adapter";
+import type { VerifiedPilotUser } from "../../src/lib/pilot/admission";
 
 const config = postgres17TestConfig(process.env);
 const suffix = randomBytes(6).toString("hex");
@@ -239,6 +245,164 @@ const read = () =>
     subject,
     binding,
   ]);
+
+function fixtureAdapter(channel: OnboardingQuery = setup) {
+  const model: {
+    user: VerifiedPilotUser | null;
+    verifications: number;
+    evidenceReads: number;
+  } = {
+    user: {
+      id: subject,
+      email_confirmed_at: "2020-01-01T00:00:00Z",
+      is_anonymous: false,
+    },
+    verifications: 0,
+    evidenceReads: 0,
+  };
+  const evidence = new Map<string, string>();
+  const adapter = createOnboardingAdapter({
+    mode: "isolated-fixture",
+    ownerUserId: owner,
+    setup: channel,
+    reader,
+    verify: async () => {
+      model.verifications++;
+      return { data: { user: model.user }, error: null };
+    },
+    verifyEvidence: async (request) => {
+      model.evidenceReads++;
+      const key = JSON.stringify(request);
+      if (!evidence.has(key)) evidence.set(key, randomUUID());
+      return { ...request, evidenceId: evidence.get(key), verified: true };
+    },
+  });
+  return { adapter, model };
+}
+const adapterCommand = (
+  expectedBindingRevision: number,
+  operationId = randomUUID(),
+) => ({ invitationId: binding, expectedBindingRevision, operationId });
+const adapterFailure = (reason: string) => (error: unknown) =>
+  error instanceof OnboardingAdapterError && error.reason === reason;
+
+test("fixture Auth and real adapter persist setup through restricted channels without opening a workspace", async () => {
+  await issued();
+  const { adapter, model } = fixtureAdapter();
+  assert.deepEqual(await adapter.recordVerifiedInvitation(adapterCommand(2)), {
+    revision: 3,
+  });
+  assert.deepEqual(await adapter.recordVerifiedPassword(adapterCommand(3)), {
+    revision: 4,
+  });
+  assert.deepEqual(
+    await adapter.saveProfile({ ...adapterCommand(4), ...details() }),
+    { revision: 5 },
+  );
+  const preview = await adapter.readSelf({ invitationId: binding });
+  assert.equal(preview.membership, "pending");
+  assert.equal(preview.profile?.displayName, "Fictional Creator");
+  assert.equal(preview.workspaceAccess, false);
+  assert.deepEqual(await adapter.finalize(adapterCommand(5)), { revision: 6 });
+  assert.equal(
+    (await adapter.readSelf({ invitationId: binding })).workspaceAccess,
+    false,
+  );
+  assert.equal(model.verifications, 8);
+  assert.equal(model.evidenceReads, 2);
+  await operate("revoke", {}, 6, randomUUID());
+  await assert.rejects(
+    adapter.readSelf({ invitationId: binding }),
+    adapterFailure("denied"),
+  );
+  assert.equal(model.verifications, 9);
+});
+
+test("adapter binds fresh fixture identity rather than profile metadata or a requested subject", async () => {
+  await profileReady();
+  const { adapter, model } = fixtureAdapter();
+  model.user = {
+    id: randomUUID(),
+    email_confirmed_at: "2020-01-01T00:00:00Z",
+    is_anonymous: false,
+    app_metadata: {},
+    user_metadata: { subject },
+  } as VerifiedPilotUser;
+  await assert.rejects(
+    adapter.readSelf({ invitationId: binding }),
+    adapterFailure("denied"),
+  );
+  await assert.rejects(
+    adapter.readSelf({ invitationId: binding, subject }),
+    adapterFailure("invalid"),
+  );
+  assert.equal(model.verifications, 1);
+});
+
+test("lost acknowledgement after profile commit has no automatic retry and exact retry creates no duplicate", async () => {
+  await passwordReady();
+  let writes = 0;
+  const flaky: OnboardingQuery = {
+    query: async (sql, values) => {
+      const result = await setup.query(sql, values);
+      writes++;
+      if (writes === 1) throw new Error("fixture acknowledgement lost");
+      return result;
+    },
+  };
+  const { adapter } = fixtureAdapter(flaky);
+  const command = { ...adapterCommand(4), ...details() };
+  await assert.rejects(
+    adapter.saveProfile(command),
+    adapterFailure("unavailable"),
+  );
+  assert.equal(writes, 1);
+  assert.equal(await count("streamer_profiles"), 1);
+  assert.deepEqual(await adapter.saveProfile(command), { revision: 5 });
+  assert.equal(writes, 2);
+  assert.equal(
+    (
+      await admin.query(
+        "select 1 from ggs_onboarding.onboarding_events where kind='profile'",
+      )
+    ).rowCount,
+    1,
+  );
+});
+
+test("lost acknowledgement after password receipt requires reconciliation and preserves one evidence operation", async () => {
+  await issued();
+  await step("accept", 2, { evidence: randomUUID() });
+  let writes = 0;
+  const flaky: OnboardingQuery = {
+    query: async (sql, values) => {
+      const result = await setup.query(sql, values);
+      writes++;
+      if (writes === 1) throw new Error("fixture acknowledgement lost");
+      return result;
+    },
+  };
+  const { adapter, model } = fixtureAdapter(flaky);
+  const command = adapterCommand(3);
+  await assert.rejects(
+    adapter.recordVerifiedPassword(command),
+    adapterFailure("reconciliation-required"),
+  );
+  assert.equal(writes, 1);
+  assert.equal(model.evidenceReads, 1);
+  // Explicit fixture reconciliation: reread the same durable proof, not a provider mutation.
+  assert.deepEqual(await adapter.recordVerifiedPassword(command), {
+    revision: 4,
+  });
+  assert.equal(
+    (
+      await admin.query(
+        "select 1 from ggs_onboarding.onboarding_events where kind='password'",
+      )
+    ).rowCount,
+    1,
+  );
+});
 
 test("migration is guarded, managed-style and restores temporary owner memberships", async () => {
   const roles = await admin.query(
