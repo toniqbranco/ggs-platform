@@ -24,6 +24,8 @@ After PR #23 added the public header Sign in button, the next design review is
 [approved-streamer first access](streamer-onboarding-plan.md): invitation,
 one-time password/profile setup and later password sign-in. It is a proposal,
 not a live Auth or data-model change; existing admission rules still apply.
+The first [disconnected setup preview](setup-preview.md) now adds bilingual screens
+and a pure policy contract without collecting passwords or profiles.
 
 | I need to…                                               | Read                                                                         |
 | -------------------------------------------------------- | ---------------------------------------------------------------------------- |

@@ -16,12 +16,14 @@ export function Shell({
   children,
   pilotPage,
   authPage,
+  setupStep,
 }: {
   locale: Locale;
   section: Section;
   children: ReactNode;
   pilotPage?: PilotPage;
-  authPage?: "sign-in" | "session" | "apply";
+  authPage?: "sign-in" | "session" | "apply" | "setup";
+  setupStep?: "password" | "profile";
 }) {
   const copy = getDictionary(locale);
   return (
@@ -66,7 +68,7 @@ export function Shell({
                   key={language}
                   href={
                     authPage
-                      ? `/${language}/${authPage}`
+                      ? `/${language}/${authPage}${authPage === "setup" ? `?step=${setupStep ?? "password"}` : ""}`
                       : pilotPage
                         ? pilotPageHref(language, pilotPage)
                         : sectionHref(language, section)

@@ -20,18 +20,27 @@ const nextConfig: NextConfig = {
         ],
       },
       {
-        source: "/:locale/:authPage(sign-in|session)",
+        source: "/:locale/:authPage(sign-in|session|setup)",
         headers: [{ key: "Cache-Control", value: "private, no-store" }],
       },
       {
         source: "/:path*",
         headers: securityHeaders(process.env.NODE_ENV === "production"),
       },
+      {
+        source: "/:locale/setup",
+        headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
+      },
     ];
   },
   async redirects() {
     return [
       { source: "/", destination: `/${defaultLocale}`, permanent: false },
+      {
+        source: "/setup",
+        destination: `/${defaultLocale}/setup`,
+        permanent: false,
+      },
       {
         source: "/pilot",
         destination: `/${defaultLocale}/pilot`,
