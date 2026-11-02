@@ -1685,3 +1685,191 @@ h1 > span {
     font-size: 2.125rem;
   }
 }
+
+.setup-layout {
+  display: grid;
+  grid-template-columns: 0.9fr 1.1fr;
+  gap: clamp(2rem, 6vw, 6rem);
+  align-items: start;
+  padding-block: 1.5rem 3rem;
+}
+.setup-story {
+  padding-block: 1.5rem;
+}
+.setup-story h1 {
+  font-size: clamp(3rem, 5.6vw, 5.5rem);
+  line-height: 1;
+  letter-spacing: -0.065em;
+  margin-block: 2rem 1.5rem;
+}
+.setup-story h1 span {
+  display: block;
+  color: var(--color-ink);
+}
+.setup-story h1 span:last-child {
+  color: var(--color-muted);
+}
+.setup-promise {
+  border-top: 1px solid var(--color-border);
+  margin-block: 3rem 2rem;
+  padding-top: 1.5rem;
+}
+.setup-promise > span {
+  font-size: 2rem;
+}
+.setup-promise h2 {
+  font-size: 1.25rem;
+  margin-block: 1rem 0.5rem;
+}
+.setup-promise p {
+  max-width: 37ch;
+  line-height: 1.7;
+}
+.setup-panel {
+  min-width: 0;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 1.75rem;
+  padding: clamp(1.25rem, 3vw, 2.75rem);
+}
+.setup-notice {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  margin-block: 1rem 2rem;
+}
+.setup-steps {
+  display: flex;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 1.25rem;
+  margin-bottom: 2rem;
+}
+.setup-steps a {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.8125rem;
+  text-decoration: none;
+}
+.setup-steps a[aria-current="step"] {
+  font-weight: 700;
+}
+.setup-steps span {
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  width: 2rem;
+  height: 2rem;
+  flex-shrink: 0;
+}
+.setup-steps [aria-current="step"] span {
+  background: var(--color-ink);
+  color: var(--color-surface);
+}
+.setup-panel h2 {
+  font-size: clamp(1.75rem, 3vw, 2.25rem);
+  letter-spacing: -0.04em;
+  margin-block: 0 1rem;
+}
+.setup-panel > p {
+  line-height: 1.65;
+}
+.setup-passwords {
+  margin-top: 2rem;
+  display: grid;
+  gap: 1.25rem;
+}
+.setup-passwords label {
+  display: block;
+  font-size: 0.875rem;
+  margin-bottom: 0.5rem;
+}
+.setup-passwords input {
+  width: 100%;
+  min-height: 3.25rem;
+  border: 1px solid var(--color-border);
+  border-radius: 0.75rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-background);
+  color: var(--color-ink);
+  opacity: 1;
+}
+.setup-passwords p {
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  margin: 0;
+}
+.setup-profile {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  margin-block: 2rem;
+}
+.setup-profile > div {
+  min-width: 0;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.75rem;
+}
+.setup-profile dt {
+  font-size: 0.75rem;
+  margin-bottom: 0.5rem;
+}
+.setup-profile dd {
+  margin: 0;
+  font-weight: 500;
+  overflow-wrap: anywhere;
+}
+.setup-profile > div:last-child {
+  grid-column: 1 / -1;
+}
+.setup-actions {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+.setup-button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 3.25rem;
+  border: 0;
+  border-radius: 999px;
+  padding: 0.875rem 1.5rem;
+  background: var(--color-ink);
+  color: var(--color-surface);
+  text-decoration: none;
+  font: inherit;
+  font-size: 0.875rem;
+}
+.setup-button:disabled {
+  background: var(--color-border);
+  color: var(--color-ink);
+  cursor: not-allowed;
+}
+.setup-ending {
+  border-top: 1px solid var(--color-border);
+  padding-top: 1.25rem;
+  margin-top: 1.5rem;
+  font-size: 0.8125rem;
+}
+@media (max-width: 760px) {
+  .setup-layout {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+    padding-top: 0;
+  }
+  .setup-story {
+    padding-top: 0;
+  }
+  .setup-promise {
+    margin-top: 2rem;
+  }
+  .setup-profile {
+    grid-template-columns: 1fr;
+  }
+  .setup-steps {
+    gap: 1rem;
+  }
+}
