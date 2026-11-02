@@ -90,6 +90,11 @@ the caller receives reconciliation-required; the fixture explicitly rereads the
 same durable evidence and verifies one database event. That is not proof of real
 provider idempotency, nor a user-facing automatic recovery flow.
 
+CI exposed a timing race in the existing TLS transport cleanup test: local pool
+shutdown can finish before PostgreSQL observes the socket closing. That test now
+waits for server-observed session removal with a three-second deadline, retaining
+the zero-session requirement and failing if cleanup does not complete.
+
 Every method verifies identity anew, and revoked database membership is denied
 even when the fixture Auth identity stays unchanged. Returned membership/profile
 data is not a reusable authorization snapshot. All future workspace/data handlers
