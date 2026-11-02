@@ -9,7 +9,8 @@ fictional [unit cases](../../tests/unit/onboarding-storage-contract.test.ts).
 The subsequent [isolated migration verification](../../docs/onboarding-migration.md)
 adds an unapplied SQL draft and real PostgreSQL 17 tests. A subsequent
 [isolated server-only adapter](../../docs/onboarding-adapter.md) exercises fixture
-identity/evidence against it. No provider operation or runtime route integration
+identity/evidence against it. The next [SDK/HTTP fixture](../../docs/setup-http-fixture.md)
+adds fake-provider effects and request orchestration. No hosted provider operation or public route integration
 is added. No hosted schema/grant,
 account, invitation, password, profile record, secret, setting or deployment changes
 are performed.

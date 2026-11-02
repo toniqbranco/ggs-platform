@@ -20,6 +20,18 @@ test("server factory fails before request context and makes no fetch calls", () 
 
 for (const boundary of [
   {
+    name: "onboarding-fixture-gateway-server-only",
+    conditions: [],
+    file: "./proposals/streamer-onboarding/fixture-gateway.ts",
+    message: /cannot be imported from a Client Component/i,
+  },
+  {
+    name: "onboarding-http-fixture-server-only",
+    conditions: [],
+    file: "./proposals/streamer-onboarding/http-fixture.ts",
+    message: /cannot be imported from a Client Component/i,
+  },
+  {
     name: "onboarding-adapter-server-only",
     conditions: [],
     file: "./proposals/streamer-onboarding/adapter.ts",

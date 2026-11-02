@@ -35,6 +35,9 @@ It remains disconnected from the website and hosted project.
 The [isolated server-only adapter](onboarding-adapter.md) now maps fresh fixture
 identity/evidence to those restricted SQL routines. No live gateway or website
 connection is enabled.
+The next [SDK/HTTP setup fixture](setup-http-fixture.md) exercises invitation and
+password effects against a fake provider, with cookie, replay and same-origin tests.
+It adds no public routes or live provider connection.
 
 | I need to…                                               | Read                                                                         |
 | -------------------------------------------------------- | ---------------------------------------------------------------------------- |

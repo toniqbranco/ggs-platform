@@ -11,6 +11,7 @@ import {
   type OnboardingQuery,
 } from "../../proposals/streamer-onboarding/adapter";
 import type { VerifiedPilotUser } from "../../src/lib/pilot/admission";
+import { setupWireFixture, setupHttpClient } from "../fixtures/onboarding-wire";
 
 const config = postgres17TestConfig(process.env);
 const suffix = randomBytes(6).toString("hex");
@@ -401,6 +402,49 @@ test("lost acknowledgement after password receipt requires reconciliation and pr
       )
     ).rowCount,
     1,
+  );
+});
+
+test("actual SDK HTTP fixture and restricted PostgreSQL channels complete setup with private cookies", async () => {
+  await issued();
+  const wire = setupWireFixture(subject);
+  const client = setupHttpClient({ ...wire.deps, setup, reader });
+  const inviteCommand = wire.seed("invitation", binding, 2);
+  const inviteResponse = await client.send("invitation", {
+    ...inviteCommand,
+    tokenHash: "a".repeat(64),
+  });
+  assert.equal(inviteResponse.status, 200);
+  assert.ok(inviteResponse.cookies.getAll().every((cookie) => cookie.httpOnly));
+  const passwordCommand = wire.seed("password", binding, 3);
+  const secret = "Fictional-HTTP-Password-Only";
+  const passwordBody = {
+    ...passwordCommand,
+    newPassword: secret,
+    confirmPassword: secret,
+  };
+  assert.equal((await client.send("password", passwordBody)).status, 200);
+  assert.equal((await client.send("password", passwordBody)).status, 409);
+  const receipt = await client.send("password-receipt", passwordCommand);
+  assert.equal(receipt.status, 200);
+  assert.equal((await receipt.json()).receipt, true);
+  assert.equal(wire.state.passwordUpdates, 1);
+  assert.equal(
+    (await client.send("profile", { ...adapterCommand(4), ...details() }))
+      .status,
+    200,
+  );
+  assert.equal((await client.send("finalize", adapterCommand(5))).status, 200);
+  const response = await client.send("status", { invitationId: binding });
+  assert.equal(response.status, 200);
+  const body = await response.json();
+  assert.equal(body.membership, "active");
+  assert.equal(body.workspaceAccess, false);
+  assert.equal(JSON.stringify(body).includes(secret), false);
+  await operate("revoke", {}, 6, randomUUID());
+  assert.equal(
+    (await client.send("status", { invitationId: binding })).status,
+    403,
   );
 });
 
