@@ -209,6 +209,7 @@ test("unknown subject/evidence/role/return fields cannot enter the request proto
     "subject",
     "role",
     "evidenceId",
+    "claimId",
     "next",
     "app_metadata",
   ]) {

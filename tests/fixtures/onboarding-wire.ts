@@ -63,27 +63,41 @@ export function setupWireFixture(subject: string = randomUUID()) {
         if (key.kind === "password" && !state.passwordPending)
           throw new Error("fixture password step closed");
         row.state = "claimed";
-      } else if (row.state === "claimed") return { ...row, state: "in-flight" };
+        row.claimId = randomUUID();
+      } else if (row.state === "claimed")
+        return { ...row, state: "in-flight", claimId: null };
       return { ...row };
     },
-    async read(key) {
+    async read(key, actor) {
       const row = records.get(key.operationId);
-      return row ? { ...row, eligible: state.eligible } : null;
+      return row && row.subject === actor
+        ? { ...row, eligible: state.eligible }
+        : null;
     },
     async verified(row, id) {
       if (state.failEvidenceCommit || !state.eligible)
         throw new Error("fixture receipt unavailable");
       const current = records.get(row.operationId);
-      if (!current || current.state !== "claimed")
+      if (
+        !current ||
+        current.state !== "claimed" ||
+        current.claimId !== row.claimId
+      )
         throw new Error("fixture claim drift");
       current.state = "verified";
       current.evidenceId = id;
+      current.claimId = null;
     },
     async uncertain(row) {
       const current = records.get(row.operationId);
-      if (current) {
+      if (
+        current &&
+        current.state === "claimed" &&
+        current.claimId === row.claimId
+      ) {
         current.state = "reconcile";
         current.evidenceId = null;
+        current.claimId = null;
       }
     },
   };
@@ -215,6 +229,7 @@ export function setupWireFixture(subject: string = randomUUID()) {
       subject,
       state: "ready",
       evidenceId: null,
+      claimId: null,
       expiresAt: new Date(Date.now() + 60_000).toISOString(),
       eligible: true,
       role: "streamer",

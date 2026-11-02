@@ -190,3 +190,11 @@ Sources checked: [Supabase RLS](https://supabase.com/docs/guides/database/postgr
 [database privileges](https://supabase.com/docs/guides/database/postgres/roles),
 [PostgreSQL locking](https://www.postgresql.org/docs/17/explicit-locking.html),
 and the [reviewed onboarding provider references](../../docs/streamer-onboarding-plan.md#references-checked).
+
+## Durable provider-store increment
+
+The [durable operation-store review](../../docs/onboarding-operation-store.md)
+adds a separate unapplied migration and isolated bridge. Prior migration SQL stays
+unchanged; no hosted execution or real Auth effects are authorized. Owner recovery
+has SQL primitives and native tests, with fresh-owner/provider-state integration
+still required before any live use.

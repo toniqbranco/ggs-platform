@@ -69,3 +69,6 @@ PR-04 quality/security/staging preparation → PR-05 documentation/handoff.
 Each PR stops for review. WP-01 is ready to close only after PR-05 is reviewed and
 merged with passing checks. That closes the foundation package, not a production
 launch and not authorization to start WP-02.
+
+For the latest isolated setup persistence and recovery stage, see the
+[durable provider operation store](onboarding-operation-store.md).

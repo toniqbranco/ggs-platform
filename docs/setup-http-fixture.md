@@ -150,3 +150,9 @@ References checked: [Supabase SSR advanced guide](https://supabase.com/docs/guid
 [password security](https://supabase.com/docs/guides/auth/password-security),
 and [current changelog](https://supabase.com/changelog). Installed Next.js route/
 cookie documentation and pinned SDK cookie helpers were also inspected.
+
+The next isolated increment is now documented in the
+[durable operation-store review](onboarding-operation-store.md). It replaces the
+in-memory store in native tests only; the real website remains disconnected from
+this setup flow. Its owner recovery primitive is SQL-only and requires a later
+fresh-owner adapter and verified provider-state/quiescence contract.
