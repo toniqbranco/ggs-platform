@@ -19,12 +19,13 @@ export const setupCommandSchema = z
 export type StepKey = z.infer<typeof setupCommandSchema> & {
   kind: "invitation" | "password";
 };
-const operationSchema = setupCommandSchema
+export const fixtureOperationSchema = setupCommandSchema
   .extend({
     kind: z.enum(["invitation", "password"]),
     subject: z.uuid(),
     state: z.enum(["claimed", "verified", "in-flight", "reconcile"]),
     evidenceId: z.uuid().nullable(),
+    claimId: z.uuid().nullable(),
     expiresAt: z.iso.datetime(),
     eligible: z.literal(true),
     role: z.literal("streamer"),
@@ -32,12 +33,13 @@ const operationSchema = setupCommandSchema
   .strict()
   .refine(
     (value) => (value.state === "verified") === (value.evidenceId !== null),
-  );
-export type FixtureOperation = z.infer<typeof operationSchema>;
+  )
+  .refine((value) => (value.state === "claimed") === (value.claimId !== null));
+export type FixtureOperation = z.infer<typeof fixtureOperationSchema>;
 export type FixtureOperationStore = {
   // Must atomically check current binding/approval/step and claim only once.
   claim(key: StepKey, verifiedSubject: string | null): Promise<unknown>;
-  read(key: StepKey): Promise<unknown>;
+  read(key: StepKey, verifiedSubject: string): Promise<unknown>;
   verified(operation: FixtureOperation, evidenceId: string): Promise<void>;
   uncertain(operation: FixtureOperation): Promise<void>;
 };
@@ -78,7 +80,7 @@ function keyFor(kind: StepKey["kind"], input: unknown): StepKey {
   return { ...parsed.data, kind };
 }
 function checkedOperation(raw: unknown, key: StepKey) {
-  const parsed = operationSchema.safeParse(raw);
+  const parsed = fixtureOperationSchema.safeParse(raw);
   if (
     !parsed.success ||
     parsed.data.kind !== key.kind ||
@@ -298,7 +300,10 @@ export function createFixtureSetupGateway(
         operationId: input.operationId,
         expectedBindingRevision: input.expectedBindingRevision,
       });
-      const record = checkedOperation(await options.operations.read(key), key);
+      const record = checkedOperation(
+        await options.operations.read(key, input.subject),
+        key,
+      );
       if (record.state !== "verified" || record.subject !== input.subject)
         throw new FixtureGatewayError("denied");
       return {

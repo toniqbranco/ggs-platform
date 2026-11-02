@@ -12,6 +12,11 @@ import {
 } from "../../proposals/streamer-onboarding/adapter";
 import type { VerifiedPilotUser } from "../../src/lib/pilot/admission";
 import { setupWireFixture, setupHttpClient } from "../fixtures/onboarding-wire";
+import { createFixtureOperationStore } from "../../proposals/streamer-onboarding/operation-store";
+import type {
+  FixtureOperation,
+  StepKey,
+} from "../../proposals/streamer-onboarding/fixture-gateway";
 
 const config = postgres17TestConfig(process.env);
 const suffix = randomBytes(6).toString("hex");
@@ -27,6 +32,7 @@ const groups = [
   "ggs_ob_setup",
   "ggs_ob_reader",
   "ggs_ob_maintenance",
+  "ggs_ob_proof",
   "ggs_pilot_data_owner",
   "ggs_pilot_executor",
   "ggs_pilot_intake",
@@ -41,13 +47,22 @@ function migration(directory: string) {
   return readFileSync(`${directory}/${files[0]}`, "utf8");
 }
 const baseline = migration("proposals/application-storage/supabase/migrations");
-const proposal = migration("proposals/streamer-onboarding/supabase/migrations");
+const onboardingDirectory = "proposals/streamer-onboarding/supabase/migrations";
+const proposal = readFileSync(
+  `${onboardingDirectory}/20261102061549_streamer_onboarding.sql`,
+  "utf8",
+);
+const providerProposal = readFileSync(
+  `${onboardingDirectory}/20261102225344_provider_operation_store.sql`,
+  "utf8",
+);
 const owner = "00000000-0000-4000-8000-000000000001";
 let operator: Pool,
   setup: Pool,
   reader: Pool,
   maintenance: Pool,
   migrator: Pool;
+let proof: Pool;
 let migratorName: string;
 const deniedPools: Pool[] = [];
 let app: string,
@@ -121,6 +136,21 @@ before(async () => {
     );
     await c.query("set ggs.reviewed_onboarding_proposal='isolated-only'");
     await c.query(proposal);
+    await assert.rejects(
+      c.query(providerProposal),
+      /Unapproved provider operation proposal/,
+    );
+    await c.query("rollback");
+    assert.equal(
+      (
+        await admin.query(
+          "select to_regclass('ggs_onboarding.provider_operations') object",
+        )
+      ).rows[0].object,
+      null,
+    );
+    await c.query("set ggs.reviewed_provider_operations='isolated-only'");
+    await c.query(providerProposal);
   } finally {
     c.release();
   }
@@ -128,6 +158,7 @@ before(async () => {
   setup = (await login("setup", "ggs_ob_setup")).pool;
   reader = (await login("reader", "ggs_ob_reader")).pool;
   maintenance = (await login("maintenance", "ggs_ob_maintenance")).pool;
+  proof = (await login("proof", "ggs_ob_proof")).pool;
   for (const group of [
     "anon",
     "authenticated",
@@ -139,7 +170,7 @@ before(async () => {
 });
 beforeEach(async () => {
   await admin.query(
-    "truncate ggs_onboarding.onboarding_events,ggs_onboarding.streamer_profiles,ggs_onboarding.setup_progress,ggs_onboarding.onboarding_operations,ggs_onboarding.invitation_bindings,ggs_pilot.application_events,ggs_pilot.application_operations,ggs_pilot.applications; delete from ggs_pilot.review_configuration",
+    "truncate ggs_onboarding.provider_events,ggs_onboarding.provider_operations,ggs_onboarding.onboarding_events,ggs_onboarding.streamer_profiles,ggs_onboarding.setup_progress,ggs_onboarding.onboarding_operations,ggs_onboarding.invitation_bindings,ggs_pilot.application_events,ggs_pilot.application_operations,ggs_pilot.applications; delete from ggs_pilot.review_configuration",
   );
   await admin.query(
     "insert into ggs_pilot.review_configuration(owner_auth_id) values($1)",
@@ -192,7 +223,7 @@ async function step(
   action: string,
   expected: number,
   payload: object = {},
-  op = randomUUID(),
+  op: string = randomUUID(),
   actor = subject,
   client: Pool | PoolClient = setup,
 ) {
@@ -452,14 +483,14 @@ test("migration is guarded, managed-style and restores temporary owner membershi
   const roles = await admin.query(
     "select rolcanlogin,rolbypassrls,rolsuper from pg_roles where rolname like 'ggs_ob_%'",
   );
-  assert.equal(roles.rowCount, 6);
+  assert.equal(roles.rowCount, 7);
   assert.ok(
     roles.rows.every((r) => !r.rolcanlogin && !r.rolbypassrls && !r.rolsuper),
   );
   const tables = await admin.query(
     "select relrowsecurity,relforcerowsecurity from pg_class c join pg_namespace n on n.oid=c.relnamespace where n.nspname='ggs_onboarding' and relkind='r'",
   );
-  assert.equal(tables.rowCount, 5);
+  assert.equal(tables.rowCount, 7);
   assert.ok(
     tables.rows.every((r) => r.relrowsecurity && r.relforcerowsecurity),
   );
@@ -976,3 +1007,366 @@ for (const revokeFirst of [true, false])
     assert.equal((await state()).state, "revoked");
     await assert.rejects(read());
   });
+
+function durableStore(channel: OnboardingQuery = proof) {
+  return createFixtureOperationStore({ mode: "isolated-fixture", channel });
+}
+function providerKey(
+  kind: StepKey["kind"] = "invitation",
+  revision = 2,
+): StepKey {
+  return { ...adapterCommand(revision), kind };
+}
+async function claimProvider(key = providerKey()) {
+  return (await durableStore().claim(
+    key,
+    key.kind === "password" ? subject : null,
+  )) as FixtureOperation;
+}
+async function resolveProvider(
+  row: FixtureOperation,
+  decision = "no-effect",
+  version = 2,
+  evidence: string | null = null,
+  review: string = randomUUID(),
+  actor = owner,
+) {
+  return operator.query(
+    "select ggs_onboarding.resolve_provider_step($1,$2,$3,$4,$5,$6) revision",
+    [actor, row.operationId, version, decision, review, evidence],
+  );
+}
+
+test("durable store survives new instances and completes actual SDK/HTTP setup without repeated effects", async () => {
+  await issued();
+  const wire = setupWireFixture(subject);
+  const client = setupHttpClient({
+    ...wire.deps,
+    ownerUserId: owner,
+    setup,
+    reader,
+    operations: durableStore(),
+  });
+  const invitation = adapterCommand(2);
+  assert.equal(
+    (
+      await client.send("invitation", {
+        ...invitation,
+        tokenHash: "a".repeat(64),
+      })
+    ).status,
+    200,
+  );
+  const password = adapterCommand(3);
+  const body = {
+    ...password,
+    newPassword: "Fictional-Durable-Password",
+    confirmPassword: "Fictional-Durable-Password",
+  };
+  assert.equal((await client.send("password", body)).status, 200);
+  const restarted = setupHttpClient({
+    ...wire.deps,
+    ownerUserId: owner,
+    setup,
+    reader,
+    operations: durableStore(),
+  });
+  for (const [name, value] of client.jar) restarted.jar.set(name, value);
+  assert.equal((await restarted.send("password", body)).status, 409);
+  assert.equal(
+    (await restarted.send("password-receipt", password)).status,
+    200,
+  );
+  assert.equal(
+    (await restarted.send("password", { ...body, operationId: randomUUID() }))
+      .status,
+    403,
+  );
+  assert.equal(wire.state.passwordUpdates, 1);
+  assert.equal(wire.state.tokenUses, 1);
+  assert.equal(
+    (await restarted.send("profile", { ...adapterCommand(4), ...details() }))
+      .status,
+    200,
+  );
+  assert.equal(
+    (await restarted.send("finalize", adapterCommand(5))).status,
+    200,
+  );
+  assert.equal(
+    (await restarted.send("password-receipt", password)).status,
+    200,
+  );
+  const stored = JSON.stringify(
+    (
+      await admin.query(
+        "select to_jsonb(o) record from ggs_onboarding.provider_operations o",
+      )
+    ).rows,
+  );
+  assert.ok(
+    !stored.includes(body.newPassword) && !stored.includes("a".repeat(64)),
+  );
+  assert.equal(await count("provider_operations"), 2);
+  assert.equal(await count("provider_events"), 4);
+});
+
+test("competing durable claims expose a nonce only once and block new operation IDs", async () => {
+  await issued();
+  const key = providerKey();
+  const rows = await Promise.all([claimProvider(key), claimProvider(key)]);
+  assert.equal(rows.filter((r) => r.state === "claimed").length, 1);
+  assert.equal(rows.filter((r) => r.claimId === null).length, 1);
+  await assert.rejects(claimProvider(providerKey()), /reconciliation-required/);
+  assert.equal(await count("provider_events"), 1);
+});
+
+test("expired claims persist reconciliation and never grant a replacement claim", async () => {
+  await issued();
+  const key = providerKey();
+  const row = await claimProvider(key);
+  await admin.query(
+    "update ggs_onboarding.provider_operations set lease_until=clock_timestamp()-interval '1 second'",
+  );
+  const again = await claimProvider(key);
+  assert.equal(again.state, "reconcile");
+  assert.equal(again.claimId, null);
+  await assert.rejects(
+    durableStore().verified(row, randomUUID()),
+    /reconciliation-required/,
+  );
+  await assert.rejects(claimProvider(), /reconciliation-required/);
+  assert.equal(await count("provider_events"), 2);
+});
+
+test("wrong claim nonce, subject and cross-binding operation reuse are denied", async () => {
+  await issued();
+  const key = providerKey();
+  const row = await claimProvider(key);
+  await assert.rejects(
+    durableStore().verified({ ...row, claimId: randomUUID() }, randomUUID()),
+    /denied/,
+  );
+  await durableStore().verified(row, randomUUID());
+  await assert.rejects(durableStore().read(key, randomUUID()), /denied/);
+  await assert.rejects(
+    claimProvider({ ...key, invitationId: randomUUID() }),
+    /denied/,
+  );
+  await assert.rejects(
+    claimProvider({ ...key, expectedBindingRevision: 3 }),
+    /reconciliation-required/,
+  );
+});
+
+test("lost completion acknowledgement preserves immutable verified evidence", async () => {
+  await issued();
+  const key = providerKey();
+  const row = await claimProvider(key);
+  const evidence = randomUUID();
+  const lossy: OnboardingQuery = {
+    query: async (sql, values) => {
+      await proof.query(sql, values);
+      throw new Error("fictional lost acknowledgement");
+    },
+  };
+  await assert.rejects(
+    durableStore(lossy).verified(row, evidence),
+    /unavailable/,
+  );
+  await durableStore().uncertain(row);
+  await durableStore().verified(row, evidence);
+  await assert.rejects(
+    durableStore().verified(row, randomUUID()),
+    /reconciliation-required/,
+  );
+  const result = (await durableStore().read(key, subject)) as FixtureOperation;
+  assert.equal(result.state, "verified");
+  assert.equal(result.evidenceId, evidence);
+  assert.equal(result.claimId, null);
+  assert.equal(await count("provider_events"), 2);
+});
+
+test("revocation before completion denies evidence but still permits uncertainty cleanup", async () => {
+  await issued();
+  const row = await claimProvider();
+  await operate("revoke", {}, 2, randomUUID());
+  await assert.rejects(durableStore().verified(row, randomUUID()), /denied/);
+  await durableStore().uncertain(row);
+  assert.equal(
+    (await admin.query("select state from ggs_onboarding.provider_operations"))
+      .rows[0].state,
+    "reconcile",
+  );
+  await assert.rejects(
+    resolveProvider(row, "verified", 2, randomUUID()),
+    /Denied/,
+  );
+  await resolveProvider(row);
+});
+
+test("binding drift during provider effect persists reconciliation instead of proof", async () => {
+  await issued();
+  const row = await claimProvider();
+  await step("accept", 2, { evidence: randomUUID() });
+  await assert.rejects(
+    durableStore().verified(row, randomUUID()),
+    /reconciliation-required/,
+  );
+  assert.equal(
+    (await admin.query("select state from ggs_onboarding.provider_operations"))
+      .rows[0].state,
+    "reconcile",
+  );
+});
+
+test("preflight refuses unissued bindings, stale approval, wrong password subject and completed steps", async () => {
+  await assert.rejects(claimProvider(), /denied/);
+  await issued();
+  await assert.rejects(
+    durableStore().claim(providerKey("password", 3), randomUUID()),
+    /denied/,
+  );
+  await assert.rejects(claimProvider(providerKey("password", 2)), /denied/);
+  await step("accept", 2, { evidence: randomUUID() });
+  await step("password", 3, { evidence: randomUUID() });
+  await assert.rejects(claimProvider(providerKey("password", 4)), /denied/);
+  await admin.query(
+    "update ggs_pilot.applications set decided_by=$2 where id=$1",
+    [app, randomUUID()],
+  );
+  await assert.rejects(claimProvider(), /denied/);
+});
+
+test("owner no-effect resolution is versioned, idempotent and fences stale writers", async () => {
+  await issued();
+  const row = await claimProvider();
+  const review = randomUUID();
+  await assert.rejects(resolveProvider(row), /Conflict/);
+  await durableStore().uncertain(row);
+  await assert.rejects(
+    resolveProvider(row, "no-effect", 2, null, review, subject),
+    /Denied/,
+  );
+  await assert.rejects(
+    resolveProvider(row, "no-effect", 1, null, review),
+    /Conflict/,
+  );
+  assert.equal(
+    (await resolveProvider(row, "no-effect", 2, null, review)).rows[0].revision,
+    3,
+  );
+  assert.equal(
+    (await resolveProvider(row, "no-effect", 2, null, review)).rows[0].revision,
+    3,
+  );
+  await assert.rejects(
+    resolveProvider(row, "verified", 3, randomUUID()),
+    /Conflict/,
+  );
+  await assert.rejects(
+    durableStore().verified(row, randomUUID()),
+    /reconciliation-required/,
+  );
+  await durableStore().uncertain(row);
+  assert.equal((await claimProvider()).state, "claimed");
+  assert.equal(await count("provider_events"), 4);
+});
+
+test("owner verified resolution recovers a receipt without repeating provider effects", async () => {
+  await issued();
+  const key = providerKey();
+  const row = await claimProvider(key);
+  await durableStore().uncertain(row);
+  const evidence = randomUUID();
+  await resolveProvider(row, "verified", 2, evidence);
+  const result = (await durableStore().read(key, subject)) as FixtureOperation;
+  assert.equal(result.evidenceId, evidence);
+  assert.equal(result.state, "verified");
+  await step("accept", 2, { evidence }, key.operationId);
+  assert.equal(
+    ((await durableStore().read(key, subject)) as FixtureOperation).evidenceId,
+    evidence,
+  );
+  await assert.rejects(claimProvider(), /denied/);
+});
+
+test("provider audit failures roll back claim, verification and owner resolution atomically", async () => {
+  await issued();
+  const trigger =
+    "create function ggs_onboarding.fixture_provider_fail() returns trigger language plpgsql as $$begin raise exception 'fixture audit failure';end$$;create trigger fixture_provider_fail before insert on ggs_onboarding.provider_events for each row execute function ggs_onboarding.fixture_provider_fail()";
+  const remove =
+    "drop trigger fixture_provider_fail on ggs_onboarding.provider_events;drop function ggs_onboarding.fixture_provider_fail()";
+  await admin.query(trigger);
+  try {
+    await assert.rejects(claimProvider(), /unavailable/);
+  } finally {
+    await admin.query(remove);
+  }
+  assert.equal(await count("provider_operations"), 0);
+  const row = await claimProvider();
+  await admin.query(trigger);
+  try {
+    await assert.rejects(
+      durableStore().verified(row, randomUUID()),
+      /unavailable/,
+    );
+  } finally {
+    await admin.query(remove);
+  }
+  assert.equal(
+    (await admin.query("select state from ggs_onboarding.provider_operations"))
+      .rows[0].state,
+    "claimed",
+  );
+  await durableStore().uncertain(row);
+  await admin.query(trigger);
+  try {
+    await assert.rejects(resolveProvider(row), /fixture audit failure/);
+  } finally {
+    await admin.query(remove);
+  }
+  assert.equal(
+    (await admin.query("select state from ggs_onboarding.provider_operations"))
+      .rows[0].state,
+    "reconcile",
+  );
+});
+
+test("proof capability has function-only access and cannot resolve, approve, activate or read profiles", async () => {
+  for (const pool of [
+    proof,
+    operator,
+    setup,
+    reader,
+    maintenance,
+    ...deniedPools,
+  ]) {
+    await assert.rejects(
+      pool.query("select * from ggs_onboarding.provider_operations"),
+    );
+    await assert.rejects(
+      pool.query("delete from ggs_onboarding.provider_events"),
+    );
+    await assert.rejects(
+      pool.query("select ggs_onboarding._provider_binding($1)", [binding]),
+    );
+  }
+  for (const pool of [operator, setup, reader, maintenance, ...deniedPools])
+    await assert.rejects(
+      pool.query(
+        "select ggs_onboarding.claim_provider_step('invitation',$1,$2,2,null,$3)",
+        [binding, randomUUID(), randomUUID()],
+      ),
+    );
+  await assert.rejects(
+    proof.query(
+      "select ggs_onboarding.resolve_provider_step($1,$2,2,'no-effect',$3,null)",
+      [owner, randomUUID(), randomUUID()],
+    ),
+  );
+  await assert.rejects(
+    proof.query("select ggs_onboarding.read_self($1,$2)", [subject, binding]),
+  );
+  await assert.rejects(proof.query("set role ggs_ob_executor"));
+});
