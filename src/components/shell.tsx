@@ -59,26 +59,39 @@ export function Shell({
               </Link>
             ))}
           </nav>
-          <nav className="language-nav" aria-label={copy.languageLabel}>
-            {locales.map((language) => (
+          <div className="header-actions">
+            <nav className="language-nav" aria-label={copy.languageLabel}>
+              {locales.map((language) => (
+                <Link
+                  key={language}
+                  href={
+                    authPage
+                      ? `/${language}/${authPage}`
+                      : pilotPage
+                        ? pilotPageHref(language, pilotPage)
+                        : sectionHref(language, section)
+                  }
+                  lang={language}
+                  hrefLang={language}
+                  aria-label={
+                    language === "es" ? "ES — Español" : "EN — English"
+                  }
+                  aria-current={locale === language ? "true" : undefined}
+                >
+                  {language.toUpperCase()}
+                </Link>
+              ))}
+            </nav>
+            {(!authPage || authPage === "apply") && (
               <Link
-                key={language}
-                href={
-                  authPage
-                    ? `/${language}/${authPage}`
-                    : pilotPage
-                      ? pilotPageHref(language, pilotPage)
-                      : sectionHref(language, section)
-                }
-                lang={language}
-                hrefLang={language}
-                aria-label={language === "es" ? "ES — Español" : "EN — English"}
-                aria-current={locale === language ? "true" : undefined}
+                className="header-sign-in"
+                href={`/${locale}/sign-in`}
+                prefetch={false}
               >
-                {language.toUpperCase()}
+                {copy.signIn}
               </Link>
-            ))}
-          </nav>
+            )}
+          </div>
         </div>
       </header>
       <main id="main-content" className="container main-content" tabIndex={-1}>

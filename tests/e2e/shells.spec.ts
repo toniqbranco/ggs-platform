@@ -16,6 +16,12 @@ for (const entry of pages) {
     );
     await expect(page.locator(".space-nav [aria-current=page]")).toHaveCount(1);
     await expect(page.getByRole("main")).toBeVisible();
+    const signIn = page.getByRole("banner").getByRole("link", {
+      name: entry.locale === "es" ? "Iniciar sesión" : "Sign in",
+      exact: true,
+    });
+    await expect(signIn).toBeVisible();
+    await expect(signIn).toHaveAttribute("href", `/${entry.locale}/sign-in`);
     await page.evaluate(() => document.fonts.ready);
     expect(
       await page.evaluate(
