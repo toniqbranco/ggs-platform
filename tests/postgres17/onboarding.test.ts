@@ -387,6 +387,20 @@ test("expired lease cannot claim success and preserves evidence for reconciliati
     "reconcile",
   );
 });
+
+test("issued receipt retry binds the same instant across database time zones", async () => {
+  const payload = await issued();
+  const c = await operator.connect();
+  try {
+    await c.query("set timezone='America/Bogota'");
+    const result = await operate("issued", payload, 1, invite, c);
+    assert.equal(result.rows[0].revision, 2);
+  } finally {
+    await c.query("set timezone='UTC'");
+    c.release();
+  }
+  assert.equal(await count("setup_progress"), 1);
+});
 test("wrong subject, unaccepted invitation and missing password cannot save profiles", async () => {
   await issued();
   await assert.rejects(

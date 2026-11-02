@@ -93,6 +93,8 @@ encodings and envelopes**. Neither is a browser credential; do not compare them
 as interchangeable hashes. The future adapter must map reviewed commands to SQL,
 let the database compute its digest, validate outputs and expose no fingerprints.
 SQL action/event names are also internal and require an explicit adapter mapping.
+Invitation-result digests use an absolute expiry instant, so an exact retry stays
+idempotent even when two database connections use different time zones.
 
 ## Draft redaction and remaining retention work
 

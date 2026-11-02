@@ -204,7 +204,7 @@ begin
   end if;
   if p_payload-array['lease','subject','expiresAt']<>'{}'::jsonb then raise exception using errcode='22023',message='Invalid'; end if;
   s:=(p_payload->>'subject')::uuid; e:=(p_payload->>'expiresAt')::timestamptz;
-  h:=ggs_onboarding._hash(jsonb_build_array(1,s,e));
+  h:=ggs_onboarding._hash(jsonb_build_array(1,s,extract(epoch from e)));
   if o.state='committed' then
     if o.provider_hash is distinct from h then raise exception using errcode='P0003',message='Conflict'; end if;
     return o.result_revision;
