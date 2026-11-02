@@ -29,6 +29,9 @@ and a pure policy contract without collecting passwords or profiles.
 The next [invitation/profile persistence contract](../proposals/streamer-onboarding/README.md)
 defines account binding, operation receipts, private storage and recovery of uncertain
 outcomes. Its isolated contract tests do not apply SQL or connect the website.
+The subsequent [unapplied onboarding migration](onboarding-migration.md) now has
+native PostgreSQL 17 permission, transaction and race tests in disposable databases.
+It remains disconnected from the website and hosted project.
 
 | I need to…                                               | Read                                                                         |
 | -------------------------------------------------------- | ---------------------------------------------------------------------------- |
