@@ -15,6 +15,7 @@ type Dictionary = {
   skipLink: string;
   navigationLabel: string;
   languageLabel: string;
+  signIn: string;
   homeLabel: string;
   brandline: string;
   availability: string;
@@ -43,6 +44,7 @@ const spanish: Dictionary = {
   skipLink: "Saltar al contenido",
   navigationLabel: "Espacios de GG's",
   languageLabel: "Idioma",
+  signIn: "Iniciar sesión",
   homeLabel: "GG's — Inicio",
   brandline: "Talento. Cultura. Conexión.",
   availability: "En preparación",
@@ -111,6 +113,7 @@ const english: Dictionary = {
   skipLink: "Skip to content",
   navigationLabel: "GG's spaces",
   languageLabel: "Language",
+  signIn: "Sign in",
   homeLabel: "GG's — Home",
   brandline: "Talent. Culture. Connection.",
   availability: "In preparation",
