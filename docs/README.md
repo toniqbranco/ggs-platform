@@ -26,6 +26,9 @@ one-time password/profile setup and later password sign-in. It is a proposal,
 not a live Auth or data-model change; existing admission rules still apply.
 The first [disconnected setup preview](setup-preview.md) now adds bilingual screens
 and a pure policy contract without collecting passwords or profiles.
+The next [invitation/profile persistence contract](../proposals/streamer-onboarding/README.md)
+defines account binding, operation receipts, private storage and recovery of uncertain
+outcomes. Its isolated contract tests do not apply SQL or connect the website.
 
 | I need to…                                               | Read                                                                         |
 | -------------------------------------------------------- | ---------------------------------------------------------------------------- |
