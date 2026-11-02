@@ -143,3 +143,37 @@ test("invalid sign-in and callback fail locally; no email or account is created"
     400,
   );
 });
+for (const locale of ["es", "en"]) {
+  test(`${locale} pending email screen avoids repeated submission and offers a session check`, async ({
+    page,
+  }) => {
+    await page.goto(`/${locale}/sign-in?state=sent`);
+    await expect(page.getByRole("status")).toBeVisible();
+    await expect(
+      page.getByRole("button", {
+        name:
+          locale === "es"
+            ? "Solicitar enlace de acceso"
+            : "Request sign-in link",
+      }),
+    ).toHaveCount(0);
+    await page
+      .getByRole("link", {
+        name: locale === "es" ? "Comprobar mi sesión" : "Check my session",
+      })
+      .click();
+    await expect(page.getByRole("status")).toContainText(
+      locale === "es"
+        ? "No hay una sesión válida"
+        : "There is no valid session",
+    );
+    await expect(
+      page.getByRole("link", {
+        name:
+          locale === "es"
+            ? "Abrir revisión de solicitudes"
+            : "Open application review",
+      }),
+    ).toHaveCount(0);
+  });
+}

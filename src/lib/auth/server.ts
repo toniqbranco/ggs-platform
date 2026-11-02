@@ -4,6 +4,11 @@ import type { NextRequest, NextResponse } from "next/server";
 import { parsePilotAuthConfig, pilotAuthCookieName } from "./config";
 import type { Database } from "@/lib/supabase/database.types";
 import type { AuthGateway } from "./flow";
+import {
+  authOutcome,
+  hasBrowserVerifier,
+  recordAuthDiagnostic,
+} from "./diagnostics";
 
 export function getPilotAuthConfig() {
   return parsePilotAuthConfig(process.env);
@@ -47,12 +52,28 @@ export function createPilotGateway(
     },
   );
   return {
-    requestLink: (email, callback) =>
-      client.auth.signInWithOtp({
+    requestLink: async (email, callback) => {
+      const result = await client.auth.signInWithOtp({
         email,
         options: { shouldCreateUser: false, emailRedirectTo: callback },
-      }),
-    exchange: (code) => client.auth.exchangeCodeForSession(code),
+      });
+      recordAuthDiagnostic(
+        "request",
+        hasBrowserVerifier(response.cookies.getAll()),
+        authOutcome(result.error),
+      );
+      return result;
+    },
+    exchange: async (code) => {
+      const browserVerifier = hasBrowserVerifier(request.cookies.getAll());
+      const result = await client.auth.exchangeCodeForSession(code);
+      recordAuthDiagnostic(
+        "callback",
+        browserVerifier,
+        authOutcome(result.error),
+      );
+      return result;
+    },
     verify: () => client.auth.getUser(),
     signOut: () => client.auth.signOut({ scope: "local" }),
   };

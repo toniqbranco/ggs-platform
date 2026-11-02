@@ -24,12 +24,21 @@ const copies = {
       "Tu cuenta no tiene acceso aprobado y activo al piloto. Consulta al equipo de GG's. Un enlace de correo no sustituye la aprobación.",
     signOut: "Cerrar sesión",
     signIn: "Ir al acceso",
+    checkSession: "Comprobar mi sesión",
+    pendingDescription:
+      "Busca el enlace más reciente en tu correo. También puedes comprobar si este navegador ya tiene una sesión abierta.",
+    retryLater: "Volver al acceso más tarde",
+    pendingHelp:
+      "Usa solo el correo más reciente y abre el enlace en el navegador donde lo solicitaste. El envío puede limitarse temporalmente; no solicites enlaces repetidamente si no llega uno nuevo.",
+    openReview: "Abrir revisión de solicitudes",
+    ownerVerified:
+      "Tu acceso de propietario está verificado. Puedes consultar las solicitudes guardadas y su historial en modo de solo lectura.",
     states: {
       "browser-required":
         "El enlace se abrió sin la verificación del navegador donde lo solicitaste. Abre el sitio en el navegador que prefieras, solicita un enlace nuevo y ábrelo en ese mismo navegador.",
       "approval-required":
         "Tu acceso al piloto requiere aprobación y una invitación aceptada. Consulta al equipo de GG's.",
-      sent: "Si tu cuenta tiene acceso habilitado, recibirás un enlace. Revisa tu correo y ábrelo en este navegador. Si no llega, consulta al equipo de GG's.",
+      sent: "Solicitud recibida. El envío de correos puede estar limitado temporalmente. Revisa si llegó un nuevo enlace de acceso.",
       invalid: "Introduce un correo electrónico válido.",
       expired:
         "El enlace no es válido, ya se utilizó, expiró o se abrió en otro navegador. Solicita uno nuevo.",
@@ -61,12 +70,21 @@ const copies = {
       "Your account does not have approved, active pilot access. Contact the GG's team. An email link does not replace approval.",
     signOut: "Sign out",
     signIn: "Go to sign-in",
+    checkSession: "Check my session",
+    pendingDescription:
+      "Look for the newest link in your inbox. You can also check whether this browser is already signed in.",
+    retryLater: "Return to sign-in later",
+    pendingHelp:
+      "Use only the newest email and open its link in the browser where you requested it. Sending can be temporarily limited; avoid repeated requests if a new email does not arrive.",
+    openReview: "Open application review",
+    ownerVerified:
+      "Your owner access is verified. You can view saved applications and their history in read-only mode.",
     states: {
       "browser-required":
         "The link opened without the verification from the browser that requested it. Open the site in your preferred browser, request a new link, and open it in that same browser.",
       "approval-required":
         "Pilot access requires approval and an accepted invitation. Contact the GG's team.",
-      sent: "If your account has access enabled, you will receive a link. Check your email and open it in this browser. If it does not arrive, contact the GG's team.",
+      sent: "Request received. Email delivery can be temporarily limited. Check your inbox for a new sign-in link.",
       invalid: "Enter a valid email address.",
       expired:
         "The link is invalid, already used, expired, or was opened in another browser. Request a new one.",

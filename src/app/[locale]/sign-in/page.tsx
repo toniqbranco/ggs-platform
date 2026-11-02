@@ -30,13 +30,32 @@ export default async function SignIn({
       <section className="auth-card" aria-labelledby="auth-title">
         <p className="eyebrow">{copy.eyebrow}</p>
         <h1 id="auth-title">{copy.title}</h1>
-        <p>{enabled ? copy.description : copy.closedDescription}</p>
+        <p>
+          {enabled
+            ? state === "sent"
+              ? copy.pendingDescription
+              : copy.description
+            : copy.closedDescription}
+        </p>
         {message && (
           <p role="status" className="auth-message">
             {message}
           </p>
         )}
-        {enabled ? (
+        {enabled && state === "sent" ? (
+          <div className="auth-pending">
+            <p>{copy.pendingHelp}</p>
+            <a
+              className="button-link button-primary"
+              href={`/${locale}/session`}
+            >
+              {copy.checkSession}
+            </a>
+            <p>
+              <a href={`/${locale}/sign-in`}>{copy.retryLater}</a>
+            </p>
+          </div>
+        ) : enabled ? (
           <form action="/auth/sign-in" method="post">
             <input type="hidden" name="locale" value={locale} />
             <label htmlFor="email">{copy.email}</label>

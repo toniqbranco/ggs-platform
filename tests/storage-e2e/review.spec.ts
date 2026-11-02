@@ -29,8 +29,16 @@ const test = base.extend({
     expect(errors).toEqual([]);
   },
 });
-async function identity(context: BrowserContext) {
-  const sub = "00000000-0000-4000-8000-000000000001",
+async function identity(
+  context: BrowserContext,
+  role: "owner" | "admin" | "streamer" = "owner",
+) {
+  const sub =
+      role === "owner"
+        ? "00000000-0000-4000-8000-000000000001"
+        : role === "admin"
+          ? "00000000-0000-4000-8000-000000000003"
+          : "00000000-0000-4000-8000-000000000002",
     exp = Math.floor(Date.now() / 1000) + 3600;
   const part = (data: object) =>
     Buffer.from(JSON.stringify(data)).toString("base64url");
@@ -70,6 +78,39 @@ const application = {
   createdAt: "2026-01-01T00:00:00Z",
 };
 for (const locale of ["es", "en"] as const) {
+  test(`${locale} fresh owner session opens the private stored queue without another sign-in`, async ({
+    page,
+    context,
+  }) => {
+    await identity(context);
+    await page.route("**/auth/application-review?operation=list", (route) =>
+      route.fulfill({
+        json: {
+          mode: "stored-readonly",
+          applications: [application],
+          bounded: true,
+        },
+      }),
+    );
+    await page.goto(`/${locale}/session`);
+    const review = page.getByRole("link", {
+      name:
+        locale === "es"
+          ? "Abrir revisión de solicitudes"
+          : "Open application review",
+    });
+    await expect(review).toHaveAttribute("href", `/${locale}/hq/applications`);
+    await expect(
+      page.getByRole("link", {
+        name: locale === "es" ? "Ir al acceso" : "Go to sign-in",
+        exact: true,
+      }),
+    ).toHaveCount(0);
+    await review.click();
+    await expect(
+      page.getByRole("button", { name: /GG Browser Fixture/ }),
+    ).toBeVisible();
+  });
   test(`${locale} read-only stored queue and history are accessible with no mutation controls`, async ({
     page,
     context,
@@ -180,6 +221,21 @@ for (const locale of ["es", "en"] as const) {
     ).toHaveCount(0);
   });
 }
+for (const role of ["admin", "streamer"] as const)
+  test(`${role} session receives no owner-review link`, async ({
+    page,
+    context,
+  }) => {
+    await identity(context, role);
+    const checked = page.waitForResponse(
+      (response) => new URL(response.url()).pathname === "/auth/access",
+    );
+    await page.goto("/en/session");
+    expect((await checked).status()).toBe(403);
+    await expect(
+      page.getByRole("link", { name: "Open application review" }),
+    ).toHaveCount(0);
+  });
 test("anonymous real route never returns stored data and POST is unavailable", async ({
   request,
 }) => {

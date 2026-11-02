@@ -62,6 +62,9 @@ solved by DPAPI. Run only in the dedicated local environment without transcripti
 
 ## Testing baseline and activation
 
+The [sign-in continuation](sign-in-recovery.md) shows the review link only after
+fresh session and owner-access checks. The public navigation still excludes HQ.
+
 Approved operations on 2026-11-01 provisioned the two restricted service logins,
 configured the existing sole owner and completed the fictional workflow test.
 The Management token was deleted by the user. Exactly one fictional application
