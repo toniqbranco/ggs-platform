@@ -20,6 +20,11 @@ initial [storage/transaction proposal](../proposals/application-storage/README.m
 Account creation, schema/settings changes, operational workspaces, and deployment
 still require their corresponding scope decisions.
 
+After PR #23 added the public header Sign in button, the next design review is
+[approved-streamer first access](streamer-onboarding-plan.md): invitation,
+one-time password/profile setup and later password sign-in. It is a proposal,
+not a live Auth or data-model change; existing admission rules still apply.
+
 | I need to…                                               | Read                                                                         |
 | -------------------------------------------------------- | ---------------------------------------------------------------------------- |
 | Understand the delivered scope and evidence              | [WP-01 status and acceptance](wp-01-status.md)                               |
