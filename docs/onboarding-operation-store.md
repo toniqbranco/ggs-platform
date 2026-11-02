@@ -113,3 +113,8 @@ No hosted resources, data, Auth settings or deployment change in this stage.
 References: [Supabase function privileges and security](https://supabase.com/docs/guides/database/functions),
 [private schemas and RLS](https://supabase.com/docs/guides/database/postgres/row-level-security),
 [PostgreSQL 17 row locks](https://www.postgresql.org/docs/17/explicit-locking.html).
+
+The [owner recovery adapter review](onboarding-owner-recovery.md) documents the
+next isolated increment, including explicit owner preparation of expired claims
+and the trusted provider-state/worker-quiescence evidence contract. Its inspector
+is simulated; it enables no real recovery or website endpoints.

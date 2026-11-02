@@ -13,6 +13,11 @@ import {
 import type { VerifiedPilotUser } from "../../src/lib/pilot/admission";
 import { setupWireFixture, setupHttpClient } from "../fixtures/onboarding-wire";
 import { createFixtureOperationStore } from "../../proposals/streamer-onboarding/operation-store";
+import {
+  createOwnerRecoveryAdapter,
+  RecoveryError,
+} from "../../proposals/streamer-onboarding/owner-recovery";
+import { approvedFixtureUser } from "../fixtures/pilot-admissions";
 import type {
   FixtureOperation,
   StepKey,
@@ -54,6 +59,10 @@ const proposal = readFileSync(
 );
 const providerProposal = readFileSync(
   `${onboardingDirectory}/20261102225344_provider_operation_store.sql`,
+  "utf8",
+);
+const recoveryProposal = readFileSync(
+  `${onboardingDirectory}/20261102234438_owner_recovery_review.sql`,
   "utf8",
 );
 const owner = "00000000-0000-4000-8000-000000000001";
@@ -151,6 +160,21 @@ before(async () => {
     );
     await c.query("set ggs.reviewed_provider_operations='isolated-only'");
     await c.query(providerProposal);
+    await assert.rejects(
+      c.query(recoveryProposal),
+      /Unapproved owner recovery proposal/,
+    );
+    await c.query("rollback");
+    assert.equal(
+      (
+        await admin.query(
+          "select to_regprocedure('ggs_onboarding.prepare_provider_review(uuid,uuid)') function",
+        )
+      ).rows[0].function,
+      null,
+    );
+    await c.query("set ggs.reviewed_owner_recovery='isolated-only'");
+    await c.query(recoveryProposal);
   } finally {
     c.release();
   }
@@ -1369,4 +1393,182 @@ test("proof capability has function-only access and cannot resolve, approve, act
     proof.query("select ggs_onboarding.read_self($1,$2)", [subject, binding]),
   );
   await assert.rejects(proof.query("set role ggs_ob_executor"));
+});
+
+function ownerRecovery(channel: OnboardingQuery = operator) {
+  const state = {
+    inspections: 0,
+    user: approvedFixtureUser("owner") as VerifiedPilotUser | null,
+  };
+  const adapter = createOwnerRecoveryAdapter({
+    mode: "isolated-fixture",
+    ownerUserId: owner,
+    operator: channel,
+    verify: async () => ({ data: { user: state.user }, error: null }),
+    inspectProvider: async (request) => {
+      state.inspections++;
+      return {
+        ...request,
+        confirmed: true,
+        workerStopped: true,
+        providerSettled: true,
+        observedAt: new Date().toISOString(),
+        evidenceId: request.decision === "verified" ? randomUUID() : null,
+      };
+    },
+  });
+  return { adapter, state };
+}
+test("owner adapter prepares expired claims with one atomic expiry event and no internal capability", async () => {
+  await issued();
+  const row = await claimProvider();
+  await admin.query(
+    "update ggs_onboarding.provider_operations set lease_until=clock_timestamp()-interval '1 second'",
+  );
+  const { adapter } = ownerRecovery();
+  const prepared = await adapter.prepare({ operationId: row.operationId });
+  assert.equal(prepared.state, "reconcile");
+  assert.equal(prepared.version, 2);
+  assert.ok(!("claimId" in prepared));
+  assert.deepEqual(
+    await adapter.prepare({ operationId: row.operationId }),
+    prepared,
+  );
+  assert.equal(await count("provider_events"), 2);
+});
+test("fresh owner recovery confirms no effect, preserves review history and permits a new claim", async () => {
+  await issued();
+  const row = await claimProvider();
+  await durableStore().uncertain(row);
+  const { adapter, state } = ownerRecovery();
+  const command = {
+    operationId: row.operationId,
+    expectedVersion: 2,
+    reviewId: randomUUID(),
+    decision: "no-effect",
+  };
+  assert.deepEqual(await adapter.resolve(command), {
+    revision: 3,
+    receipt: false,
+  });
+  assert.deepEqual(await adapter.resolve(command), {
+    revision: 3,
+    receipt: true,
+  });
+  assert.equal(state.inspections, 1);
+  await assert.rejects(
+    durableStore().verified(row, randomUUID()),
+    /reconciliation-required/,
+  );
+  assert.equal((await claimProvider()).state, "claimed");
+  assert.equal(await count("provider_events"), 4);
+});
+test("owner verified recovery provides evidence without another provider action and denial follows revocation", async () => {
+  await issued();
+  const key = providerKey();
+  const row = await claimProvider(key);
+  await durableStore().uncertain(row);
+  const { adapter } = ownerRecovery();
+  await adapter.resolve({
+    operationId: row.operationId,
+    expectedVersion: 2,
+    reviewId: randomUUID(),
+    decision: "verified",
+  });
+  const proofRecord = (await durableStore().read(
+    key,
+    subject,
+  )) as FixtureOperation;
+  assert.equal(proofRecord.state, "verified");
+  await step(
+    "accept",
+    2,
+    { evidence: proofRecord.evidenceId },
+    key.operationId,
+  );
+  await operate("revoke", {}, 3, randomUUID());
+  await assert.rejects(durableStore().read(key, subject), /denied/);
+});
+test("native lost recovery acknowledgement is safely read as the same receipt", async () => {
+  await issued();
+  const row = await claimProvider();
+  await durableStore().uncertain(row);
+  let writes = 0;
+  const lossy: OnboardingQuery = {
+    query: async (sql, values) => {
+      const result = await operator.query(sql, values);
+      if (sql.includes("resolve_provider_step") && ++writes === 1)
+        throw new Error("fictional acknowledgement loss");
+      return result;
+    },
+  };
+  const { adapter, state } = ownerRecovery(lossy);
+  const command = {
+    operationId: row.operationId,
+    expectedVersion: 2,
+    reviewId: randomUUID(),
+    decision: "no-effect",
+  };
+  await assert.rejects(
+    adapter.resolve(command),
+    (error: Error) =>
+      error instanceof RecoveryError &&
+      error.reason === "reconciliation-required",
+  );
+  assert.deepEqual(await adapter.resolve(command), {
+    revision: 3,
+    receipt: true,
+  });
+  assert.equal(writes, 1);
+  assert.equal(state.inspections, 1);
+  assert.equal(await count("provider_events"), 3);
+});
+test("owner preparation fails atomically if the expiry audit insert fails", async () => {
+  await issued();
+  const row = await claimProvider();
+  await admin.query(
+    "update ggs_onboarding.provider_operations set lease_until=clock_timestamp()-interval '1 second'",
+  );
+  await admin.query(
+    "create function ggs_onboarding.fixture_expiry_fail() returns trigger language plpgsql as $$begin raise exception 'fixture audit failure';end$$;create trigger fixture_expiry_fail before insert on ggs_onboarding.provider_events for each row execute function ggs_onboarding.fixture_expiry_fail()",
+  );
+  try {
+    await assert.rejects(
+      ownerRecovery().adapter.prepare({ operationId: row.operationId }),
+      /reconciliation-required/,
+    );
+  } finally {
+    await admin.query(
+      "drop trigger fixture_expiry_fail on ggs_onboarding.provider_events;drop function ggs_onboarding.fixture_expiry_fail()",
+    );
+  }
+  assert.equal(
+    (await admin.query("select state from ggs_onboarding.provider_operations"))
+      .rows[0].state,
+    "claimed",
+  );
+  assert.equal(await count("provider_events"), 1);
+});
+test("owner preparation is denied to all other runtime roles and wrong owner identities", async () => {
+  await issued();
+  const row = await claimProvider();
+  for (const pool of [proof, setup, reader, maintenance, ...deniedPools])
+    await assert.rejects(
+      pool.query("select ggs_onboarding.prepare_provider_review($1,$2)", [
+        owner,
+        row.operationId,
+      ]),
+    );
+  await assert.rejects(
+    operator.query("select ggs_onboarding.prepare_provider_review($1,$2)", [
+      subject,
+      row.operationId,
+    ]),
+  );
+  const { adapter, state } = ownerRecovery();
+  state.user = null;
+  await assert.rejects(
+    adapter.prepare({ operationId: row.operationId }),
+    /denied/,
+  );
 });
