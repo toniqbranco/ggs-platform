@@ -35,6 +35,10 @@ tests invoke real NextRequest/NextResponse objects directly.
 | `/auth/setup/finalize`   | Separate fixed command; profile completion alone never grants membership. No workspace route or permission is opened.                                                                                                     |
 | `/auth/setup/status`     | Binding ID only; current verified identity and SQL authorize the private projection, always with `workspaceAccess: false`.                                                                                                |
 
+Two command-only reconciliation paths, `/auth/setup/invitation-receipt` and
+`/auth/setup/password-receipt`, use already verified evidence and current identity.
+They accept no token/password and perform no provider effect.
+
 All are POST-only, exact same-origin with `Sec-Fetch-Site: same-origin`, JSON-only
 and reject query strings. GET links cannot consume an invitation or reset/change a
 password. Bodies are limited to 8192 bytes including streaming input and have a
@@ -69,8 +73,12 @@ trusted store. The adapter then independently rechecks identity and binds that
 evidence to its exact command before SQL. Raw token hashes and passwords are not
 passed to the store, SQL, audit, response JSON, URLs or application logs.
 
-An exact completed-operation retry with the correct current session reuses the
-same evidence, avoiding another SDK verify/password update. A missing browser
+Completed secret-bearing requests return reconciliation-required rather than
+acknowledging a resubmitted or changed password/token as applied. Dedicated
+command-only receipt requests with the correct current session reuse the same
+evidence and explicitly label the response `receipt: true`; they accept no secret
+and perform no SDK verify/password update. This avoids storing a password-derived
+fingerprint just to compare secret retries. A missing browser
 session is not repaired by replaying a consumed token. Unknown provider outcomes,
 store failures after an SDK effect and revocation during a password update require
 reconciliation and do not cause automatic repeat/update/resend or activation.

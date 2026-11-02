@@ -424,7 +424,10 @@ test("actual SDK HTTP fixture and restricted PostgreSQL channels complete setup 
     confirmPassword: secret,
   };
   assert.equal((await client.send("password", passwordBody)).status, 200);
-  assert.equal((await client.send("password", passwordBody)).status, 200);
+  assert.equal((await client.send("password", passwordBody)).status, 409);
+  const receipt = await client.send("password-receipt", passwordCommand);
+  assert.equal(receipt.status, 200);
+  assert.equal((await receipt.json()).receipt, true);
   assert.equal(wire.state.passwordUpdates, 1);
   assert.equal(
     (await client.send("profile", { ...adapterCommand(4), ...details() }))

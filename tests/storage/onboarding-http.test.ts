@@ -221,12 +221,15 @@ test("unknown subject/evidence/role/return fields cannot enter the request proto
   assert.equal(wire.state.claims, 0);
   assert.equal(wire.state.tokenUses, 0);
 });
-test("same-browser exact invitation retry uses durable evidence without another token verification", async () => {
+test("same-browser invitation reconciliation uses command-only evidence without another token verification", async () => {
   const { wire, client, command } = await begin();
   assert.equal(
     (await client.send("invitation", { ...command, tokenHash })).status,
-    200,
+    409,
   );
+  const receipt = await client.send("invitation-receipt", command);
+  assert.equal(receipt.status, 200);
+  assert.equal((await receipt.json()).receipt, true);
   assert.equal(wire.state.tokenUses, 1);
   client.jar.clear();
   assert.equal(
@@ -235,6 +238,46 @@ test("same-browser exact invitation retry uses durable evidence without another 
   );
   assert.equal(wire.state.tokenUses, 1);
 });
+test("a changed password cannot be falsely acknowledged through a completed operation", async () => {
+  const { wire, client, binding } = await begin();
+  const command = wire.seed("password", binding, 3);
+  assert.equal(
+    (
+      await client.send("password", {
+        ...command,
+        newPassword: password,
+        confirmPassword: password,
+      })
+    ).status,
+    200,
+  );
+  const changed = "Different-Fictional-Password-Only";
+  assert.equal(
+    (
+      await client.send("password", {
+        ...command,
+        newPassword: changed,
+        confirmPassword: changed,
+      })
+    ).status,
+    409,
+  );
+  assert.equal(wire.state.passwordUpdates, 1);
+  assert.equal(
+    (
+      await client.send("password-receipt", {
+        ...command,
+        newPassword: changed,
+      })
+    ).status,
+    400,
+  );
+  const receipt = await client.send("password-receipt", command);
+  assert.equal(receipt.status, 200);
+  assert.equal((await receipt.json()).receipt, true);
+  assert.equal(wire.state.passwordUpdates, 1);
+});
+
 test("provider failure marks reconciliation and blocks repeated invitation verification", async () => {
   const wire = setupWireFixture();
   wire.state.failVerification = true;

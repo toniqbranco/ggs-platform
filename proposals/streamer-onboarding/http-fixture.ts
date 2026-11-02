@@ -35,6 +35,8 @@ const readSchema = z.object({ invitationId: z.uuid() }).strict();
 const paths = [
   "invitation",
   "password",
+  "invitation-receipt",
+  "password-receipt",
   "profile",
   "finalize",
   "status",
@@ -122,7 +124,7 @@ export async function runSetupHttpFixture(
           ? passwordSchema
           : action === "profile"
             ? profileWriteSchema
-            : action === "finalize"
+            : action === "finalize" || action.endsWith("-receipt")
               ? setupCommandSchema
               : readSchema;
     const parsed = schema.safeParse(raw);
@@ -156,6 +158,16 @@ export async function runSetupHttpFixture(
     }
     if (action === "profile")
       return reply(await adapter.saveProfile(parsed.data));
+    if (action === "invitation-receipt")
+      return reply({
+        ...(await adapter.recordVerifiedInvitation(parsed.data)),
+        receipt: true,
+      });
+    if (action === "password-receipt")
+      return reply({
+        ...(await adapter.recordVerifiedPassword(parsed.data)),
+        receipt: true,
+      });
     if (action === "finalize")
       return reply(await adapter.finalize(parsed.data));
     return reply(await adapter.readSelf(parsed.data));

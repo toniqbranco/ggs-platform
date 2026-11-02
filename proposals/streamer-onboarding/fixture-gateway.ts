@@ -260,7 +260,9 @@ export function createFixtureSetupGateway(
     if (operation.state === "verified") {
       if ((await subject()) !== operation.subject)
         throw new FixtureGatewayError("denied");
-      return;
+      // Do not acknowledge a newly submitted secret as applied. Reconcile using
+      // the command-only receipt path, which cannot carry a different password.
+      throw new FixtureGatewayError("reconciliation-required");
     }
     try {
       const result =
