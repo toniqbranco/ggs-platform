@@ -20,6 +20,12 @@ test("server factory fails before request context and makes no fetch calls", () 
 
 for (const boundary of [
   {
+    name: "onboarding-owner-recovery-server-only",
+    conditions: [],
+    file: "./proposals/streamer-onboarding/owner-recovery.ts",
+    message: /cannot be imported from a Client Component/i,
+  },
+  {
     name: "onboarding-operation-store-server-only",
     conditions: [],
     file: "./proposals/streamer-onboarding/operation-store.ts",

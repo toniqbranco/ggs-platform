@@ -72,3 +72,6 @@ launch and not authorization to start WP-02.
 
 For the latest isolated setup persistence and recovery stage, see the
 [durable provider operation store](onboarding-operation-store.md).
+
+Owner recovery orchestration and the milestones toward local app integration are
+in the [owner recovery review](onboarding-owner-recovery.md).

@@ -198,3 +198,8 @@ adds a separate unapplied migration and isolated bridge. Prior migration SQL sta
 unchanged; no hosted execution or real Auth effects are authorized. Owner recovery
 has SQL primitives and native tests, with fresh-owner/provider-state integration
 still required before any live use.
+
+The [owner recovery adapter](../../docs/onboarding-owner-recovery.md) adds one
+unapplied owner-only preparation function and fixture orchestration. The provider
+inspector is simulated. Hosted SQL/Auth effects remain unauthorized; the next
+reviewed milestone is local app page/request integration with fictional data.
