@@ -113,3 +113,22 @@ for (const route of ["pilot", "access-denied"]) {
     expect((await request.get(`/fr/${route}`)).status()).toBe(404);
   });
 }
+
+test("local setup routes stay closed in the production build", async ({
+  request,
+}) => {
+  for (const locale of ["es", "en"])
+    expect((await request.get(`/${locale}/setup/local`)).status()).toBe(404);
+  expect(
+    (
+      await request.post("/auth/setup-local/start", {
+        data: {},
+        headers: {
+          origin: "http://localhost:3107",
+          "sec-fetch-site": "same-origin",
+          host: "localhost:3107",
+        },
+      })
+    ).status(),
+  ).toBe(404);
+});

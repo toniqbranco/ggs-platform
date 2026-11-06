@@ -62,3 +62,9 @@ not sending invitations or enabling password sign-in. The earlier real-owner
 email/callback check remains unverified. Hosted schemas/grants, account changes,
 profile retention, provider exchange/settings and activation need their own reviews.
 No deployment is included.
+
+## Interactive local app
+
+The [local setup app](local-setup-app.md) now connects a separate gated local-only
+page to the fictional SDK flow. The original public preview routes above remain
+unchanged. Real profile/password entry and hosted integration remain disabled.

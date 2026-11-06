@@ -75,3 +75,5 @@ For the latest isolated setup persistence and recovery stage, see the
 
 Owner recovery orchestration and the milestones toward local app integration are
 in the [owner recovery review](onboarding-owner-recovery.md).
+
+For hands-on fictional onboarding, see the [local setup app](local-setup-app.md).

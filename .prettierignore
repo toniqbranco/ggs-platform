@@ -1,5 +1,6 @@
 node_modules/
 .next/
+.next-setup-fixture/
 out/
 build/
 coverage/

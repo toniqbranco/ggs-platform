@@ -42,7 +42,7 @@ const paths = [
   "status",
 ] as const;
 
-async function boundedJson(request: NextRequest): Promise<unknown> {
+export async function boundedJson(request: NextRequest): Promise<unknown> {
   const length = request.headers.get("content-length");
   if (length !== null && (!/^\d+$/.test(length) || Number(length) > 8192))
     throw new FixtureGatewayError("invalid");
