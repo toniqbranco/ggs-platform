@@ -1,6 +1,7 @@
 import "server-only";
 import { z } from "zod";
 import { profileFieldsSchema, profileWriteSchema } from "./contract";
+import { approvedPilotOrigin } from "../../src/lib/auth/config";
 import {
   readPilotAdmission,
   type VerifiedPilotUser,
@@ -70,7 +71,7 @@ function parse<T>(schema: z.ZodType<T>, input: unknown): T {
 
 /** Isolated proposal only. No environment switch, transport or live SDK is wired. */
 export function createOnboardingAdapter(deps: Dependencies) {
-  function guard() {
+  return createAdapter(deps, () => {
     if (
       deps.mode !== "isolated-fixture" ||
       process.env.APP_ENV !== "test" ||
@@ -78,9 +79,83 @@ export function createOnboardingAdapter(deps: Dependencies) {
       !z.uuid().safeParse(deps.ownerUserId).success
     )
       throw new OnboardingAdapterError("unavailable");
+  });
+}
+
+const testingOrigin = "http://127.0.0.1:3103";
+const testingScopeSchema = z
+  .object({
+    subject: z.uuid(),
+    invitationId: z.uuid(),
+    applicationId: z.uuid(),
+    applicationRevision: revision,
+  })
+  .strict();
+const approvedBindingSchema = testingScopeSchema
+  .extend({
+    approval: z.literal("approved"),
+    decidedBy: z.uuid(),
+  })
+  .strict();
+
+type TestingDependencies = Omit<Dependencies, "mode"> & {
+  enabled?: boolean;
+  providerOrigin: string;
+  appOrigin: string;
+  scope: unknown;
+  /** Trusted server read of the binding joined to its current approval. */
+  readApprovedBinding(invitationId: string): Promise<unknown>;
+};
+
+/** Server composition must supply project-pinned Auth and restricted database channels. */
+export function createTestingOnboardingAdapter(deps: TestingDependencies) {
+  const scope = testingScopeSchema.safeParse(deps.scope);
+  function guard() {
+    if (
+      deps.enabled !== true ||
+      process.env.APP_ENV !== "test" ||
+      process.env.NODE_ENV === "production" ||
+      deps.providerOrigin !== approvedPilotOrigin ||
+      deps.appOrigin !== testingOrigin ||
+      !z.uuid().safeParse(deps.ownerUserId).success ||
+      !scope.success ||
+      scope.data.subject === deps.ownerUserId
+    )
+      throw new OnboardingAdapterError("unavailable");
   }
-  async function identity() {
+  return createAdapter(deps, guard, async (invitationId, subject) => {
+    if (!scope.success || invitationId !== scope.data.invitationId)
+      throw new OnboardingAdapterError("denied");
+    if (subject === undefined) return;
+    if (subject !== scope.data.subject)
+      throw new OnboardingAdapterError("denied");
+    let raw: unknown;
+    try {
+      raw = await deps.readApprovedBinding(invitationId);
+    } catch {
+      throw new OnboardingAdapterError("unavailable");
+    }
+    const binding = approvedBindingSchema.safeParse(raw);
+    if (
+      !binding.success ||
+      binding.data.invitationId !== invitationId ||
+      binding.data.subject !== subject ||
+      binding.data.applicationId !== scope.data.applicationId ||
+      binding.data.applicationRevision !== scope.data.applicationRevision ||
+      binding.data.decidedBy !== deps.ownerUserId
+    )
+      throw new OnboardingAdapterError("denied");
+  });
+}
+
+function createAdapter(
+  deps: Dependencies,
+  guard: () => void,
+  checkScope?: (invitationId: string, subject?: string) => Promise<void>,
+) {
+  async function identity(invitationId: string) {
     guard();
+    await checkScope?.(invitationId);
     let result: Awaited<ReturnType<Dependencies["verify"]>>;
     try {
       result = await deps.verify();
@@ -107,6 +182,9 @@ export function createOnboardingAdapter(deps: Dependencies) {
       priorAdmission?.roles.some((role) => role === "owner" || role === "admin")
     )
       throw new OnboardingAdapterError("denied");
+    guard();
+    await checkScope?.(invitationId, user.id);
+    guard();
     return user.id;
   }
   async function query<T>(
@@ -166,7 +244,7 @@ export function createOnboardingAdapter(deps: Dependencies) {
   async function recordEvidence(kind: EvidenceRequest["kind"], input: unknown) {
     guard();
     const command = parse(commandSchema, input);
-    const subject = await identity();
+    const subject = await identity(command.invitationId);
     const request: EvidenceRequest = { ...command, subject, kind };
     let raw: unknown;
     try {
@@ -185,7 +263,7 @@ export function createOnboardingAdapter(deps: Dependencies) {
     )
       throw new OnboardingAdapterError("denied");
     // Evidence lookup may take time; never reuse the first identity across it.
-    if ((await identity()) !== subject)
+    if ((await identity(command.invitationId)) !== subject)
       throw new OnboardingAdapterError("denied");
     try {
       return await transition(
@@ -208,7 +286,7 @@ export function createOnboardingAdapter(deps: Dependencies) {
     async readSelf(input: unknown) {
       guard();
       const command = parse(readSchema, input);
-      const subject = await identity();
+      const subject = await identity(command.invitationId);
       const row = await query(
         deps.reader,
         "select ggs_onboarding.read_self($1,$2) result",
@@ -221,7 +299,7 @@ export function createOnboardingAdapter(deps: Dependencies) {
     async saveProfile(input: unknown) {
       guard();
       const command = parse(profileWriteSchema, input);
-      const subject = await identity();
+      const subject = await identity(command.invitationId);
       const {
         displayName,
         country,
@@ -242,7 +320,7 @@ export function createOnboardingAdapter(deps: Dependencies) {
     async finalize(input: unknown) {
       guard();
       const command = parse(commandSchema, input);
-      const subject = await identity();
+      const subject = await identity(command.invitationId);
       return transition(subject, command, "finalize", {});
     },
     recordVerifiedInvitation: (input: unknown) =>

@@ -123,3 +123,20 @@ Do not connect hosted resources, invite a person, set a real password, collect a
 profile, enable a workspace or deploy without its separately reviewed stage.
 
 Reference: [Supabase server session verification](https://supabase.com/docs/guides/auth/server-side/advanced-guide).
+
+## One-streamer testing adapter
+
+The server-only testing factory requires explicit enablement, APP_ENV=test,
+a nonproduction runtime, the GG-livestream provider origin and the existing
+http://127.0.0.1:3103 callback origin. Its server-supplied scope identifies one
+Auth subject, invitation, application and approved revision. Before any setup
+operation it checks verified identity and a current binding and approval read.
+Evidence operations repeat those checks after reading the provider receipt.
+The existing SQL routines enforce current eligibility again when invoked.
+
+The factory accepts injected dependencies. A later composition PR must pin
+the actual Auth transport, provide a restricted binding reader and durable proof
+reader, and bind the request origin to the reviewed callback configuration.
+The origin values on the factory are configuration checks. They do not attest
+to an injected client's network destination. The current app has no caller
+for this factory. The local fictional setup continues to use its existing mode.

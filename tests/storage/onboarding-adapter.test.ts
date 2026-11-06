@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { before, after, beforeEach, test } from "node:test";
 import {
   createOnboardingAdapter,
+  createTestingOnboardingAdapter,
   OnboardingAdapterError,
   type EvidenceRequest,
 } from "../../proposals/streamer-onboarding/adapter";
@@ -296,4 +297,111 @@ test("finalization is a fixed separate SQL command and returns no workspace perm
   assert.equal(calls[0]!.values[4], "finalize");
   assert.equal(calls[0]!.values[5], "{}");
   assert.equal(proofCalls, 0);
+});
+
+function testingFixture() {
+  const subject = approvedFixtureUser("streamer").id;
+  const scope = {
+    subject,
+    invitationId,
+    applicationId: "00000000-0000-4000-8000-000000000013",
+    applicationRevision: 2,
+  };
+  const state = {
+    user: approvedFixtureUser("streamer"),
+    binding: { ...scope, approval: "approved", decidedBy: fixtureOwnerId },
+    onProof: () => {},
+    checks: 0,
+    writes: 0,
+  };
+  const deps = {
+    enabled: true,
+    providerOrigin: "https://rchxnmpsxfbsicthasxn.supabase.co",
+    appOrigin: "http://127.0.0.1:3103",
+    ownerUserId: fixtureOwnerId,
+    scope,
+    verify: async () => ({ data: { user: state.user }, error: null }),
+    readApprovedBinding: async () => {
+      state.checks++;
+      return state.binding;
+    },
+    verifyEvidence: async (request: EvidenceRequest) => {
+      state.onProof();
+      return { ...request, evidenceId, verified: true };
+    },
+    setup: {
+      query: async () => {
+        state.writes++;
+        return { rows: [{ revision: 5 }] };
+      },
+    },
+    reader: {
+      query: async () => ({
+        rows: [
+          {
+            result: {
+              membership: "pending",
+              bindingRevision: 4,
+              profile: null,
+            },
+          },
+        ],
+      }),
+    },
+  };
+  return { state, deps };
+}
+
+test("testing adapter requires explicit enablement and exact project and app origins", async () => {
+  const { deps, state } = testingFixture();
+  for (const patch of [
+    { enabled: false },
+    { providerOrigin: "https://wrong-project.supabase.co" },
+    { appOrigin: "https://example.invalid" },
+  ]) {
+    await assert.rejects(
+      createTestingOnboardingAdapter({ ...deps, ...patch }).finalize(command),
+      failure("unavailable"),
+    );
+  }
+  adapterTestEnv.NODE_ENV = "production";
+  await assert.rejects(
+    createTestingOnboardingAdapter(deps).finalize(command),
+    failure("unavailable"),
+  );
+  assert.equal(state.checks, 0);
+  assert.equal(state.writes, 0);
+});
+
+test("testing adapter denies another invitation, subject, or approval revision", async () => {
+  const { deps, state } = testingFixture();
+  const adapter = createTestingOnboardingAdapter(deps);
+  await assert.rejects(
+    adapter.finalize({ ...command, invitationId: operationId }),
+    failure("denied"),
+  );
+  state.user = { ...state.user, id: operationId };
+  await assert.rejects(adapter.finalize(command), failure("denied"));
+  assert.equal(state.checks, 0);
+  state.user = approvedFixtureUser("streamer");
+  state.binding.applicationRevision++;
+  await assert.rejects(adapter.finalize(command), failure("denied"));
+  assert.equal(state.writes, 0);
+});
+
+test("testing adapter rechecks the approved binding after provider evidence", async () => {
+  const { deps, state } = testingFixture();
+  const adapter = createTestingOnboardingAdapter(deps);
+  assert.deepEqual(await adapter.recordVerifiedPassword(command), {
+    revision: 5,
+  });
+  assert.equal(state.checks, 2);
+  state.onProof = () => {
+    state.binding.approval = "withdrawn";
+  };
+  await assert.rejects(
+    adapter.recordVerifiedPassword(command),
+    failure("denied"),
+  );
+  assert.equal(state.writes, 1);
 });
