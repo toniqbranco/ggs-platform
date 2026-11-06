@@ -140,3 +140,7 @@ migration compatibility correction stops for review before hosted credentials or
 intake, operational decisions, or invitations. Merging a proposal does not
 authorize applying its SQL. Each later increment
 retains its own review boundary.
+
+Local interactive setup can be reviewed separately with `pnpm dev:setup-fixture`.
+See [the manual test guide](docs/local-setup-app.md) for the fictional-data limits
+and localhost link. This enables no real accounts or hosted services.

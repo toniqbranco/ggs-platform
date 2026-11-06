@@ -3,12 +3,15 @@ import { defaultLocale } from "./src/lib/i18n/config";
 import { parseServerEnvironment } from "./src/lib/env/schema";
 import { securityHeaders } from "./src/lib/security/headers";
 import { parsePilotAuthConfig } from "./src/lib/auth/config";
+import { localSetupEnabled } from "./src/lib/setup-local/gate";
 
 // Next.js loads the appropriate .env files before evaluating this configuration.
 parseServerEnvironment(process.env);
 parsePilotAuthConfig(process.env);
 
 const nextConfig: NextConfig = {
+  ...(localSetupEnabled(process.env) ? { devIndicators: false as const } : {}),
+  distDir: localSetupEnabled(process.env) ? ".next-setup-fixture" : ".next",
   poweredByHeader: false,
   async headers() {
     return [
@@ -28,6 +31,13 @@ const nextConfig: NextConfig = {
         headers: securityHeaders(process.env.NODE_ENV === "production"),
       },
       {
+        source: "/:locale/setup/local",
+        headers: [
+          { key: "Cache-Control", value: "private, no-store" },
+          { key: "Referrer-Policy", value: "no-referrer" },
+        ],
+      },
+      {
         source: "/:locale/setup",
         headers: [{ key: "Referrer-Policy", value: "no-referrer" }],
       },
@@ -36,6 +46,11 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       { source: "/", destination: `/${defaultLocale}`, permanent: false },
+      {
+        source: "/setup/local",
+        destination: `/${defaultLocale}/setup/local`,
+        permanent: false,
+      },
       {
         source: "/setup",
         destination: `/${defaultLocale}/setup`,

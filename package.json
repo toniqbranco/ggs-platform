@@ -22,7 +22,9 @@
     "test:e2e:report": "playwright show-report",
     "security:audit": "pnpm audit --audit-level=high",
     "test:e2e:auth": "playwright test --config playwright.auth.config.ts",
-    "test:e2e:storage": "playwright test --config playwright.storage.config.ts"
+    "test:e2e:storage": "playwright test --config playwright.storage.config.ts",
+    "dev:setup-fixture": "tsx scripts/run-setup-fixture.ts",
+    "test:e2e:setup": "playwright test --config playwright.setup.config.ts"
   },
   "dependencies": {
     "@fontsource-variable/roboto": "^5.3.0",

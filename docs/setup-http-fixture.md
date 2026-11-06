@@ -156,3 +156,8 @@ The next isolated increment is now documented in the
 in-memory store in native tests only; the real website remains disconnected from
 this setup flow. Its owner recovery primitive is SQL-only and requires a later
 fresh-owner adapter and verified provider-state/quiescence contract.
+
+The [local interactive setup stage](local-setup-app.md) adds a gated wrapper around
+this orchestrator on a dedicated localhost development server. It supplies only
+fixed fictional inputs and uses ephemeral memory, with no hosted or durable-store
+connection. The main setup previews and current pilot Auth routes are unchanged.
