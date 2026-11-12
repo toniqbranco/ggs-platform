@@ -31,7 +31,7 @@ const nextConfig: NextConfig = {
         headers: securityHeaders(process.env.NODE_ENV === "production"),
       },
       {
-        source: "/:locale/setup/local",
+        source: "/:locale/setup/:variant(local|pilot)",
         headers: [
           { key: "Cache-Control", value: "private, no-store" },
           { key: "Referrer-Policy", value: "no-referrer" },

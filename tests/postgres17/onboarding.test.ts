@@ -65,6 +65,10 @@ const recoveryProposal = readFileSync(
   `${onboardingDirectory}/20261102234438_owner_recovery_review.sql`,
   "utf8",
 );
+const statusProposal = readFileSync(
+  `${onboardingDirectory}/20261112082133_pilot_setup_status.sql`,
+  "utf8",
+);
 const owner = "00000000-0000-4000-8000-000000000001";
 let operator: Pool,
   setup: Pool,
@@ -175,6 +179,13 @@ before(async () => {
     );
     await c.query("set ggs.reviewed_owner_recovery='isolated-only'");
     await c.query(recoveryProposal);
+    await assert.rejects(
+      c.query(statusProposal),
+      /Unapproved pilot setup status proposal/,
+    );
+    await c.query("rollback");
+    await c.query("set ggs.reviewed_pilot_setup_status='isolated-only'");
+    await c.query(statusProposal);
   } finally {
     c.release();
   }
@@ -1571,4 +1582,30 @@ test("owner preparation is denied to all other runtime roles and wrong owner ide
     adapter.prepare({ operationId: row.operationId }),
     /denied/,
   );
+});
+
+test("approved binding reader exposes only an accepted current binding to the reader capability", async () => {
+  await issued();
+  const sql = "select ggs_onboarding.read_approved_binding($1,$2) result";
+  await assert.rejects(reader.query(sql, [subject, binding]), {
+    code: "42501",
+  });
+  await step("accept", 2, { evidence: randomUUID() });
+  const result = (await reader.query(sql, [subject, binding])).rows[0].result;
+  assert.deepEqual(result, {
+    invitationId: binding,
+    subject,
+    applicationId: app,
+    applicationRevision: 2,
+    approval: "approved",
+    decidedBy: owner,
+  });
+  await assert.rejects(reader.query(sql, [randomUUID(), binding]), {
+    code: "42501",
+  });
+  await assert.rejects(proof.query(sql, [subject, binding]), { code: "42501" });
+  await operate("revoke", {}, 3, randomUUID());
+  await assert.rejects(reader.query(sql, [subject, binding]), {
+    code: "42501",
+  });
 });

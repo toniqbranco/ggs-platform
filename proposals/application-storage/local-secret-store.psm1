@@ -74,17 +74,21 @@ function ConvertTo-GgsCanonical([hashtable]$Bundle) {
   return ConvertTo-Json -InputObject $result -Depth 4 -Compress
 }
 function Get-GgsEntropy { return [Text.Encoding]::UTF8.GetBytes('GG-testing-storage-v1:rchxnmpsxfbsicthasxn') }
-function Read-GgsProtected([string]$File) {
+function Read-GgsProtected([string]$File, [switch]$SetupReader) {
   Assert-GgsAcl $File $false
   $length = (Get-Item -LiteralPath $File -Force -ErrorAction Stop).Length
   if ($length -lt 16 -or $length -gt 16384) { Stop-GgsStore }
   $encrypted = [IO.File]::ReadAllBytes($File)
   $plain = $null
   try {
-    $plain = [Security.Cryptography.ProtectedData]::Unprotect($encrypted, (Get-GgsEntropy), [Security.Cryptography.DataProtectionScope]::CurrentUser)
+    $entropy = if ($SetupReader) { [Text.Encoding]::UTF8.GetBytes('GG-setup-reader-v1:rchxnmpsxfbsicthasxn') } else { Get-GgsEntropy }
+    $plain = [Security.Cryptography.ProtectedData]::Unprotect($encrypted, $entropy, [Security.Cryptography.DataProtectionScope]::CurrentUser)
     $bundle = ConvertFrom-Json -InputObject ([Text.Encoding]::UTF8.GetString($plain)) -AsHashtable -ErrorAction Stop
     # Canonical validation also rejects a decrypted payload for a different target.
-    [void](ConvertTo-GgsCanonical $bundle)
+    if ($SetupReader) {
+      if ($bundle.Count -ne 2 -or $bundle.user -cne 'ggs_ob_reader_login.rchxnmpsxfbsicthasxn' -or
+          $bundle.password -isnot [string] -or $bundle.password -cnotmatch '^[a-f0-9]{64}$') { Stop-GgsStore }
+    } else { [void](ConvertTo-GgsCanonical $bundle) }
     return $bundle
   } finally {
     if ($plain) { [Array]::Clear($plain, 0, $plain.Length) }
@@ -147,4 +151,18 @@ function Invoke-GgsWithTestingCredentials {
   } catch { Stop-GgsStore }
 }
 
-Export-ModuleMember -Function Save-GgsTestingCredentialBundle, Invoke-GgsWithTestingCredentials
+function Invoke-GgsWithSetupReaderCredential {
+  param([Parameter(Mandatory)][string]$CheckoutRoot,
+    [Parameter(Mandatory)][string]$Acknowledgement,
+    [Parameter(Mandatory)][scriptblock]$Consumer)
+  try {
+    Assert-GgsContext $Acknowledgement
+    if ($env:APP_ENV -cne 'test' -or $env:GGS_PILOT_SETUP_ENABLED -cne 'single-streamer') { Stop-GgsStore }
+    $paths = Get-GgsPaths $CheckoutRoot
+    Assert-GgsAcl $paths.Directory $true
+    $credential = Read-GgsProtected (Join-Path $paths.Directory 'ggs-setup-reader.dpapi') -SetupReader
+    [void](& $Consumer $credential)
+  } catch { Stop-GgsStore }
+}
+
+Export-ModuleMember -Function Save-GgsTestingCredentialBundle, Invoke-GgsWithTestingCredentials, Invoke-GgsWithSetupReaderCredential
