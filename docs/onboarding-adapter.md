@@ -134,9 +134,25 @@ operation it checks verified identity and a current binding and approval read.
 Evidence operations repeat those checks after reading the provider receipt.
 The existing SQL routines enforce current eligibility again when invoked.
 
-The factory accepts injected dependencies. A later composition PR must pin
-the actual Auth transport, provide a restricted binding reader and durable proof
-reader, and bind the request origin to the reviewed callback configuration.
-The origin values on the factory are configuration checks. They do not attest
-to an injected client's network destination. The current app has no caller
-for this factory. The local fictional setup continues to use its existing mode.
+The testing status page at /es/setup/pilot or /en/setup/pilot uses the
+existing Supabase browser session and a fresh server Auth user check.
+Its same-origin status request accepts an empty JSON object and returns only
+pending or complete. The reader verifies the accepted binding and current
+approval, then uses the existing self-read operation.
+
+Enablement is default off. The status page needs APP_ENV=test, a nonproduction
+server bound to 127.0.0.1:3103, the reviewed pilot Auth configuration,
+GGS_PILOT_SETUP_ENABLED=single-streamer, and the server-side scope values
+GGS_PILOT_SETUP_SUBJECT_ID, GGS_PILOT_SETUP_INVITATION_ID,
+GGS_PILOT_SETUP_APPLICATION_ID and GGS_PILOT_SETUP_APPLICATION_REVISION.
+
+The unapplied 20261112082133 proposal adds the binding reader function for
+ggs_ob_reader. The application expects a separately provisioned
+ggs_ob_reader_login with that capability and an owner-only Windows DPAPI
+file at .local-secrets/ggs-setup-reader.dpapi. The existing review credential
+remains separate. Provisioning the login and storing its credential are
+outside this change. The tests use simulated Auth and disposable PostgreSQL.
+
+The screen assumes a signed-in participant with an accepted binding. A
+hosted invitation callback, password submission, profile edits and recovery
+still need their own integration and activation review.

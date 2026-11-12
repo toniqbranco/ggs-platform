@@ -114,11 +114,15 @@ for (const route of ["pilot", "access-denied"]) {
   });
 }
 
-test("local setup routes stay closed in the production build", async ({
+test("local and pilot setup routes stay closed in the production build", async ({
   request,
 }) => {
   for (const locale of ["es", "en"])
-    expect((await request.get(`/${locale}/setup/local`)).status()).toBe(404);
+    for (const variant of ["local", "pilot"])
+      expect((await request.get(`/${locale}/setup/${variant}`)).status()).toBe(
+        404,
+      );
+  expect((await request.post("/auth/setup-status")).status()).toBe(404);
   expect(
     (
       await request.post("/auth/setup-local/start", {

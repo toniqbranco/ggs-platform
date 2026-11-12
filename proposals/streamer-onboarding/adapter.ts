@@ -82,8 +82,8 @@ export function createOnboardingAdapter(deps: Dependencies) {
   });
 }
 
-const testingOrigin = "http://127.0.0.1:3103";
-const testingScopeSchema = z
+export const testingOnboardingOrigin = "http://127.0.0.1:3103";
+export const testingScopeSchema = z
   .object({
     subject: z.uuid(),
     invitationId: z.uuid(),
@@ -116,7 +116,7 @@ export function createTestingOnboardingAdapter(deps: TestingDependencies) {
       process.env.APP_ENV !== "test" ||
       process.env.NODE_ENV === "production" ||
       deps.providerOrigin !== approvedPilotOrigin ||
-      deps.appOrigin !== testingOrigin ||
+      deps.appOrigin !== testingOnboardingOrigin ||
       !z.uuid().safeParse(deps.ownerUserId).success ||
       !scope.success ||
       scope.data.subject === deps.ownerUserId
