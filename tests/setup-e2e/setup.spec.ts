@@ -45,7 +45,7 @@ for (const locale of ["es", "en"]) {
     ).toBeVisible();
     await page.reload();
     await expect(
-      page.getByText("GG Demo Creator", { exact: true }),
+      page.getByText("Stream Talents Demo Creator", { exact: true }),
     ).toBeVisible();
     await page.screenshot({
       path: `test-results/local-setup-${locale}-${test.info().project.name}.png`,

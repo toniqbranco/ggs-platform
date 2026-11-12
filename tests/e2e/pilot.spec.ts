@@ -53,7 +53,7 @@ for (const locale of ["es", "en"]) {
       await expect(page.locator("html")).toHaveAttribute("lang", locale);
       await expect(page.getByRole("heading", { level: 1 })).toHaveCount(1);
       await expect(page).toHaveTitle(
-        `${await page.getByRole("heading", { level: 1 }).innerText()} · GG's`,
+        `${await page.getByRole("heading", { level: 1 }).innerText()} · Stream Talents`,
       );
       await expect(page.locator("[data-pilot-page]")).toHaveAttribute(
         "data-pilot-page",

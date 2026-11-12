@@ -172,7 +172,7 @@ export async function runLocalSetup(request: NextRequest) {
               ? {
                   ...session.profile,
                   expectedProfileRevision: 0,
-                  displayName: "GG Demo Creator",
+                  displayName: "Stream Talents Demo Creator",
                   country: "Colombia",
                   platform: "twitch",
                   profileUrl: "https://example.invalid/creator",

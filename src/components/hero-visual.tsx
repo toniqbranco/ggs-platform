@@ -28,7 +28,7 @@ export function HeroVisual({
           <div className="orbit orbit-two" />
           <div className="orbit orbit-three" />
           <span className="art-wordmark">
-            GG&apos;s<span>↗</span>
+            Stream Talents<span>↗</span>
           </span>
           <div className="art-node node-one" />
           <div className="art-node node-two" />
@@ -49,7 +49,7 @@ export function HeroVisual({
         <Icon name="signal" />
       </div>
       <span className="visual-index" aria-hidden="true">
-        GG&apos;S — 001
+        Stream Talents — 001
       </span>
     </div>
   );

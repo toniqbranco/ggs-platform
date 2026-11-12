@@ -1,4 +1,4 @@
-# GG's Platform
+# Stream Talents
 
 A modern digital-talent and livestream website foundation: Next.js App Router,
 strict TypeScript, pnpm, Roboto, and Spanish-default/English preview shells.

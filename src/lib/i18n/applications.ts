@@ -2,7 +2,7 @@ import type { Locale } from "./config";
 
 const copy = {
   en: {
-    eyebrow: "THE NEXT WAVE · GG'S TALENT",
+    eyebrow: "THE NEXT WAVE · Stream Talents",
     title: "Your next chapter starts here.",
     description:
       "A space for creators with a voice, a vision, and the drive to grow. Let’s get to know your talent.",
@@ -69,7 +69,7 @@ const copy = {
     noResults: "No applications in this view.",
   },
   es: {
-    eyebrow: "LA NUEVA OLA · TALENTO GG'S",
+    eyebrow: "LA NUEVA OLA · Stream Talents",
     title: "Tu próximo capítulo empieza aquí.",
     description:
       "Un espacio para creadores con voz, visión y ganas de crecer. Queremos conocer tu talento.",

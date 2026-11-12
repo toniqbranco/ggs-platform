@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { BrandLogo } from "./brand-logo";
 import { useEffect, useState } from "react";
 import { z } from "zod";
 import type { Locale } from "@/lib/i18n/config";
@@ -76,8 +77,8 @@ export function OwnerStoredReview({ locale }: { locale: Locale }) {
         {locale === "es" ? "Saltar al contenido" : "Skip to content"}
       </a>
       <header className="review-header">
-        <a className="wordmark" href={`/${locale}`}>
-          GG&apos;s.
+        <a className="wordmark" aria-label="Stream Talents" href={`/${locale}`}>
+          <BrandLogo />
         </a>
         <span className="eyebrow">{copy.eyebrow}</span>
         <nav aria-label={locale === "es" ? "Idioma" : "Language"}>
