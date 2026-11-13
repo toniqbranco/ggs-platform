@@ -15,12 +15,12 @@ export async function getPilotMetadata(
   const copy = getPilotCopy(locale);
   if (target === "streamer") {
     return {
-      title: `${getDictionary(locale).sections[target].label} · ${copy.invitationOnly} · GG's`,
+      title: `${getDictionary(locale).sections[target].label} · ${copy.invitationOnly} · Stream Talents`,
       description: copy.entryDescription,
     };
   }
   return {
-    title: `${copy[target].title} · GG's`,
+    title: `${copy[target].title} · Stream Talents`,
     description: copy[target].description,
   };
 }

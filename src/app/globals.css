@@ -586,11 +586,23 @@ a {
   line-height: 1;
   text-decoration: none;
 }
-.wordmark-ending {
-  font-weight: 750;
+.brand-logo {
+  display: block;
+  width: clamp(6.5rem, 11vw, 9rem);
+  height: auto;
 }
-.wordmark-period {
-  color: var(--color-ink);
+.brand-logo-static {
+  display: none;
+}
+@media (prefers-reduced-motion: reduce) {
+  .brand-logo {
+    display: none;
+  }
+  .brand-logo-static {
+    display: block;
+    font-size: 1.25rem;
+    letter-spacing: -0.035em;
+  }
 }
 .brandline {
   width: 7.5rem;
@@ -1083,7 +1095,7 @@ h1 > span {
   gap: 1.5rem;
 }
 .footer-brand {
-  font-size: 4.75rem;
+  font-size: clamp(1.65rem, 5vw, 4rem);
   font-weight: 850;
   letter-spacing: -0.08em;
   line-height: 1;
@@ -1136,7 +1148,7 @@ h1 > span {
 .art-wordmark {
   z-index: 1;
   padding-bottom: 2rem;
-  font-size: 7.5rem;
+  font-size: clamp(1.6rem, 4vw, 4.5rem);
   font-weight: 850;
   letter-spacing: -0.08em;
   color: #e3eddb;
@@ -1345,17 +1357,11 @@ h1 > span {
   .panel {
     padding: 1.5rem;
   }
-  .footer-brand {
-    font-size: 3.75rem;
-  }
   .footer-main p {
     font-size: 1.25rem;
   }
   .footer-bottom {
     font-size: 0.5625rem;
-  }
-  .art-wordmark {
-    font-size: 6rem;
   }
 }
 
@@ -1916,7 +1922,7 @@ h1 > span {
 }
 .local-orbit > span:first-child {
   font-weight: 900;
-  font-size: 4rem;
+  font-size: 1.75rem;
   letter-spacing: -0.07em;
 }
 .local-orbit > span:last-child {

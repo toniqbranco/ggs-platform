@@ -23,12 +23,12 @@ type PilotCopy = {
 
 const copies: Record<Locale, PilotCopy> = {
   es: {
-    eyebrow: "PILOTO PRIVADO DE GG'S",
+    eyebrow: "PILOTO PRIVADO DE Stream Talents",
     preview: "Vista previa del piloto",
     invitationOnly: "Solo por invitación",
     entryTitle: "Tu invitación es el primer paso.",
     entryDescription:
-      "Estamos preparando un piloto privado para los streamers de GG's. El acceso se habilitará únicamente para participantes invitados y aprobados.",
+      "Estamos preparando un piloto privado para los streamers de Stream Talents. El acceso se habilitará únicamente para participantes invitados y aprobados.",
     availability:
       "El inicio de sesión todavía no está disponible. Esta página no crea cuentas ni solicita tus datos.",
     signinSoon: "Inicio de sesión próximamente",
@@ -39,7 +39,7 @@ const copies: Record<Locale, PilotCopy> = {
       {
         title: "Invitación directa",
         description:
-          "GG's invitará a los participantes del piloto. El registro público permanecerá cerrado.",
+          "Stream Talents invitará a los participantes del piloto. El registro público permanecerá cerrado.",
       },
       {
         title: "Acceso aprobado",
@@ -58,7 +58,7 @@ const copies: Record<Locale, PilotCopy> = {
     information: {
       title: "Un buen comienzo, por invitación.",
       description:
-        "El piloto de GG's comenzará con un grupo de participantes invitados. Así podremos cuidar la experiencia desde el primer día.",
+        "El piloto de Stream Talents comenzará con un grupo de participantes invitados. Así podremos cuidar la experiencia desde el primer día.",
       note: "Las invitaciones y el inicio de sesión aún no están habilitados. Esta vista previa explica la política del piloto; no es un formulario de registro.",
     },
     denied: {
@@ -76,18 +76,18 @@ const copies: Record<Locale, PilotCopy> = {
       {
         name: "Comunidad",
         description:
-          "El sitio público seguirá disponible para conocer la visión de GG's.",
+          "El sitio público seguirá disponible para conocer la visión de Stream Talents.",
       },
     ],
     withoutInvitation: "¿No tienes invitación?",
   },
   en: {
-    eyebrow: "GG'S PRIVATE PILOT",
+    eyebrow: "Stream Talents PRIVATE PILOT",
     preview: "Pilot preview",
     invitationOnly: "Invitation only",
     entryTitle: "Your invitation comes first.",
     entryDescription:
-      "We're preparing a private pilot for GG's streamers. Access will open only to invited and approved participants.",
+      "We're preparing a private pilot for Stream Talents streamers. Access will open only to invited and approved participants.",
     availability:
       "Sign-in is not available yet. This page does not create accounts or collect your details.",
     signinSoon: "Sign-in coming soon",
@@ -98,7 +98,7 @@ const copies: Record<Locale, PilotCopy> = {
       {
         title: "A direct invitation",
         description:
-          "GG's will invite pilot participants. Public registration will remain closed.",
+          "Stream Talents will invite pilot participants. Public registration will remain closed.",
       },
       {
         title: "Approved access",
@@ -117,7 +117,7 @@ const copies: Record<Locale, PilotCopy> = {
     information: {
       title: "Good beginnings start with an invitation.",
       description:
-        "The GG's pilot will begin with a group of invited participants, so we can care for the experience from day one.",
+        "The Stream Talents pilot will begin with a group of invited participants, so we can care for the experience from day one.",
       note: "Invitations and sign-in are not enabled yet. This preview explains the pilot policy; it is not a registration form.",
     },
     denied: {
@@ -134,7 +134,8 @@ const copies: Record<Locale, PilotCopy> = {
       },
       {
         name: "Community",
-        description: "The public site stays open to discover the GG's vision.",
+        description:
+          "The public site stays open to discover the vision of Stream Talents.",
       },
     ],
     withoutInvitation: "No invitation yet?",

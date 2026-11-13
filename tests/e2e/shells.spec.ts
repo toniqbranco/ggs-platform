@@ -54,7 +54,7 @@ test("language switching preserves the shell and subsequent navigation preserves
   await expect(page).toHaveURL(/\/en$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await page
-    .getByRole("navigation", { name: "GG's spaces" })
+    .getByRole("navigation", { name: "Stream Talents spaces" })
     .getByRole("link", { name: "Streamers" })
     .click();
   await expect(page).toHaveURL(/\/en\/streamer$/);
@@ -73,7 +73,7 @@ test("keyboard skip link focuses main and the public CTA reaches its section", a
   ).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("main")).toBeFocused();
-  await page.getByRole("link", { name: "Discover GG's" }).click();
+  await page.getByRole("link", { name: "Discover Stream Talents" }).click();
   await expect(page).toHaveURL(/#vision$/);
   await expect(page.locator("#vision")).toBeInViewport();
 });

@@ -13,7 +13,7 @@ export function SetupPreview({
   const copy = getSetupCopy(locale);
   const profile = step === "profile";
   const fields = [
-    [copy.name, "GG Demo Creator"],
+    [copy.name, "Stream Talents Demo Creator"],
     [copy.email, "creator@example.invalid"],
     [copy.country, "Colombia"],
     [copy.language, locale === "es" ? "Español" : "English"],

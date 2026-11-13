@@ -10,7 +10,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/session">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  return { title: getAuthCopy(locale).sessionTitle + " · GG's" };
+  return { title: getAuthCopy(locale).sessionTitle + " · Stream Talents" };
 }
 export default async function Session({
   params,

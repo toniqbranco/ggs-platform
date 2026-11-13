@@ -1,5 +1,6 @@
 "use client";
 import Link from "next/link";
+import { BrandLogo } from "./brand-logo";
 import { useEffect, useRef, useState } from "react";
 import type { Locale } from "@/lib/i18n/config";
 import {
@@ -202,7 +203,7 @@ export function LocalSetup({ locale }: { locale: Locale }) {
             ? c.reset
             : c.start;
   const fields = [
-    [c.name, "GG Demo Creator"],
+    [c.name, "Stream Talents Demo Creator"],
     [c.country, "Colombia"],
     [c.platform, "Twitch"],
     [c.url, "https://example.invalid/creator"],
@@ -210,8 +211,12 @@ export function LocalSetup({ locale }: { locale: Locale }) {
   return (
     <main className="local-setup">
       <header className="local-setup-header">
-        <Link href={`/${locale}`} className="local-brand" aria-label="GG's">
-          GG<span>’s</span>
+        <Link
+          href={`/${locale}`}
+          className="local-brand"
+          aria-label="Stream Talents"
+        >
+          <BrandLogo />
         </Link>
         <Link
           href={`/${locale === "es" ? "en" : "es"}/setup/local`}
@@ -224,7 +229,7 @@ export function LocalSetup({ locale }: { locale: Locale }) {
       <div className="setup-layout">
         <div className="setup-story">
           <p className="eyebrow">
-            <span className="square-dot" /> GG’S · TALENT & TECH
+            <span className="square-dot" /> Stream Talents · TALENT & TECH
           </p>
           <h1>
             {c.title.split("\n").map((line) => (
@@ -233,7 +238,7 @@ export function LocalSetup({ locale }: { locale: Locale }) {
           </h1>
           <p className="intro-description">{c.intro}</p>
           <div className="local-orbit" aria-hidden="true">
-            <span>GG’S</span>
+            <span>Stream Talents</span>
             <span>LIVE · CREATE · GROW ·</span>
           </div>
           <p className="local-footnote">{c.footer}</p>

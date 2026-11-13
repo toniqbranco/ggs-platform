@@ -2,7 +2,7 @@ import type { Locale } from "./config";
 
 const copy = {
   es: {
-    eyebrow: "TU PRÓXIMO CAPÍTULO · GG’S",
+    eyebrow: "TU PRÓXIMO CAPÍTULO · Stream Talents",
     title: "Tu talento.\nTu espacio.",
     intro:
       "Un comienzo sencillo para una nueva etapa. Así será la configuración de tu acceso como streamer aprobado.",
@@ -38,7 +38,7 @@ const copy = {
     navigation: "Pasos de configuración",
   },
   en: {
-    eyebrow: "YOUR NEXT CHAPTER · GG’S",
+    eyebrow: "YOUR NEXT CHAPTER · Stream Talents",
     title: "Your talent.\nYour space.",
     intro:
       "A simple start to a new chapter. A preview of first-time setup for approved streamers.",

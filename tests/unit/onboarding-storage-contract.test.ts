@@ -55,7 +55,7 @@ const profile = {
   invitationId: bindingId,
   expectedBindingRevision: 3,
   expectedProfileRevision: 0,
-  displayName: "GG Demo Creator",
+  displayName: "Stream Talents Demo Creator",
   country: "Colombia",
   platform: "twitch",
   profileUrl: "https://example.invalid/creator",
@@ -231,7 +231,7 @@ test("fingerprints normalize profile whitespace and input key order but bind cha
   assert.equal(
     fingerprintIntent("profile", {
       ...profile,
-      displayName: " GG Demo Creator ",
+      displayName: " Stream Talents Demo Creator ",
     }),
     expected.requestHash,
   );

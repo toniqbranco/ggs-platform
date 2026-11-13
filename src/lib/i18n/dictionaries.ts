@@ -37,20 +37,20 @@ type Dictionary = {
 
 const spanish: Dictionary = {
   metadata: {
-    title: "GG's · Talento sin fronteras",
+    title: "Stream Talents · Talento sin fronteras",
     description:
       "Una nueva perspectiva para el talento digital, la cultura del directo y la conexión global.",
   },
   skipLink: "Saltar al contenido",
-  navigationLabel: "Espacios de GG's",
+  navigationLabel: "Espacios de Stream Talents",
   languageLabel: "Idioma",
   signIn: "Iniciar sesión",
-  homeLabel: "GG's — Inicio",
+  homeLabel: "Stream Talents — Inicio",
   brandline: "Talento. Cultura. Conexión.",
   availability: "En preparación",
   footer: "Lo que viene, lo creamos juntos.",
   backHome: "Volver al inicio",
-  discover: "Conoce GG's",
+  discover: "Conoce Stream Talents",
   spacesLabel: "Nuestros espacios",
   mediaLabel: "Cultura creadora",
   mediaTitle: "Más voces. Más posibilidades.",
@@ -88,7 +88,7 @@ const spanish: Dictionary = {
         "Donde el talento digital, la cultura del directo y las nuevas ideas encuentran su próximo horizonte.",
       panelTitle: "Estamos dando forma a lo que viene.",
       panelDescription:
-        "Los espacios de GG's están en preparación. Por ahora, descubre la base de nuestra próxima etapa.",
+        "Los espacios de Stream Talents están en preparación. Por ahora, descubre la base de nuestra próxima etapa.",
     },
     streamer: {
       label: "Streamers",
@@ -96,7 +96,7 @@ const spanish: Dictionary = {
       title: "Tu voz.",
       accent: "Tu horizonte.",
       description:
-        "La creatividad empieza contigo. Este es el inicio de tu espacio en GG's.",
+        "La creatividad empieza contigo. Este es el inicio de tu espacio en Stream Talents.",
       panelTitle: "Tu próxima etapa está tomando forma.",
       panelDescription:
         "El espacio streamer está en preparación. Esta vista previa presenta la estructura; todavía no hay herramientas ni datos de streamers disponibles.",
@@ -106,20 +106,20 @@ const spanish: Dictionary = {
 
 const english: Dictionary = {
   metadata: {
-    title: "GG's · Talent without limits",
+    title: "Stream Talents · Talent without limits",
     description:
       "A fresh perspective on digital talent, live culture, and global connection.",
   },
   skipLink: "Skip to content",
-  navigationLabel: "GG's spaces",
+  navigationLabel: "Stream Talents spaces",
   languageLabel: "Language",
   signIn: "Sign in",
-  homeLabel: "GG's — Home",
+  homeLabel: "Stream Talents — Home",
   brandline: "Talent. Culture. Connection.",
   availability: "In preparation",
   footer: "What's next is a collective thing.",
   backHome: "Back to home",
-  discover: "Discover GG's",
+  discover: "Discover Stream Talents",
   spacesLabel: "Our spaces",
   mediaLabel: "Creator culture",
   mediaTitle: "More voices. More possibilities.",
@@ -156,7 +156,7 @@ const english: Dictionary = {
         "Where digital talent, live culture, and new ideas find their next horizon.",
       panelTitle: "We're shaping what comes next.",
       panelDescription:
-        "The GG's spaces are in preparation. For now, explore the foundation of our next chapter.",
+        "The Stream Talents spaces are in preparation. For now, explore the foundation of our next chapter.",
     },
     streamer: {
       label: "Streamers",
@@ -164,7 +164,7 @@ const english: Dictionary = {
       title: "Your voice.",
       accent: "Your horizon.",
       description:
-        "Creativity starts with you. This is the beginning of your space at GG's.",
+        "Creativity starts with you. This is the beginning of your space at Stream Talents.",
       panelTitle: "Your next chapter is taking shape.",
       panelDescription:
         "The streamer space is in preparation. This preview presents the structure; streamer tools and data are not available yet.",

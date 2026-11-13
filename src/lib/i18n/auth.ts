@@ -5,9 +5,9 @@ const copies = {
     eyebrow: "PILOTO PRIVADO · STREAMERS",
     title: "Tu próximo paso empieza aquí.",
     description:
-      "Si GG's ya habilitó tu cuenta del piloto, solicita un enlace para entrar. Ábrelo en este mismo navegador.",
+      "Si Stream Talents ya habilitó tu cuenta del piloto, solicita un enlace para entrar. Ábrelo en este mismo navegador.",
     closedDescription:
-      "Un espacio privado para streamers aprobados por GG's. El acceso se abrirá por invitación.",
+      "Un espacio privado para streamers aprobados por Stream Talents. El acceso se abrirá por invitación.",
     email: "Correo electrónico",
     send: "Solicitar enlace de acceso",
     offline: "El acceso del piloto aún no está disponible.",
@@ -21,7 +21,7 @@ const copies = {
     absent:
       "No hay una sesión válida. Solicita un nuevo enlace para continuar.",
     restricted:
-      "Tu cuenta no tiene acceso aprobado y activo al piloto. Consulta al equipo de GG's. Un enlace de correo no sustituye la aprobación.",
+      "Tu cuenta no tiene acceso aprobado y activo al piloto. Consulta al equipo de Stream Talents. Un enlace de correo no sustituye la aprobación.",
     signOut: "Cerrar sesión",
     signIn: "Ir al acceso",
     checkSession: "Comprobar mi sesión",
@@ -37,7 +37,7 @@ const copies = {
       "browser-required":
         "El enlace se abrió sin la verificación del navegador donde lo solicitaste. Abre el sitio en el navegador que prefieras, solicita un enlace nuevo y ábrelo en ese mismo navegador.",
       "approval-required":
-        "Tu acceso al piloto requiere aprobación y una invitación aceptada. Consulta al equipo de GG's.",
+        "Tu acceso al piloto requiere aprobación y una invitación aceptada. Consulta al equipo de Stream Talents.",
       sent: "Solicitud recibida. El envío de correos puede estar limitado temporalmente. Revisa si llegó un nuevo enlace de acceso.",
       invalid: "Introduce un correo electrónico válido.",
       expired:
@@ -51,9 +51,9 @@ const copies = {
     eyebrow: "PRIVATE PILOT · STREAMERS",
     title: "Your next step starts here.",
     description:
-      "If GG's has already enabled your pilot account, request a sign-in link. Open it in this same browser.",
+      "If Stream Talents has already enabled your pilot account, request a sign-in link. Open it in this same browser.",
     closedDescription:
-      "A private space for streamers approved by GG's. Access will open by invitation.",
+      "A private space for streamers approved by Stream Talents. Access will open by invitation.",
     email: "Email address",
     send: "Request sign-in link",
     offline: "Pilot sign-in is not open yet.",
@@ -67,7 +67,7 @@ const copies = {
     absent:
       "There is no valid session. Request a new sign-in link to continue.",
     restricted:
-      "Your account does not have approved, active pilot access. Contact the GG's team. An email link does not replace approval.",
+      "Your account does not have approved, active pilot access. Contact the Stream Talents team. An email link does not replace approval.",
     signOut: "Sign out",
     signIn: "Go to sign-in",
     checkSession: "Check my session",
@@ -83,7 +83,7 @@ const copies = {
       "browser-required":
         "The link opened without the verification from the browser that requested it. Open the site in your preferred browser, request a new link, and open it in that same browser.",
       "approval-required":
-        "Pilot access requires approval and an accepted invitation. Contact the GG's team.",
+        "Pilot access requires approval and an accepted invitation. Contact the Stream Talents team.",
       sent: "Request received. Email delivery can be temporarily limited. Check your inbox for a new sign-in link.",
       invalid: "Enter a valid email address.",
       expired:

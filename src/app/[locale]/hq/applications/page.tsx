@@ -6,7 +6,7 @@ import { getServerEnvironment } from "@/lib/env/server";
 
 export const dynamic = "force-dynamic";
 export const metadata = {
-  title: "GG's · Private review",
+  title: "Stream Talents · Private review",
   robots: { index: false, follow: false },
 };
 export default async function Applications({

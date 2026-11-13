@@ -9,7 +9,7 @@ export async function generateMetadata({
 }: PageProps<"/[locale]/sign-in">) {
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
-  return { title: getAuthCopy(locale).title + " · GG's" };
+  return { title: getAuthCopy(locale).title + " · Stream Talents" };
 }
 export default async function SignIn({
   params,

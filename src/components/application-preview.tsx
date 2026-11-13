@@ -36,7 +36,7 @@ export function ApplicationPreview({ locale }: { locale: Locale }) {
       aria-labelledby="application-form-title"
     >
       <div className="application-form-top">
-        <span className="eyebrow">01 / GG&apos;S</span>
+        <span className="eyebrow">01 / Stream Talents</span>
         <span className="preview-pill">{copy.preview}</span>
       </div>
       <h2 id="application-form-title">{copy.formTitle}</h2>

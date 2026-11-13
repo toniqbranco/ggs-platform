@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { BrandLogo } from "./brand-logo";
 import type { ReactNode } from "react";
 import {
   locales,
@@ -39,10 +40,7 @@ export function Shell({
               href={sectionHref(locale, "public")}
               aria-label={copy.homeLabel}
             >
-              GG<span className="wordmark-ending">&apos;s</span>
-              <span className="wordmark-period" aria-hidden="true">
-                .
-              </span>
+              <BrandLogo />
             </Link>
             <span className="brandline">{copy.brandline}</span>
           </div>
@@ -102,7 +100,7 @@ export function Shell({
       <footer className="site-footer container">
         <div className="footer-main">
           <span className="footer-brand">
-            GG&apos;s<span aria-hidden="true">↗</span>
+            Stream Talents<span aria-hidden="true">↗</span>
           </span>
           <p>{copy.footer}</p>
         </div>
