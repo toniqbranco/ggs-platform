@@ -31,7 +31,7 @@ for (const entry of pages) {
       ),
     ).toBe(true);
     if (entry.shell === "public") {
-      const image = page.locator(".creator-photo");
+      const image = page.locator("#introduction img");
       await expect(image).toBeVisible();
       await expect
         .poll(() =>
@@ -50,7 +50,8 @@ test("language switching preserves the shell and subsequent navigation preserves
   page,
 }) => {
   await page.goto("/es");
-  await page.getByRole("link", { name: "EN — English", exact: true }).click();
+  await page.locator(".home-language summary").click();
+  await page.getByRole("link", { name: "English", exact: true }).click();
   await expect(page).toHaveURL(/\/en$/);
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   await page
@@ -63,7 +64,7 @@ test("language switching preserves the shell and subsequent navigation preserves
   await expect(page.locator("html")).toHaveAttribute("lang", "es");
 });
 
-test("keyboard skip link focuses main and the public CTA reaches its section", async ({
+test("keyboard skip link focuses the seven-section homepage", async ({
   page,
 }) => {
   await page.goto("/en");
@@ -73,9 +74,13 @@ test("keyboard skip link focuses main and the public CTA reaches its section", a
   ).toBeFocused();
   await page.keyboard.press("Enter");
   await expect(page.getByRole("main")).toBeFocused();
-  await page.getByRole("link", { name: "Discover Stream Talents" }).click();
-  await expect(page).toHaveURL(/#vision$/);
-  await expect(page.locator("#vision")).toBeInViewport();
+  await expect(page.getByRole("main").getByRole("region")).toHaveCount(7);
+  await expect(
+    page.getByRole("button", { name: "I am a streamer" }),
+  ).toBeDisabled();
+  await expect(
+    page.getByRole("button", { name: "I am a brand" }),
+  ).toBeDisabled();
 });
 
 test("reduced-motion preference suppresses entrance animation", async ({
@@ -85,7 +90,7 @@ test("reduced-motion preference suppresses entrance animation", async ({
   await page.goto("/en");
   expect(
     await page
-      .locator(".hero-grid")
+      .locator("#introduction")
       .evaluate((element) => getComputedStyle(element).animationName),
   ).toBe("none");
 });
@@ -103,4 +108,30 @@ test("all localized shells fit a narrow 320px viewport", async ({ page }) => {
       entry.path,
     ).toBe(true);
   }
+});
+
+test("Spanish homepage controls fit at 320px and remember the selected theme", async ({
+  page,
+}) => {
+  await page.setViewportSize({ width: 320, height: 740 });
+  await page.goto("/es");
+  const header = page.getByRole("banner");
+  const theme = header.getByRole("button", { name: "Tema claro" });
+  await expect(theme).toHaveAttribute("aria-pressed", "false");
+  await theme.click();
+  await expect(theme).toHaveAttribute("aria-pressed", "true");
+  await header.getByText("Descubre", { exact: true }).click();
+  await expect(
+    header.getByText("Academia para streamers", { exact: true }),
+  ).toBeInViewport();
+  const signIn = header.getByRole("link", { name: "Iniciar sesión" });
+  await expect(signIn).toBeInViewport();
+  await expect(signIn).toHaveAttribute("href", "/es/sign-in");
+  await page.locator(".home-language summary").click();
+  await expect(header.getByText("中文", { exact: true })).toBeInViewport();
+  await header.getByRole("link", { name: "English", exact: true }).click();
+  await expect(page).toHaveURL(/\/en$/);
+  await expect(
+    header.getByRole("button", { name: "Light theme" }),
+  ).toHaveAttribute("aria-pressed", "true");
 });
