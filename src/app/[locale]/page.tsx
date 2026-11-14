@@ -52,13 +52,16 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
       </a>
       <header className="site-header">
         <div className="container home-header">
-          <Link
-            className="wordmark"
-            href={`/${locale}`}
-            aria-label={copy.homeLabel}
-          >
-            <BrandLogo />
-          </Link>
+          <div className="brand-lockup home-brand">
+            <Link
+              className="wordmark"
+              href={`/${locale}`}
+              aria-label={copy.homeLabel}
+            >
+              <BrandLogo />
+            </Link>
+            <span className="brandline">{copy.brandline}</span>
+          </div>
           <nav className="space-nav home-nav" aria-label={copy.navigationLabel}>
             <Link href={`/${locale}`} aria-current="page">
               {copy.sections.public.label}
@@ -82,9 +85,9 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
             <HomeThemeToggle label={menu.theme} />
             <details className="home-language">
               <summary
-                aria-label={`${copy.languageLabel}: ${languageNames[locale]}`}
+                aria-label={`${copy.languageLabel}: ${locale.toUpperCase()}`}
               >
-                {languageNames[locale]}
+                {locale.toUpperCase()}
               </summary>
               <ul>
                 {locales.map((language) => (
