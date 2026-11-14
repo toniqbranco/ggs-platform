@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -38,6 +39,58 @@ const navigation = {
     closing: "EL DIRECTO ES SOLO EL COMIENZO.",
   },
 };
+
+const sharing = {
+  en: {
+    title: "Stream Talents | The Future Is Live",
+    description:
+      "Discover live creators, original shows, and new ways for brands to connect with audiences in real time.",
+    alt: "Stream Talents. The future is live. A creator wearing headphones beside a studio microphone.",
+    locale: "en_US",
+  },
+  es: {
+    title: "Stream Talents | El futuro es en vivo",
+    description:
+      "Descubre creadores en vivo, shows originales y nuevas formas de conectar marcas con audiencias en tiempo real.",
+    alt: "Stream Talents. El futuro es en vivo. Una creadora con audífonos junto a un micrófono de estudio.",
+    locale: "es_CO",
+  },
+};
+
+export async function generateMetadata({
+  params,
+}: PageProps<"/[locale]">): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+
+  const { title, description, alt, locale: ogLocale } = sharing[locale];
+  const image = {
+    url: `/images/share-${locale}.jpg`,
+    width: 1200,
+    height: 630,
+    alt,
+  };
+
+  return {
+    metadataBase: new URL("https://www.streamtalents.com"),
+    openGraph: {
+      title,
+      description,
+      siteName: "Stream Talents",
+      url: `/${locale}`,
+      type: "website",
+      locale: ogLocale,
+      alternateLocale: [sharing[locale === "en" ? "es" : "en"].locale],
+      images: [image],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [image],
+    },
+  };
+}
 
 export default async function Home({ params }: PageProps<"/[locale]">) {
   const { locale } = await params;
