@@ -36,7 +36,7 @@ export const pages = [
     path: "/es",
     locale: "es",
     shell: "public",
-    title: "Talento sin fronteras.",
+    title: "EL FUTURO ES EN VIVO.",
   },
   {
     path: "/es/streamer",
@@ -48,7 +48,7 @@ export const pages = [
     path: "/en",
     locale: "en",
     shell: "public",
-    title: "Talent without limits.",
+    title: "THE FUTURE IS LIVE.",
   },
   {
     path: "/en/streamer",
