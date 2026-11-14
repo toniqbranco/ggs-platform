@@ -84,7 +84,7 @@ export default async function Home({ params }: PageProps<"/[locale]">) {
               <summary
                 aria-label={`${copy.languageLabel}: ${languageNames[locale]}`}
               >
-                {locale.toUpperCase()}
+                {languageNames[locale]}
               </summary>
               <ul>
                 {locales.map((language) => (
